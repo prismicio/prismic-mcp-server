@@ -1,0 +1,44 @@
+{
+  "name": "@prismicio/mcp-server",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "commonjs",
+  "license": "UNLICENSED",
+  "packageManager": "yarn@4.9.1",
+  "bin": {
+    "prismic-mcp-server": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "rimraf dist && tsc",
+    "dev:watch": "rimraf dist && tsc --watch",
+    "prepare": "yarn build && chmod +x dist/index.js",
+    "postinstall": "chmod +x dist/index.js || true",
+    "lint": "eslint src --ext .ts --config eslint.config.mjs",
+    "format": "prettier --write 'src/**/*.ts' 'scripts/**/*.js'",
+    "dev:server": "concurrently \"yarn dev:watch\" \"nodemon --watch dist --exec 'DEBUG=true npx @modelcontextprotocol/inspector -e DEBUG=true node dist/index.js'\"",
+    "start:server": "yarn build && npx @modelcontextprotocol/inspector node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.10.1",
+    "zod": "^3.24.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.25.1",
+    "@types/fs-extra": "^11",
+    "@types/node": "^22.14.1",
+    "@typescript-eslint/eslint-plugin": "^8.31.0",
+    "@typescript-eslint/parser": "^8.31.0",
+    "concurrently": "^9.1.2",
+    "eslint": "^9.25.1",
+    "eslint-config-prettier": "^10.1.2",
+    "eslint-plugin-prettier": "^5.2.6",
+    "fs-extra": "^11.3.0",
+    "nodemon": "^3.1.9",
+    "prettier": "^3.5.3",
+    "rimraf": "^6.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.31.0"
+  }
+}
