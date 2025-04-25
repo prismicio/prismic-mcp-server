@@ -1,0 +1,55 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_type:
+        description: "Version type to release"
+        required: true
+        default: "alpha"
+        type: "choice"
+        options:
+          - alpha
+          - patch
+          - minor
+          - major
+
+jobs:
+  prepare:
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    name: Deploy
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+
+      - name: Setup Node
+        uses: ./.github/actions/setup-node
+
+      - name: Configure Git
+        run: |
+          git config user.email "${GITHUB_ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
+          git config user.name "${GITHUB_ACTOR}"
+
+      - name: Run standard-version
+        run: |
+          if [ "${{ github.event.inputs.version_type }}" = "alpha" ]; then
+            yarn standard-version --prerelease alpha
+          else
+            yarn standard-version --release-as ${{ github.event.inputs.version_type }}
+          fi
+
+      - name: Push changes
+        run: |
+          git push --follow-tags origin ${{ github.ref_name }}
+
+      - name: Setup npm authentication
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" > ~/.npmrc
+
+      - name: Publish to NPM
+        run: |
+          npm publish
