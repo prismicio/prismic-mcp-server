@@ -26,7 +26,7 @@ git clone https://github.com/prismicio/prismic-mcp-server.git
 cd prismic-mcp-server
 
 # Install dependencies
-npm i
+yarn
 ```
 
 ---
