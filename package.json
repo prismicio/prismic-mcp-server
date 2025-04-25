@@ -10,14 +10,17 @@
     "prismic-mcp-server": "./dist/index.js"
   },
   "scripts": {
+    "typecheck": "tsc --noEmit",
     "build": "rimraf dist && tsc",
     "dev:watch": "rimraf dist && tsc --watch",
-    "prepare": "yarn build && chmod +x dist/index.js",
-    "postinstall": "chmod +x dist/index.js || true",
     "lint": "eslint src --ext .ts --config eslint.config.mjs",
-    "format": "prettier --write 'src/**/*.ts' 'scripts/**/*.js'",
+    "lint:fix": "yarn lint --fix",
+    "format": "prettier --write 'src/**/*.ts'",
+    "format:check": "yarn format --check",
     "dev:server": "concurrently \"yarn dev:watch\" \"nodemon --watch dist --exec 'DEBUG=true npx @modelcontextprotocol/inspector -e DEBUG=true node dist/index.js'\"",
-    "start:server": "yarn build && npx @modelcontextprotocol/inspector node dist/index.js"
+    "start:server": "yarn build && npx @modelcontextprotocol/inspector node dist/index.js",
+    "prepare": "yarn build && chmod +x dist/index.js",
+    "postinstall": "chmod +x dist/index.js || true"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.10.1",
