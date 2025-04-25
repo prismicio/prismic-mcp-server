@@ -2,13 +2,13 @@
 
 ---
 
-## Getting Started (npm package + Cursor)
+## Getting Started (Cursor)
 
 ---
 
-### Step 1: Setup the MCP server to Cursor
+### Step 1: Setup the MCP server with Cursor
 
-Go to Cursor preferences and click to add an MCP server to `mcp.json`:
+Go to Cursor preferences and click to add an MCP server:
 
 ```json
 {
