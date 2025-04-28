@@ -4,10 +4,12 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### 0.0.3 (2025-04-28)
 
+- docs: improve CHANGELOG
+
 ### 0.0.2 (2025-04-28)
 
-- doc: improve doc + add license
-- doc: create contributing guide and seprate README
+- docs: improve doc + add license
+- docs: create contributing guide and seprate README
 
 ### 0.0.1 (2025-04-25)
 
