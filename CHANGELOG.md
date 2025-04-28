@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.5 (2025-04-28)
+
+
+### Documentation
+
+* improve getting started with Cursor in README ([1f69d24](https://github.com/prismicio/prismic-mcp-server/commit/1f69d240d525c15bcd29b5b984a65b9f7d4a9113))
+
 ### 0.0.4 (2025-04-28)
 
 
