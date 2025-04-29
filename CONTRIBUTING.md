@@ -72,6 +72,8 @@ Go to Cursor preferences and click to add an MCP server to `mcp.json`:
 }
 ```
 
+_Note: Don't forget to deactivate "Prismic MCP" server if you already define one with the published package._
+
 ---
 
 ### Step 4: Test `how-to-code-slice` tool
