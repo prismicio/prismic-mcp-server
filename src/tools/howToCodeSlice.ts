@@ -1172,7 +1172,8 @@ function getHowToCodeSliceModel(args: HowToCodeSliceToolArgs) {
       ## Styling
       Use the screenshot file(s) to get an idea of the slice visual in order to code the slice.
       You must include styling for the slice but NEVER assume styling systems.
-      IMPORTANT:
+      CRITICAL PRE-IMPLEMENTATION CHECK:
+      You MUST run these checks in order and document your findings BEFORE writing any code:
         1. FIRST examine package.json to identify styling dependencies (Tailwind, styled-components, CSS modules, etc.)
         2. THEN look at similar components to see exactly how styles are applied
         3. USE the SAME styling approach as existing components
