@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.6 (2025-04-29)
+
+
+### Features
+
+* support mocks + rework the system prompt and output to ensure better results ([f363579](https://github.com/prismicio/prismic-mcp-server/commit/f36357906ba5f4c498098d42cadf5011f1be8a3b))
+
 ### 0.0.5 (2025-04-28)
 
 
