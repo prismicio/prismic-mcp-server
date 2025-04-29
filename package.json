@@ -18,9 +18,7 @@
     "format": "prettier --write 'src/**/*.ts'",
     "format:check": "yarn format --check",
     "dev:server": "concurrently \"yarn dev:watch\" \"nodemon --watch dist --exec 'DEBUG=true npx @modelcontextprotocol/inspector -e DEBUG=true node dist/index.js'\"",
-    "start:server": "yarn build && npx @modelcontextprotocol/inspector node dist/index.js",
-    "prepare": "yarn build && chmod +x dist/index.js",
-    "postinstall": "chmod +x dist/index.js || true"
+    "start:server": "yarn build && npx @modelcontextprotocol/inspector node dist/index.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.10.1",
