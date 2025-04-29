@@ -1,5 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import fs from "node:fs";
 import { formatErrorForMcpTool } from "../utils/error.util.js";
 
 export function registerHowToCodeSliceTools(server: McpServer) {
@@ -32,7 +33,11 @@ export function registerHowToCodeSliceTools(server: McpServer) {
         2. Examine the project's \`prismicio-types.d.ts\` file
         3. Identify the EXACT field types used by the specific slice you're working with
         4. Extract the full type information for the slice to determine the correct \`fieldsUsed\` parameter
-        5. Only then call this tool with the precise field types as determined from the type definitions
+        5. Identify the absolute paths to the screenshots of the slice \`screenshot-<variation>.png\`
+        6. Identify the styling system currently used in the project (looking at other slices, package.json, etc.)
+        7. Identify the absolute path of the \`model.json\` file
+        8. Identify the absolute path of the \`mocks.json\` file
+        9. Only then call this tool with the above information
 
       VERIFICATION STEP:
       For ANY coding request, first check: Is this a Prismic slice? → If yes or unclear, use this tool
@@ -49,12 +54,13 @@ export function registerHowToCodeSliceTools(server: McpServer) {
       - Best practices for implementing each field type
       - Best practices for styling the slice component
       - Best practices for coding the slice component
+      - Best practices for updating the mocks
 
       EXAMPLES:
-      - Do the code of this slice component { projectFramework: "next" }
-      - How do I implement an ImageField and RichTextField in { projectFramework: "nuxt" }
-      - Do the code of this slice component { projectFramework: "next", fieldsUsed: ["prismic.ImageField", "prismic.BooleanField", "prismic.GeoPointField"] }
-      - Show me how to implement { projectFramework: "sveltekit", fieldsUsed: ["prismic.RichTextField", "prismic.LinkField"] }`,
+      - Code this slice
+      - How do I implement an ImageField
+      - Do the code of this slice component
+      - Show me how to implement this slice`,
     HowToCodeSliceToolArgs.shape,
     getHowToCodeSliceModel,
   );
@@ -1256,38 +1262,45 @@ function getHowToCodeSliceModel(args: HowToCodeSliceToolArgs) {
       YOU MUST read this ENTIRE output from beginning to end BEFORE writing a SINGLE line of code.
       NO EXCEPTIONS - ALL steps are required.
 
+      ## Screenshots [MANDATORY]
+      Screenshots to follow for styling and mocks are provided along with this tool.
+      
       ## Fields documentation [MANDATORY]
       Fields documentation to follow: ${JSON.stringify(fieldsUsed)}
       IMPORTANT:
-       - Look at similar components to see how fields are coded
-       - Use the SAME approach as existing components
-
-      ## Mock [MANDATORY]
-      Do not read or consider the mocks as it's not part of the process of coding a slice.
-      Do not edit the mock file(s).
+        - Look at similar components to see how fields are coded
+        - Use the SAME approach as existing components
 
       ## Model analysis [MANDATORY]
       BEFORE writing ANY code, you MUST:
-      1. Read the \`model.json\` file completely
-      2. Create a formal table of fields with the following format:
-      | Field         | Type       | Config                    | Implementation Plan      |
-      |---------------|------------|---------------------------|--------------------------|
-      | cta_link      | Link       | allowText: true           | No children needed       |
-      | description   | RichText   | multi: paragraph,em,link  | Handle these block types |
+        1. Read the ${args.modelAbsolutePath} file completely
+        2. Create a formal table of fields with the following format:
+          | Field         | Type       | Config                    | Implementation Plan      |
+          |---------------|------------|---------------------------|--------------------------|
+          | cta_link      | Link       | allowText: true           | No children needed       |
+          | description   | RichText   | multi: paragraph,em,link  | Handle these block types |
       CRITICAL: You MUST complete this model analysis BEFORE writing ANY implementation code.
       The analysis should reflect EXACTLY what is in the \`model.json\` file, not assumptions.
       The system will verify you have performed this analysis before accepting any code.
       NEVER update the \`model.json\` file, you can ONLY read it.
 
       ## Styling implementation [MANDATORY]
-      Use the screenshot file(s) to get an idea of the slice visual in order to code the slice.
-      You must include styling for the slice but NEVER assume styling systems.
-      CRITICAL PRE-IMPLEMENTATION CHECK:
-      You MUST run these checks in order and document your findings BEFORE writing any code:
-        1. FIRST examine package.json to identify styling dependencies (Tailwind, styled-components, CSS modules, etc.)
-        2. THEN look at similar components to see exactly how styles are applied
-        3. USE the SAME styling approach as existing components
-        4. PROVIDE EVIDENCE of the styling system found before applying styles
+      Use the screenshot(s) to PRECISELY match the visual appearance of the slice. 
+      Your implementation MUST closely replicate all visual elements, spacing, colors, typography, and layout exactly as shown in the screenshots. 
+      Do not approximate or simplify the design - aim for pixel-perfect implementation.
+      Use the \`stylingSystemToUse\` parameter to identify the styling system to use for the slice.
+      Look at similar components to see exactly how styles are applied.
+      
+      ## Mocks data update [MANDATORY FINAL STEP]
+      AFTER coding the slice component:
+        1. FIND AND EXAMINE ${args.mocksAbsolutePath} files side-by-side with the screenshots
+        2. UPDATE ONLY the text content in \`mocks.json\` to EXACTLY match text visible in screenshot:
+          - Maintain the EXACT same structure and format of the mock data
+          - Do not modify any non-text elements (images, links structure, field properties)
+          - For StructuredText fields, update only the text content while preserving spans, direction, and type
+          - Match the exact number of group items visible in the screenshot
+        3. VERIFY all visible text from the screenshot appears in mocks before moving on
+      CRITICAL: DO NOT MODIFY THE JSON STRUCTURE OF mocks.json, keep it as is and only update the text content.
     `;
 
     return {
@@ -1296,6 +1309,11 @@ function getHowToCodeSliceModel(args: HowToCodeSliceToolArgs) {
           type: "text" as const,
           text: globalDocumentation,
         },
+        ...args.screenshotsAbsolutePaths.map((path) => ({
+          type: "image" as const,
+          data: fs.readFileSync(path).toString("base64"),
+          mimeType: "image/png",
+        })),
       ],
     };
   } catch (error) {
@@ -1307,6 +1325,22 @@ const HowToCodeSliceToolArgs = z.object({
   projectFramework: z
     .enum(["next", "nuxt", "sveltekit"])
     .describe("The framework used by the project"),
+  screenshotsAbsolutePaths: z
+    .array(z.string())
+    .describe(
+      "The absolute paths to the screenshots of the slice `screenshot-<variation>.png`",
+    ),
+  stylingSystemToUse: z
+    .string()
+    .describe(
+      "The styling system currently used in the project (looking at other slices, package.json, etc.)",
+    ),
+  modelAbsolutePath: z
+    .string()
+    .describe("The absolute path to the `model.json` file of the slice"),
+  mocksAbsolutePath: z
+    .string()
+    .describe("The absolute path to the `mocks.json` file of the slice"),
   fieldsUsed: z
     .array(
       z.enum([
