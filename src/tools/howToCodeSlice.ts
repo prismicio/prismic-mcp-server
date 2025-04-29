@@ -487,6 +487,55 @@ function getHowToCodeSliceModel(args: HowToCodeSliceToolArgs) {
         ## Use display text as labels
 
         The link's text label can be managed in Prismic when display text is enabled. Prismic's link components automatically display the text.
+        you MUST verify \`model.json\` file to check if display text is enabled for the link field with the property \`allowText\`.
+
+        When \`allowText\` is enabled, you must never provide children to the component:
+        \`\`\`
+        ${(() => {
+          switch (args.projectFramework) {
+            case "next":
+              return `
+                import { PrismicNextLink } from "@prismicio/next"
+
+                // CORRECT: No children
+                <PrismicNextLink
+                  field={slice.primary.my_link_field}
+                />
+
+                // INCORRECT: Adding children
+                <PrismicNextLink field={slice.primary.my_link_field}>
+                  Learn more
+                </PrismicNextLink>
+              `;
+            case "nuxt":
+              return `
+                // CORRECT: No children
+                <PrismicLink :field="slice.primary.my_link_field" />
+
+                // INCORRECT: Adding children
+                <PrismicLink :field="slice.primary.my_link_field">
+                  Learn more
+                </PrismicLink>
+              `;
+            case "sveltekit":
+              return `
+                <script>
+                  import { PrismicLink } from "@prismicio/svelte"
+                </script>
+
+                // CORRECT: No children
+                <PrismicLink field={slice.primary.my_link_field} />
+
+                // INCORRECT: Adding children
+                <PrismicLink field={slice.primary.my_link_field}>
+                  Learn more
+                </PrismicLink>
+              `;
+          }
+        })()}
+        \`\`\`
+
+        ## Use variants to style links
 
         Link variants can determine how links are styled. This example adds a CSS class based on the selected variant.
 
@@ -585,7 +634,56 @@ function getHowToCodeSliceModel(args: HowToCodeSliceToolArgs) {
 
         ## Use display text as labels
 
-        The link to media's text label can be managed in Prismic when [display text](#optional-allow-display-text) is enabled. Prismic's link components automatically display the text.
+        The link's text label can be managed in Prismic when display text is enabled. Prismic's link components automatically display the text.
+        you MUST verify \`model.json\` file to check if display text is enabled for the link field with the property \`allowText\`.
+
+        When \`allowText\` is enabled, you must never provide children to the component:
+        \`\`\`
+        ${(() => {
+          switch (args.projectFramework) {
+            case "next":
+              return `
+                import { PrismicNextLink } from "@prismicio/next"
+
+                // CORRECT: No children
+                <PrismicNextLink
+                  field={slice.primary.my_link_field}
+                />
+
+                // INCORRECT: Adding children
+                <PrismicNextLink field={slice.primary.my_link_field}>
+                  Learn more
+                </PrismicNextLink>
+              `;
+            case "nuxt":
+              return `
+                // CORRECT: No children
+                <PrismicLink :field="slice.primary.my_link_field" />
+
+                // INCORRECT: Adding children
+                <PrismicLink :field="slice.primary.my_link_field">
+                  Learn more
+                </PrismicLink>
+              `;
+            case "sveltekit":
+              return `
+                <script>
+                  import { PrismicLink } from "@prismicio/svelte"
+                </script>
+
+                // CORRECT: No children
+                <PrismicLink field={slice.primary.my_link_field} />
+
+                // INCORRECT: Adding children
+                <PrismicLink field={slice.primary.my_link_field}>
+                  Learn more
+                </PrismicLink>
+              `;
+          }
+        })()}
+        \`\`\`
+
+        ## Use variants to style links
 
         Link variants can determine how links are styled. This example adds a CSS class based on the selected variant.
 
@@ -1153,23 +1251,35 @@ function getHowToCodeSliceModel(args: HowToCodeSliceToolArgs) {
 
     const globalDocumentation = `
       # How to code a slice
-      Follow each documentation information from this tool to code the slice.
+      This tool contains MANDATORY STEPS that MUST be followed.
+      FAILING to read and implement ANY section marked MANDATORY will result in INCORRECT code.
+      YOU MUST read this ENTIRE output from beginning to end BEFORE writing a SINGLE line of code.
+      NO EXCEPTIONS - ALL steps are required.
 
-      ## Fields
+      ## Fields documentation [MANDATORY]
       Fields documentation to follow: ${JSON.stringify(fieldsUsed)}
       IMPORTANT:
        - Look at similar components to see how fields are coded
        - Use the SAME approach as existing components
 
-      ## Mock
+      ## Mock [MANDATORY]
       Do not read or consider the mocks as it's not part of the process of coding a slice.
       Do not edit the mock file(s).
 
-      ## Model
-      Do not read or consider the model as it's not part of the process of coding a slice, 
-      instead use \`prismicio-types.d.ts\` to get available types for the current slice.
+      ## Model analysis [MANDATORY]
+      BEFORE writing ANY code, you MUST:
+      1. Read the \`model.json\` file completely
+      2. Create a formal table of fields with the following format:
+      | Field         | Type       | Config                    | Implementation Plan      |
+      |---------------|------------|---------------------------|--------------------------|
+      | cta_link      | Link       | allowText: true           | No children needed       |
+      | description   | RichText   | multi: paragraph,em,link  | Handle these block types |
+      CRITICAL: You MUST complete this model analysis BEFORE writing ANY implementation code.
+      The analysis should reflect EXACTLY what is in the \`model.json\` file, not assumptions.
+      The system will verify you have performed this analysis before accepting any code.
+      NEVER update the \`model.json\` file, you can ONLY read it.
 
-      ## Styling
+      ## Styling implementation [MANDATORY]
       Use the screenshot file(s) to get an idea of the slice visual in order to code the slice.
       You must include styling for the slice but NEVER assume styling systems.
       CRITICAL PRE-IMPLEMENTATION CHECK:
