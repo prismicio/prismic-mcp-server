@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.9 (2025-04-30)
+
+
+### Features
+
+* ensure AI don't hard code content ([598c9ab](https://github.com/prismicio/prismic-mcp-server/commit/598c9ab0830c23c9284a65d7802d13322448d922))
+
 ### 0.0.8 (2025-04-30)
 
 
