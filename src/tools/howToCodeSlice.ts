@@ -1299,6 +1299,7 @@ function getHowToCodeSliceModel(args: HowToCodeSliceToolArgs) {
           - Maintain the EXACT same structure and format of the mock data
           - Do not modify any non-text elements (images, links structure, field properties)
           - For StructuredText fields, update only the text content while preserving spans, direction, and type
+          - For text, be sure TO NOT ADD extra \`"\` inside the text content as it WILL BREAK the JSON structure
           - Match the exact number of group items visible in the screenshot
         3. VERIFY all visible text from the screenshot appears in mocks before moving on
       CRITICAL: DO NOT MODIFY THE JSON STRUCTURE OF mocks.json, keep it as is and only update the text content.
