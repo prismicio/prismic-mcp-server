@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.10 (2025-04-30)
+
+
+### Features
+
+* ensure mocks generation don't break json ([227840b](https://github.com/prismicio/prismic-mcp-server/commit/227840b891a2c5691a6629728948a25e15b490c8))
+
 ### 0.0.9 (2025-04-30)
 
 
