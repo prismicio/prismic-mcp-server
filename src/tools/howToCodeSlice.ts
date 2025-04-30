@@ -1270,6 +1270,7 @@ function getHowToCodeSliceModel(args: HowToCodeSliceToolArgs) {
       IMPORTANT:
         - Look at similar components to see how fields are coded
         - Use the SAME approach as existing components
+      CRITICAL: ANY content visible to users MUST come from Prismic fields. Never hardcode ANY values directly - everything must be dynamic.
 
       ## Model analysis [MANDATORY]
       BEFORE writing ANY code, you MUST:
