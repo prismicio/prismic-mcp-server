@@ -66,7 +66,7 @@ Go to Cursor preferences and click to add an MCP server to `mcp.json`:
   "mcpServers": {
     "Prismic MCP (Local)": {
       "command": "npx",
-      "args": ["prismic-mcp-server"]
+      "args": ["mcp-server"]
     }
   }
 }
