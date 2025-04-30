@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.8 (2025-04-30)
+
+
+### Bug Fixes
+
+* ensure package can be used with npx ([5f3641e](https://github.com/prismicio/prismic-mcp-server/commit/5f3641e0ff291ab3c944985ed38d28973ed33dd1))
+
 ### 0.0.7 (2025-04-30)
 
 
