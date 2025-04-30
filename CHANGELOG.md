@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.7 (2025-04-30)
+
+
+### Chore
+
+* rename bin script ([6b0f5f4](https://github.com/prismicio/prismic-mcp-server/commit/6b0f5f4e1d1905be6babae90b68898ca0c296e32))
+
 ### 0.0.6 (2025-04-29)
 
 
