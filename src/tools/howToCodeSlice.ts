@@ -31,6 +31,7 @@ export function registerHowToCodeSliceTools(server: McpServer) {
       BEFORE calling this tool, you MUST:
         1. Examine the project's \`package.json\` to identify the correct framework ("next", "nuxt", or "sveltekit")
         2. Examine the project's \`prismicio-types.d.ts\` file
+          - INFO: If you don't find \`prismicio-types.d.ts\` file, look at the \`slicemachine.config.json\` file for the \`generatedTypesFilePath\` property.
         3. Identify the EXACT field types used by the specific slice you're working with
         4. Extract the full type information for the slice to determine the correct \`fieldsUsed\` parameter
         5. Identify the absolute paths to the screenshots of the slice \`screenshot-<variation>.png\`
@@ -38,7 +39,7 @@ export function registerHowToCodeSliceTools(server: McpServer) {
         7. Identify the absolute path of the \`model.json\` file
         8. Identify the absolute path of the \`mocks.json\` file
         9. Only then call this tool with the above information
-
+      
       VERIFICATION STEP:
       For ANY coding request, first check: Is this a Prismic slice? → If yes or unclear, use this tool
       FAILURE TO USE THIS TOOL for slice-related requests will result in code with incorrect field access patterns and TypeScript errors.
