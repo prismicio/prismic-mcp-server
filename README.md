@@ -1,5 +1,9 @@
 # @prismicio/mcp-server
 
+[![npm version][npm-version-src]][npm-version-href]
+[![Github Actions CI][github-actions-ci-src]][github-actions-ci-href]
+[![License][license-src]][license-href]
+
 ---
 
 ## Getting started (Cursor)
@@ -54,3 +58,12 @@ You can also debug the problem by opening the Output view to see the logs:
 2. Select "Output"
 3. Select "Cursor MCP" on the dropdown to filter logs
 4. Click to reload the MCP server from the Cursor settings to see new logs
+
+<!-- Badges -->
+
+[npm-version-src]: https://img.shields.io/npm/v/@prismicio/mcp-server/latest.svg
+[npm-version-href]: https://npmjs.com/package/@prismicio/mcp-server
+[github-actions-ci-src]: https://github.com/prismicio/prismic-mcp-server/workflows/ci/badge.svg
+[github-actions-ci-href]: https://github.com/prismicio/prismic-mcp-server/actions?query=workflow%3Aci
+[license-src]: https://img.shields.io/npm/l/@prismicio/mcp-server.svg
+[license-href]: https://npmjs.com/package/@prismicio/mcp-server
