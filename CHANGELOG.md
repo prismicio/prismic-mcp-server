@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.11 (2025-05-02)
+
+
+### Features
+
+* add final instructions to prevent the ai to get stuck after calling the tool ([c7cafb5](https://github.com/prismicio/prismic-mcp-server/commit/c7cafb56efb4dcd703dc31dadf7dfbf9a50c0d63))
+
 ### 0.0.10 (2025-04-30)
 
 
