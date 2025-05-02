@@ -1256,7 +1256,7 @@ function getHowToCodeSliceModel(args: HowToCodeSliceToolArgs) {
         return { [field]: fieldsDocumentation[field] };
       });
 
-    const globalDocumentation = `
+    const globalInstruction = `
       # How to code a slice
       This tool contains MANDATORY STEPS that MUST be followed.
       FAILING to read and implement ANY section marked MANDATORY will result in INCORRECT code.
@@ -1306,17 +1306,30 @@ function getHowToCodeSliceModel(args: HowToCodeSliceToolArgs) {
       CRITICAL: DO NOT MODIFY THE JSON STRUCTURE OF mocks.json, keep it as is and only update the text content.
     `;
 
+    const finalInstruction = `
+      ## IMMEDIATE ACTION REQUIRED AFTER CALLING THIS TOOL
+      You have received all necessary information. 
+      DO NOT wait for additional instructions.
+      NO further confirmation needed.
+      PROCEED now to implementation FOLLOWING THE GUIDELINES above.
+      REPLY IMMEDIATELY with the message "I have read and understood the instructions from Prismic MCP tool" and continue with the implementation.
+    `;
+
     return {
       content: [
         {
           type: "text" as const,
-          text: globalDocumentation,
+          text: globalInstruction,
         },
         ...args.screenshotsAbsolutePaths.map((path) => ({
           type: "image" as const,
           data: fs.readFileSync(path).toString("base64"),
           mimeType: "image/png",
         })),
+        {
+          type: "text" as const,
+          text: finalInstruction,
+        },
       ],
     };
   } catch (error) {
