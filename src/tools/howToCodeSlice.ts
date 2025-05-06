@@ -1,6 +1,5 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import fs from "node:fs";
 import { formatErrorForMcpTool } from "../utils/error.util.js";
 
 export function registerHowToCodeSliceTools(server: McpServer) {
@@ -34,11 +33,9 @@ export function registerHowToCodeSliceTools(server: McpServer) {
           - INFO: If you don't find \`prismicio-types.d.ts\` file, look at the \`slicemachine.config.json\` file for the \`generatedTypesFilePath\` property.
         3. Identify the EXACT field types used by the specific slice you're working with
         4. Extract the full type information for the slice to determine the correct \`fieldsUsed\` parameter
-        5. Identify the absolute paths to the screenshots of the slice \`screenshot-<variation>.png\`
-        6. Identify the styling system currently used in the project (looking at other slices, package.json, etc.)
-        7. Identify the absolute path of the \`model.json\` file
-        8. Identify the absolute path of the \`mocks.json\` file
-        9. Only then call this tool with the above information
+        5. Identify the styling system currently used in the project (looking at other slices, package.json, etc.)
+        6. Identify the absolute path of the \`model.json\` file
+        7. Only then call this tool with the above information
       
       VERIFICATION STEP:
       For ANY coding request, first check: Is this a Prismic slice? → If yes or unclear, use this tool
@@ -55,7 +52,6 @@ export function registerHowToCodeSliceTools(server: McpServer) {
       - Best practices for implementing each field type
       - Best practices for styling the slice component
       - Best practices for coding the slice component
-      - Best practices for updating the mocks
 
       EXAMPLES:
       - Code this slice
@@ -1263,9 +1259,6 @@ function getHowToCodeSliceModel(args: HowToCodeSliceToolArgs) {
       YOU MUST read this ENTIRE output from beginning to end BEFORE writing a SINGLE line of code.
       NO EXCEPTIONS - ALL steps are required.
 
-      ## Screenshots [MANDATORY]
-      Screenshots to follow for styling and mocks are provided along with this tool.
-      
       ## Fields documentation [MANDATORY]
       Fields documentation to follow: ${JSON.stringify(fieldsUsed)}
       IMPORTANT:
@@ -1287,23 +1280,8 @@ function getHowToCodeSliceModel(args: HowToCodeSliceToolArgs) {
       NEVER update the \`model.json\` file, you can ONLY read it.
 
       ## Styling implementation [MANDATORY]
-      Use the screenshot(s) to PRECISELY match the visual appearance of the slice. 
-      Your implementation MUST closely replicate all visual elements, spacing, colors, typography, and layout exactly as shown in the screenshots. 
-      Do not approximate or simplify the design - aim for pixel-perfect implementation.
       Use the \`stylingSystemToUse\` parameter to identify the styling system to use for the slice.
       Look at similar components to see exactly how styles are applied.
-      
-      ## Mocks data update [MANDATORY FINAL STEP]
-      AFTER coding the slice component:
-        1. FIND AND EXAMINE ${args.mocksAbsolutePath} files side-by-side with the screenshots
-        2. UPDATE ONLY the text content in \`mocks.json\` to EXACTLY match text visible in screenshot:
-          - Maintain the EXACT same structure and format of the mock data
-          - Do not modify any non-text elements (images, links structure, field properties)
-          - For StructuredText fields, update only the text content while preserving spans, direction, and type
-          - For text, be sure TO NOT ADD extra \`"\` inside the text content as it WILL BREAK the JSON structure
-          - Match the exact number of group items visible in the screenshot
-        3. VERIFY all visible text from the screenshot appears in mocks before moving on
-      CRITICAL: DO NOT MODIFY THE JSON STRUCTURE OF mocks.json, keep it as is and only update the text content.
     `;
 
     const finalInstruction = `
@@ -1321,11 +1299,6 @@ function getHowToCodeSliceModel(args: HowToCodeSliceToolArgs) {
           type: "text" as const,
           text: globalInstruction,
         },
-        ...args.screenshotsAbsolutePaths.map((path) => ({
-          type: "image" as const,
-          data: fs.readFileSync(path).toString("base64"),
-          mimeType: "image/png",
-        })),
         {
           type: "text" as const,
           text: finalInstruction,
@@ -1341,11 +1314,6 @@ const HowToCodeSliceToolArgs = z.object({
   projectFramework: z
     .enum(["next", "nuxt", "sveltekit"])
     .describe("The framework used by the project"),
-  screenshotsAbsolutePaths: z
-    .array(z.string())
-    .describe(
-      "The absolute paths to the screenshots of the slice `screenshot-<variation>.png`",
-    ),
   stylingSystemToUse: z
     .string()
     .describe(
@@ -1354,9 +1322,6 @@ const HowToCodeSliceToolArgs = z.object({
   modelAbsolutePath: z
     .string()
     .describe("The absolute path to the `model.json` file of the slice"),
-  mocksAbsolutePath: z
-    .string()
-    .describe("The absolute path to the `mocks.json` file of the slice"),
   fieldsUsed: z
     .array(
       z.enum([
