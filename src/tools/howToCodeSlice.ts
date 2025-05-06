@@ -365,6 +365,11 @@ function getHowToCodeSliceModel(args: HowToCodeSliceToolArgs) {
 
         # Tips
 
+        ## \`alt\` and \`fallbackAlt\` attributes
+
+        The \`alt\` and \`fallbackAlt\` attributes are manage automatically by the Image component. 
+        DO NOT provide an \`alt\` or \`fallbackAlt\` attribute to the component.
+
         ## Styling
 
         IMPORTANT: Apply classes directly via the class prop, don't wrap the component in a \`<div>\`.
