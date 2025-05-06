@@ -12,8 +12,9 @@
 
 ### Prerequisites
 
-You need a code editor powered by AI that supports MCP servers (Cursor, Windsurf, VS Code, etc.)
-You can check the list of supported code editors here: https://modelcontextprotocol.io/clients
+You need a code editor powered by AI that supports MCP servers (Cursor, Windsurf, VS Code, etc.).
+
+_You can check the list of supported code editors here: https://modelcontextprotocol.io/clients_
 
 ### Step 1: Configure the MCP Server
 
