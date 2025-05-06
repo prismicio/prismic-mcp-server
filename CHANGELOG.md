@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.13 (2025-05-06)
+
+
+### Features
+
+* ensure ai don't write alt or fallbackAlt prop to the Image component ([2ba1a18](https://github.com/prismicio/prismic-mcp-server/commit/2ba1a181af9aefe332c32c309a67d4a45c272319))
+
 ### 0.0.12 (2025-05-06)
 
 
