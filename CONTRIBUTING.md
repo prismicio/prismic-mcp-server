@@ -29,7 +29,7 @@ _Note: Use `yarn start:server` if you want a production build with the MCP Inspe
 
 ---
 
-## Local development (Cursor)
+## Local development (Code editor)
 
 ---
 
@@ -53,13 +53,13 @@ npm link
 
 This will globally link `@prismicio/mcp-server` as available package in your computer.
 
-_Note: Don't forget to unlink the package after development with `npm unlink @prismicio/mcp-server`_
+_Note: Don't forget to unlink the package after development with `npm unlink -g @prismicio/mcp-server`_
 
 ---
 
-### Step 3: Setup the MCP server to Cursor
+### Step 3: Configure the MCP Server
 
-Go to Cursor preferences and click to add an MCP server to `mcp.json`:
+Add the local Prismic MCP server to your code editor's configuration:
 
 ```json
 {
@@ -72,26 +72,10 @@ Go to Cursor preferences and click to add an MCP server to `mcp.json`:
 }
 ```
 
-_Note: Don't forget to deactivate "Prismic MCP" server if you already define one with the published package._
+_Note:_
 
----
-
-### Step 4: Test `how-to-code-slice` tool
-
-In Cursor chat:
-
-1. Select "Agent" mode
-2. Select "claude-3.7-sonnet" model
-3. Add your empty slice file in the chat context (`CMD+i` from the slice file)
-4. Write in the chat `Code this slice`
-5. Execute the command
-6. When the tool is called by Cursor, accept it by clicking on "Run tool"
-
-🚀 And Cursor will generate the slice for you.
-
-_You can also ask Cursor to help you on specific fields inside the slice._
-
-_Note: Restart Cursor when doing changes to remove Cursor cache of the MCP server._
+- _Don't forget to deactivate "Prismic MCP" server if you already define one with the published package._
+- _Restart Cursor when doing changes to remove Cursor cache of the MCP server._
 
 ## Commits
 

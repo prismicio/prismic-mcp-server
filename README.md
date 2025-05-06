@@ -6,13 +6,18 @@
 
 ---
 
-## Getting started (Cursor)
+## Getting started
 
 ---
 
-### Step 1: Setup the MCP server with Cursor
+### Prerequisites
 
-Go to Cursor preferences and click to add an MCP server:
+You need a code editor powered by AI that supports MCP servers (Cursor, Windsurf, VS Code, etc.)
+You can check the list of supported code editors here: https://modelcontextprotocol.io/clients
+
+### Step 1: Configure the MCP Server
+
+Add Prismic MCP server to your code editor's configuration:
 
 ```json
 {
@@ -25,22 +30,21 @@ Go to Cursor preferences and click to add an MCP server:
 }
 ```
 
----
+### Step 2: Use the recommended model
 
-### Step 2: Test `how-to-code-slice` tool
+For optimal results, select `claude-3.7-sonnet` model in your AI chat interface.
 
-In Cursor chat:
+### Step 3: Start using Prismic MCP
 
-1. Select "Agent" mode
-2. Select "claude-3.7-sonnet" model
-3. Add your empty slice file in the chat context (`CMD+i` from the slice file)
-4. Write in the chat `Code this slice`
-5. Execute the command
-6. When the tool is called by Cursor, accept it by clicking on "Run tool"
+🚀 Try it now:
 
-🚀 And Cursor will generate the slice for you.
+1. Open any slice file in your project
+2. Ask your AI assistant: `Code this Slice`
 
-_You can also ask Cursor to help you on specific fields inside the slice._
+You can also request help with specific field implementations, such as:
+
+- `How do I implement an ImageField?`
+- `Show me how to use RichTextField in this slice`
 
 ---
 
@@ -48,7 +52,7 @@ _You can also ask Cursor to help you on specific fields inside the slice._
 
 ---
 
-#### How to solve "Client closed" with "No tools available" when setting up my MCP server in Cursor?
+#### How to solve "Client closed" with "No tools available" when setting up Prismic MCP server in Cursor?
 
 Ensure `npx` is correctly working by running `npx -v` and reload Cursor.
 
