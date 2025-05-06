@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.14 (2025-05-06)
+
+
+### Documentation
+
+* make readme and contributing guide editor agnostic ([08e402f](https://github.com/prismicio/prismic-mcp-server/commit/08e402f8563e487c2307b904626f5623d7f47383))
+
 ### 0.0.13 (2025-05-06)
 
 
