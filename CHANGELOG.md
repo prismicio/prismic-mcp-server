@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.12 (2025-05-06)
+
+
+### Features
+
+* rollback to only support code generation without screenshot analysis and mocks update ([1edb0ff](https://github.com/prismicio/prismic-mcp-server/commit/1edb0ff30ccd0e3325fe5f5d7db0ca62739d3746))
+
 ### 0.0.11 (2025-05-02)
 
 
