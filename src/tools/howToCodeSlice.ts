@@ -875,40 +875,6 @@ function getHowToCodeSliceModel(args: HowToCodeSliceToolArgs) {
         })()}
         \`\`\`
 
-        ## Display as Plain Text (Preferred for Single Headings)
-
-        Use the PrismicText component when you want to render rich text content as plain text without formatting. This is preferred over the full PrismicRichText component when the rich text content only contains a heading, as it allows you to wrap the text in the appropriate heading element.
-
-        \`\`\`
-        ${(() => {
-          switch (args.projectFramework) {
-            case "next":
-              return `
-                import { PrismicText } from "@prismicio/react"
-
-                <h1>
-                  <PrismicText field={slice.primary.my_rich_text_field} />
-                </h1>
-              `;
-            case "nuxt":
-              return `
-                <h1>
-                  <PrismicText :field="slice.primary.my_rich_text_field" />
-                </h1>
-              `;
-            case "sveltekit":
-              return `
-                <script>
-                  import { PrismicText } from "@prismicio/svelte"
-                </script>
-
-                <h1>
-                  <PrismicText field={slice.primary.my_rich_text_field} />
-                </h1>
-              `;
-          }
-        })()}
-        \`\`\`
         
         # Tips
        
