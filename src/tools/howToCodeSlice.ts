@@ -874,12 +874,58 @@ function getHowToCodeSliceModel(args: HowToCodeSliceToolArgs) {
           }
         })()}
         \`\`\`
+
         
         # Tips
        
         ## Styling
 
-        Prismic's rich text components can render custom components for each block type.
+        You can style the component using a wrapper \`<div>\` element with CSS classes. The wrapper element can target child elements to apply styles.
+
+        \`\`\`
+        ${(() => {
+          switch (args.projectFramework) {
+            case "next":
+              return `
+                <div className="rich-text">
+                  <PrismicRichText field={slice.primary.my_rich_text_field} />
+                </div>
+              `;
+            case "nuxt":
+              return `
+                <div class="rich-text">
+                  <PrismicRichText :field="slice.primary.my_rich_text_field" />
+                </div>
+              `;
+            case "sveltekit":
+              return `
+                <div class="rich-text">
+                  <PrismicRichText field={slice.primary.my_rich_text_field} />
+                </div>
+              `;
+          }
+        })()}
+        \`\`\`
+
+        \`\`\`css
+        .rich-text h1 {
+          font-size: 2rem;
+          margin-bottom: 1rem;
+        }
+
+        .rich-text p {
+          margin-bottom: 0.75rem;
+          line-height: 1.6;
+        }
+
+        .rich-text strong {
+          font-weight: bold;
+        }
+        \`\`\`
+
+        ## Advanced Styling with Components
+
+        The \`components\` prop is primarily used for advanced use cases where you need to use another UI component or if you prefer not using cascading CSS.
 
         \`\`\`
         ${(() => {
@@ -928,11 +974,6 @@ function getHowToCodeSliceModel(args: HowToCodeSliceToolArgs) {
           }
         })()}
         \`\`\`
-
-        IMPORTANT:
-          - Do not wrap the \`PrismicRichText\` component in a HTML element like \`<h1>\` or \`<p>\`, but use the \`components\` prop to customize the rendering of each block type.
-          - When customizing styles, it's mandatory to use the \`components\` prop to customize the rendering of each block type needed for the slice.
-          - For overall positioning of the PrismicRichText component, wrap it in a parent \`<div>\`.
 
         ## Use \`isFilled.richText()\` to check if a rich text field has a value
 
@@ -1063,7 +1104,42 @@ function getHowToCodeSliceModel(args: HowToCodeSliceToolArgs) {
           - For overall positioning of the PrismicTable component, wrap it in a parent \`<div>\`.
       `,
       "prismic.TitleField": `
-        Prismic provides a RichText component for the TitleField.
+        Use the PrismicText component to render title field content as plain text, typically wrapped in an appropriate heading element. This is the preferred approach for title fields.
+
+        \`\`\`
+        ${(() => {
+          switch (args.projectFramework) {
+            case "next":
+              return `
+                import { PrismicText } from "@prismicio/react"
+
+                <h1>
+                  <PrismicText field={slice.primary.my_title_field} />
+                </h1>
+              `;
+            case "nuxt":
+              return `
+                <h1>
+                  <PrismicText :field="slice.primary.my_title_field" />
+                </h1>
+              `;
+            case "sveltekit":
+              return `
+                <script>
+                  import { PrismicText } from "@prismicio/svelte"
+                </script>
+
+                <h1>
+                  <PrismicText field={slice.primary.my_title_field} />
+                </h1>
+              `;
+          }
+        })()}
+        \`\`\`
+
+        ## Alternative: Using PrismicRichText
+
+        You can also use the PrismicRichText component if you need more complex rendering or formatting.
 
         \`\`\`
         ${(() => {
@@ -1094,7 +1170,50 @@ function getHowToCodeSliceModel(args: HowToCodeSliceToolArgs) {
        
         ## Styling
 
-        Prismic's rich text component can render custom components for each block type.
+        You can style the component using a wrapper \`<div>\` element with CSS classes. The wrapper element can target child elements to apply styles.
+
+        \`\`\`
+        ${(() => {
+          switch (args.projectFramework) {
+            case "next":
+              return `
+                <div className="title">
+                  <PrismicRichText field={slice.primary.my_title_field} />
+                </div>
+              `;
+            case "nuxt":
+              return `
+                <div class="title">
+                  <PrismicRichText :field="slice.primary.my_title_field" />
+                </div>
+              `;
+            case "sveltekit":
+              return `
+                <div class="title">
+                  <PrismicRichText field={slice.primary.my_title_field} />
+                </div>
+              `;
+          }
+        })()}
+        \`\`\`
+
+        \`\`\`css
+        .title h1 {
+          font-size: 3rem;
+          font-weight: bold;
+          margin-bottom: 1rem;
+        }
+
+        .title h2 {
+          font-size: 2rem;
+          font-weight: semibold;
+          margin-bottom: 0.75rem;
+        }
+        \`\`\`
+
+        ## Advanced Styling with Components
+
+        The \`components\` prop is primarily used for advanced use cases where you need to use another UI component or if you prefer not using cascading CSS.
 
         \`\`\`
         ${(() => {
@@ -1142,11 +1261,6 @@ function getHowToCodeSliceModel(args: HowToCodeSliceToolArgs) {
           }
         })()}
         \`\`\`
-
-        IMPORTANT:
-          - Do not wrap the \`PrismicRichText\` component in a HTML element like \`<h1>\` or \`<p>\`, but use the \`components\` prop to customize the rendering of each block type.
-          - When customizing styles, it's mandatory to use the \`components\` prop to customize the rendering of each block type needed for the slice.
-          - For overall positioning of the PrismicRichText component, wrap it in a parent \`<div>\`.
 
         ## Use \`isFilled.richText()\` to check if a rich text field has a value
 

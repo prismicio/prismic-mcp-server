@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.15-alpha.1 (2025-06-13)
+
+
+### Bug Fixes
+
+* refine TitleField in the same way ([c45b13d](https://github.com/prismicio/prismic-mcp-server/commit/c45b13d2f0d103d921a1436d019d0aaed94451fe))
+
+### 0.0.15-alpha.0 (2025-06-13)
+
+
+### Bug Fixes
+
+* refine handling of rich text ([5bb3a74](https://github.com/prismicio/prismic-mcp-server/commit/5bb3a740e010c1e0ad142d23a9c9f8a2c0684b9c))
+
 ### 0.0.14 (2025-05-06)
 
 
