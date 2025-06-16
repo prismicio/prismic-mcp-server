@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.15 (2025-06-16)
+
+
+### Bug Fixes
+
+* refine handling of rich text and titles ([#1](https://github.com/prismicio/prismic-mcp-server/issues/1)) ([35d9eb4](https://github.com/prismicio/prismic-mcp-server/commit/35d9eb446136f10aea4d53ca6bb3263c976cc772))
+
 ### 0.0.15-alpha.1 (2025-06-13)
 
 
