@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Set up Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
 
@@ -43,7 +43,7 @@ jobs:
 
     steps:
       - name: Set up Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
 
@@ -67,7 +67,7 @@ jobs:
 
       - name: Coverage
         if: matrix.os == 'ubuntu-latest' && matrix.node == 22
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
 
   types:
     needs: prepare
@@ -83,7 +83,7 @@ jobs:
 
     steps:
       - name: Set up Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
 
@@ -115,7 +115,7 @@ jobs:
 
     steps:
       - name: Set up Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
 
