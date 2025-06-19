@@ -1,15 +1,3 @@
-<!--
-
-TODO: Go through all "TODO" comments in the project
-
-TODO: Replace all on all files (README.md, CONTRIBUTING.md, bug_report.md, package.json):
-- @prismicio/mcp-server
-- Prismic Model Context Protocol (MCP) Server
-- prismicio/prismic-mcp-server
-- prismic-mcp-server
-
--->
-
 # @prismicio/mcp-server
 
 [![npm version][npm-version-src]][npm-version-href]
@@ -19,21 +7,7 @@ TODO: Replace all on all files (README.md, CONTRIBUTING.md, bug_report.md, packa
 [![Conventional Commits][conventional-commits-src]][conventional-commits-href]
 [![License][license-src]][license-href]
 
-<!-- TODO: Replacing link to Prismic with [Prismic][prismic] is useful here -->
-
 Prismic Model Context Protocol (MCP) Server.
-
-<!--
-
-TODO: Create a small list of package features:
-
-- 🤔 &nbsp;A useful feature;
-- 🥴 &nbsp;Another useful feature;
-- 🙃 &nbsp;A final useful feature.
-
-Non-breaking space: &nbsp; are here on purpose to fix emoji rendering on certain systems.
-
--->
 
 ## Install
 
