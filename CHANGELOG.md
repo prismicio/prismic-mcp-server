@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.16 (2025-06-19)
+
+
+### Documentation
+
+* add [@latest](https://github.com/latest) to npx command ([77c850c](https://github.com/prismicio/prismic-mcp-server/commit/77c850c05867c43d52bfe938021da2fb91f891f1))
+
 ### 0.0.15 (2025-06-16)
 
 
