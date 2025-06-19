@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.17-alpha.3 (2025-06-19)
+
+
+### Chore
+
+* **release:** 0.0.17-alpha.2 ([0eb57d6](https://github.com/prismicio/prismic-mcp-server/commit/0eb57d60fa4bb31c5126caae29ba7ee67e7cfc48))
+
 ### 0.0.17-alpha.2 (2025-06-19)
 
 ### 0.0.17-alpha.1 (2025-06-19)
