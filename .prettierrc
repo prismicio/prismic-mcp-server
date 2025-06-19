@@ -1,1 +1,31 @@
-{}
+{
+	"plugins": ["@trivago/prettier-plugin-sort-imports", "prettier-plugin-jsdoc"],
+	"jsdocCapitalizeDescription": false,
+	"jsdocSeparateReturnsFromParam": true,
+	"jsdocSeparateTagGroups": true,
+	"jsdocCommentLineStrategy": "multiline",
+	"tsdoc": true,
+	"importOrder": [
+		"^vitest(/|$)",
+		"^node:",
+		"<THIRD_PARTY_MODULES>",
+		"^(?!.*/src(/|$)).*/__testutils__(/|$)",
+		"^(?!.*/src(/|$)).*/__fixtures__(/|$)",
+		"^(?!.*/src(/|$)).*/lib(/|$)",
+		"^(?!.*/src(/|$)).*/types(/|$)",
+		"^(?!.*/src(/|$)).*/errors(/|$)",
+		"^(?!.*/src(/|$))../../../../../",
+		"^(?!.*/src(/|$))../../../../",
+		"^(?!.*/src(/|$))../../../",
+		"^(?!.*/src(/|$))../../",
+		"^(?!.*/src(/|$))../",
+		"^(?!.*/src(/|$))./(.*/)+",
+		"^(?!.*/src(/|$))./",
+		"/src(/|$)"
+	],
+	"importOrderSeparation": true,
+	"importOrderSortSpecifiers": true,
+	"importOrderGroupNamespaceSpecifiers": true,
+	"useTabs": true,
+	"semi": false
+}
