@@ -21,7 +21,6 @@ jobs:
   publish:
     name: Publish
     needs: prepare
-    runs-on: ubuntu-latest
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -34,14 +33,11 @@ jobs:
           git config user.email "${GITHUB_ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
           git config user.name "${GITHUB_ACTOR}"
 
-      - name: Setup npm
-        run: |
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" > ~/.npmrc
-
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -74,3 +70,6 @@ jobs:
           else
             npm publish
           fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true

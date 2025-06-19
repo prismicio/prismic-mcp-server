@@ -127,23 +127,6 @@ gh pr create
 
 Use the [**Publish**](https://github.com/prismicio/prismic-mcp-server/actions/workflows/publish.yml) GitHub Action to publish a new stable or prelease version.
 
-```sh
-# Checkout the master branch and pull the latest changes.
-git checkout master
-git pull
-
-# Perform a dry-run and verify the output.
-# If it looks good, release a new # version.
-npm run release:dry
-npm run release
-
-# Or release an alpha.
-# Perform a dry-run and verify the output.
-# If it looks good, release a new # alpha version.
-npm run release:alpha:dry
-npm run release:alpha
-```
-
 [^1]: This package is maintained by the DevX team. Prismic employees can ask for help or a review in the [#team-devx](https://prismic-team.slack.com/archives/C014VAACCQL) Slack channel.
 [^2]: Prismic employees are highly encouraged to discuss changes with the DevX team in the [#team-devx](https://prismic-team.slack.com/archives/C014VAACCQL) Slack channel before starting.
 [^3]: Code should be reviewed by the DevX team before merging. Prismic employees can request a review in the [#team-devx](https://prismic-team.slack.com/archives/CPG31MDL1) Slack channel.
