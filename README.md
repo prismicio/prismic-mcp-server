@@ -25,7 +25,7 @@ Add Prismic MCP server to your code editor's configuration:
   "mcpServers": {
     "Prismic MCP": {
       "command": "npx",
-      "args": ["-y", "@prismicio/mcp-server"]
+      "args": ["-y", "@prismicio/mcp-server@latest"]
     }
   }
 }
