@@ -37,9 +37,13 @@ Non-breaking space: &nbsp; are here on purpose to fix emoji rendering on certain
 
 ## Install
 
+The MCP server can be launched with this command:
+
 ```sh
 npx -y @prismicio/mcp-server@latest
 ```
+
+Visit the [documentation][prismic-docs] for how to set it up with your code editor.
 
 ## Documentation
 

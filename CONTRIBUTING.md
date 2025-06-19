@@ -125,6 +125,8 @@ gh pr create
 > [!CAUTION]
 > Publishing is restricted to the Prismic team.[^4]
 
+Use the [**Publish**](https://github.com/prismicio/prismic-mcp-server/actions/workflows/publish.yml) GitHub Action to publish a new stable or prelease version.
+
 ```sh
 # Checkout the master branch and pull the latest changes.
 git checkout master

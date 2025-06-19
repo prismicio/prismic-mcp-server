@@ -1,0 +1,76 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_type:
+        description: "Version type to release"
+        required: true
+        default: "alpha"
+        type: "choice"
+        options:
+          - alpha
+          - patch
+          - minor
+          - major
+
+jobs:
+  prepare:
+    uses: ./.github/workflows/ci.yml
+
+  publish:
+    name: Publish
+    needs: prepare
+    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node: [22]
+
+    steps:
+      - name: Set up Git
+        run: |
+          git config user.email "${GITHUB_ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
+          git config user.name "${GITHUB_ACTOR}"
+
+      - name: Setup npm
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" > ~/.npmrc
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Checkout
+        uses: actions/checkout@master
+
+      - name: Retrieve node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ matrix.os }}-node-v${{ matrix.node }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/package-lock.json')) }}
+
+      - name: Bump version
+        run: |
+          if [ "${{ github.event.inputs.version_type }}" = "alpha" ]; then
+            npx standard-version --prerelease alpha
+          else
+            npx standard-version --release-as ${{ github.event.inputs.version_type }}
+          fi
+
+      - name: Push changes
+        run: |
+          git push --follow-tags origin ${{ github.ref_name }}
+
+      - name: Build
+        run: npm run build
+
+      - name: Publish
+        run: |
+          if [ "${{ github.event.inputs.version_type }}" = "alpha" ]; then
+            npm publish --tag alpha
+          else
+            npm publish
+          fi

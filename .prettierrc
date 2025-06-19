@@ -26,18 +26,6 @@
 	"importOrderSeparation": true,
 	"importOrderSortSpecifiers": true,
 	"importOrderGroupNamespaceSpecifiers": true,
-	"printWidth": 80,
 	"useTabs": true,
-	"semi": false,
-	"singleQuote": false,
-	"quoteProps": "as-needed",
-	"jsxSingleQuote": false,
-	"trailingComma": "all",
-	"bracketSpacing": true,
-	"bracketSameLine": false,
-	"arrowParens": "always",
-	"requirePragma": false,
-	"insertPragma": false,
-	"htmlWhitespaceSensitivity": "css",
-	"endOfLine": "lf"
+	"semi": false
 }
