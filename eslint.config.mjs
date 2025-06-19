@@ -1,34 +1,44 @@
-import eslint from "@eslint/js";
-import tseslint from "typescript-eslint";
-import prettierPlugin from "eslint-plugin-prettier";
-import eslintConfigPrettier from "eslint-config-prettier";
+import eslint from "@eslint/js"
+import prettier from "eslint-plugin-prettier/recommended"
+import tsdoc from "eslint-plugin-tsdoc"
+import tseslint from "typescript-eslint"
 
 export default tseslint.config(
-  {
-    ignores: ["node_modules/**", "dist/**", "examples/**"],
-  },
-  eslint.configs.recommended,
-  ...tseslint.configs.recommended,
-  {
-    plugins: {
-      prettier: prettierPlugin,
-    },
-    rules: {
-      "prettier/prettier": "error",
-      "@typescript-eslint/no-unused-vars": [
-        "error",
-        { argsIgnorePattern: "^_" },
-      ],
-    },
-    languageOptions: {
-      parserOptions: {
-        ecmaVersion: "latest",
-        sourceType: "module",
-      },
-      globals: {
-        node: "readonly",
-      },
-    },
-  },
-  eslintConfigPrettier,
-);
+	{
+		ignores: ["dist"],
+	},
+	eslint.configs.recommended,
+	tseslint.configs.recommended,
+	prettier,
+	{
+		plugins: {
+			tsdoc,
+		},
+		rules: {
+			"no-console": ["warn", { allow: ["info", "warn", "error"] }],
+			"no-debugger": "warn",
+			"no-undef": "off",
+			curly: "error",
+			"prefer-const": "error",
+			"padding-line-between-statements": [
+				"error",
+				{
+					blankLine: "always",
+					prev: "*",
+					next: "return",
+				},
+			],
+			"@typescript-eslint/no-unused-vars": [
+				"error",
+				{
+					argsIgnorePattern: "^_",
+					varsIgnorePattern: "^_",
+				},
+			],
+			"@typescript-eslint/no-require-imports": "off",
+			"@typescript-eslint/explicit-module-boundary-types": "error",
+			"@typescript-eslint/consistent-type-imports": "error",
+			"tsdoc/syntax": "warn",
+		},
+	},
+)

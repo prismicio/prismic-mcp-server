@@ -1,0 +1,47 @@
+---
+description: Creating, registering, or updating tools for the MCP server.
+globs:
+alwaysApply: false
+---
+# MCP Server Tool Registration
+
+<rule>
+name: mcp_server_tool_registration
+description: Enforces best practices for adding tools to the MCP server in src/mcp/server.ts.
+filters:
+  - type: file_path
+    pattern: "^src/mcp/server\\.ts$"
+  - type: event
+    pattern: "file_modify|file_create"
+
+actions:
+  - type: reject
+    conditions:
+      - pattern: "server\\.tool\\([^)]*get_repository_locales[^)]*\\)"
+        message: "When registering a tool, use the spread operator: server.tool(...get_repository_locales)"
+      - pattern: "import\\s+\\{[^}]*\\}\\s+from\\s+['\"]\\.\\/tools\\/get_repository_locales['\"];"
+        message: "Import tools as named imports from their respective files in src/mcp/tools/."
+  - type: suggest
+    message: |
+      When adding a new tool to the MCP server:
+      1. Define the tool in src/mcp/tools/ using the tool helper.
+      2. Export the tool as a named export.
+      3. Import the tool into src/mcp/server.ts as a named import.
+      4. Register the tool with the MCP server using server.tool(...yourTool).
+      5. Use the spread operator when registering tools.
+
+examples:
+  - input: |
+      import { get_repository_locales } from "./tools/get_repository_locales"
+      server.tool(...get_repository_locales)
+    output: "Good: Tool imported and registered correctly"
+
+  - input: |
+      import get_repository_locales from "./tools/get_repository_locales"
+      server.tool(get_repository_locales)
+    output: "Bad: Should use named import and spread operator"
+
+metadata:
+  priority: high
+  version: 1.0
+</rule>

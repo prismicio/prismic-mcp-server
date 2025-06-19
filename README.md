@@ -1,74 +1,110 @@
+<!--
+
+TODO: Go through all "TODO" comments in the project
+
+TODO: Replace all on all files (README.md, CONTRIBUTING.md, bug_report.md, package.json):
+- @prismicio/mcp-server
+- Prismic Model Context Protocol (MCP) Server
+- prismicio/prismic-mcp-server
+- prismic-mcp-server
+
+-->
+
 # @prismicio/mcp-server
 
 [![npm version][npm-version-src]][npm-version-href]
+[![npm downloads][npm-downloads-src]][npm-downloads-href]
 [![Github Actions CI][github-actions-ci-src]][github-actions-ci-href]
+[![Codecov][codecov-src]][codecov-href]
+[![Conventional Commits][conventional-commits-src]][conventional-commits-href]
 [![License][license-src]][license-href]
 
----
+<!-- TODO: Replacing link to Prismic with [Prismic][prismic] is useful here -->
 
-## Getting started
+Prismic Model Context Protocol (MCP) Server.
 
----
+<!--
 
-### Prerequisites
+TODO: Create a small list of package features:
 
-You need a code editor powered by AI that supports MCP servers (Cursor, Windsurf, VS Code, etc.).
+- 🤔 &nbsp;A useful feature;
+- 🥴 &nbsp;Another useful feature;
+- 🙃 &nbsp;A final useful feature.
 
-_You can check the list of supported code editors here: https://modelcontextprotocol.io/clients_
+Non-breaking space: &nbsp; are here on purpose to fix emoji rendering on certain systems.
 
-### Step 1: Configure the MCP Server
+-->
 
-Add Prismic MCP server to your code editor's configuration:
+## Install
 
-```json
-{
-  "mcpServers": {
-    "Prismic MCP": {
-      "command": "npx",
-      "args": ["-y", "@prismicio/mcp-server@latest"]
-    }
-  }
-}
+```sh
+npx -y @prismicio/mcp-server@latest
 ```
 
-### Step 2: Use the recommended model
+## Documentation
 
-For optimal results, select `claude-3.7-sonnet` model in your AI chat interface.
+To discover what's new on this package check out [the changelog][changelog]. For full documentation, visit the [official Prismic documentation][prismic-docs].
 
-### Step 3: Start using Prismic MCP
+## Contributing
 
-🚀 Try it now:
+Whether you're helping us fix bugs, improve the docs, or spread the word, we'd love to have you as part of the Prismic developer community!
 
-1. Open any slice file in your project
-2. Ask your AI assistant: `Code this Slice`
+**Asking a question**: [Open a new topic][forum-question] on our community forum explaining what you want to achieve / your question. Our support team will get back to you shortly.
 
-You can also request help with specific field implementations, such as:
+**Reporting a bug**: [Open an issue][repo-bug-report] explaining your application's setup and the bug you're encountering.
 
-- `How do I implement an ImageField?`
-- `Show me how to use RichTextField in this slice`
+**Suggesting an improvement**: [Open an issue][repo-feature-request] explaining your improvement or feature so we can discuss and learn more.
 
----
+**Submitting code changes**: For small fixes, feel free to [open a pull request][repo-pull-requests] with a description of your changes. For large changes, please first [open an issue][repo-feature-request] so we can discuss if and how the changes should be implemented.
 
-### FAQ
+For more clarity on this project and its structure you can also check out the detailed [CONTRIBUTING.md][contributing] document.
 
----
+## License
 
-#### How to solve "Client closed" with "No tools available" when setting up Prismic MCP server in Cursor?
+```
+Copyright 2013-2025 Prismic <contact@prismic.io> (https://prismic.io)
 
-Ensure `npx` is correctly working by running `npx -v` and reload Cursor.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-You can also debug the problem by opening the Output view to see the logs:
+http://www.apache.org/licenses/LICENSE-2.0
 
-1. Click on "View" from the main toolbar
-2. Select "Output"
-3. Select "Cursor MCP" on the dropdown to filter logs
-4. Click to reload the MCP server from the Cursor settings to see new logs
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```
+
+<!-- Links -->
+
+[prismic]: https://prismic.io
+
+<!-- TODO: Replace link with a more useful one if available -->
+
+[prismic-docs]: https://prismic.io/docs/ai#code-with-prismics-mcp-server
+[changelog]: ./CHANGELOG.md
+[contributing]: ./CONTRIBUTING.md
+
+<!-- TODO: Replace link with a more useful one if available -->
+
+[forum-question]: https://community.prismic.io
+[repo-bug-report]: https://github.com/prismicio/prismic-mcp-server/issues/new?assignees=&labels=bug&template=bug_report.md&title=
+[repo-feature-request]: https://github.com/prismicio/prismic-mcp-server/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=
+[repo-pull-requests]: https://github.com/prismicio/prismic-mcp-server/pulls
 
 <!-- Badges -->
 
 [npm-version-src]: https://img.shields.io/npm/v/@prismicio/mcp-server/latest.svg
 [npm-version-href]: https://npmjs.com/package/@prismicio/mcp-server
+[npm-downloads-src]: https://img.shields.io/npm/dm/@prismicio/mcp-server.svg
+[npm-downloads-href]: https://npmjs.com/package/@prismicio/mcp-server
 [github-actions-ci-src]: https://github.com/prismicio/prismic-mcp-server/workflows/ci/badge.svg
 [github-actions-ci-href]: https://github.com/prismicio/prismic-mcp-server/actions?query=workflow%3Aci
+[codecov-src]: https://img.shields.io/codecov/c/github/prismicio/prismic-mcp-server.svg
+[codecov-href]: https://codecov.io/gh/prismicio/prismic-mcp-server
+[conventional-commits-src]: https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white
+[conventional-commits-href]: https://conventionalcommits.org
 [license-src]: https://img.shields.io/npm/l/@prismicio/mcp-server.svg
 [license-href]: https://npmjs.com/package/@prismicio/mcp-server

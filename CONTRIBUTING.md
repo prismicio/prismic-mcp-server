@@ -1,118 +1,148 @@
 # Contributing
 
-Please read the full contributing guide before submitting any contributions to this repository.
+This package is primarily maintained by [Prismic](https://prismic.io)[^1]. External contributions are welcome. Ask for help by [opening an issue](https://github.com/prismicio/prismic-mcp-server/issues/new/choose), or request a review by opening a pull request.
 
-## Setup
+## :gear: Setup
 
-```bash
-# Clone the repository
-git clone https://github.com/prismicio/prismic-mcp-server.git
-cd prismic-mcp-server
+<!-- When applicable, list system requriements to work on the project. -->
 
-# Install dependencies
-yarn
+The following setup is required to work on this project:
+
+- Node.js
+- npm CLI
+
+## :memo: Project-specific notes
+
+### Developing with MCP Inspector
+
+```sh
+# Start the development watcher.
+npm run dev
+
+# Or build the project for production.
+npm run build
+
+# In another terminal, start the inspector.
+npm run preview
+
+# Make sure to restart the server in the UI between each build you test.
 ```
 
----
+### Developing in your code editor
 
-## Local development (MCP Inspector)
-
----
-
-Access the visual MCP Inspector to test tools and view request/response details:
-
-1. Run `yarn dev:server` (watches for changes and rebuilds automatically)
-2. Open the MCP Inspector at the given URL
-3. Test tools and view logs directly in the UI
-
-_Note: Use `yarn start:server` if you want a production build with the MCP Inspector._
-
----
-
-## Local development (Code editor)
-
----
-
-### Step 1: Build Project
-
-Build the project:
-
-```bash
-yarn build
-```
-
----
-
-### Step 2: Make `@prismicio/mcp-server` package available locally
-
-From the root folder of this repository run:
-
-```bash
-npm link
-```
-
-This will globally link `@prismicio/mcp-server` as available package in your computer.
-
-_Note: Don't forget to unlink the package after development with `npm unlink -g @prismicio/mcp-server`_
-
----
-
-### Step 3: Configure the MCP Server
-
-Add the local Prismic MCP server to your code editor's configuration:
-
-```json
+```sh
+# Configure a new local MCP server.
+# This example is for cursor, adapt it as needed.
 {
-  "mcpServers": {
-    "Prismic MCP (Local)": {
-      "command": "npx",
-      "args": ["mcp-server"]
-    }
-  }
+	"mcpServers": {
+		"Prismic (Local)": {
+			"command": "node",
+			"args": ["~/projects/prismic/mcp/bin/stdio"]
+		}
+	}
 }
+
+# Start the development watcher.
+npm run dev
+
+# Or build the project for production.
+npm run build
+
+# Make sure your editor restarted the MCP server between each build you test.
 ```
 
-_Note:_
+<!-- Share information about the repository. -->
+<!-- What specific knowledge do contributors need? -->
 
-- _Don't forget to deactivate "Prismic MCP" server if you already define one with the published package._
-- _Restart Cursor when doing changes to remove Cursor cache of the MCP server._
+> [!TIP]
+> Please update this section with helpful notes for contributors.
 
-## Commits
+## :construction_worker: Develop
 
-This project uses [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines and automated changelog generation. Please follow the conventional commit format for all commits.
+> [!NOTE]
+> It's highly recommended to discuss your changes with the Prismic team before starting by [opening an issue](https://github.com/prismicio/prismic-mcp-server/issues/new/choose).[^2]
+>
+> A short discussion can accellerate your work and ship it faster.
 
-The following commit types are supported as defined in the `.versionrc` file:
+```sh
+# Clone and prepare the project.
+git clone git@github.com:prismicio/prismic-mcp-server.git
+cd prismic-mcp-server
+npm install
 
-- `feat`: New features (appears in "Features" section)
-- `fix`: Bug fixes (appears in "Bug Fixes" section)
-- `refactor`: Code changes that neither fix bugs nor add features (appears in "Refactor" section)
-- `docs`: Documentation changes (appears in "Documentation" section)
-- `chore`: Maintenance tasks (appears in "Chore" section)
+# Create a new branch for your changes (e.g. lh/fix-win32-paths).
+git checkout -b <your-initials>/<feature-or-fix-description>
 
-Example: `feat: improve link documentation for text property`
+# Start the development watcher.
+# Run this command while you are working on your changes.
+npm run dev
 
-_Note: commits without using a category from above will not be included in the Changelog. E.g.: `ci: deploy from github actions`._
+# Build the project for production.
+# Run this command when you want to see the production version.
+npm run build
 
-## Publishing
+# Preview the current build.
+# Run this command while running the development watcher or after a production build.
+npm run preview
 
-This project uses GitHub Actions for automated publishing. You can deploy a new version using the "Deploy" workflow:
+# Lint your changes before requesting a review. No errors are allowed.
+npm run lint
+# Some errors can be fixed automatically:
+npm run lint -- --fix
 
-1. Go to the GitHub repository's "Actions" tab
-2. Select the "Deploy" workflow
-3. Click "Run workflow"
-4. Choose a version type:
-   - `alpha`: Creates a prerelease version (e.g., 1.0.0-alpha.0)
-   - `patch`: Increments the patch version (e.g., 1.0.0 → 1.0.1)
-   - `minor`: Increments the minor version (e.g., 1.0.0 → 1.1.0)
-   - `major`: Increments the major version (e.g., 1.0.0 → 2.0.0)
+# Format your changes before requesting a review. No errors are allowed.
+npm run format
 
-The workflow will:
+# Test your changes before requesting a review.
+# All changes should be tested. No failing tests are allowed.
+npm run test
+# Run only unit tests (optionally in watch mode):
+npm run unit
+npm run unit:watch
+# Run only type tests
+npm run types
+```
 
-- Run tests and checks
-- Update the version in package.json
-- Generate/update the CHANGELOG.md based on conventional commits
-- Create a git tag for the version
-- Push changes to the repository
-- Publish the package to npm
+## :building_construction: Submit a pull request
 
-No manual version bumping or changelog editing is required.
+> [!NOTE]
+> Code will be reviewed by the Prismic team before merging.[^3]
+>
+> Request a review by opening a pull request.
+
+```sh
+# Open a pull request. This example uses the GitHub CLI.
+gh pr create
+
+# Someone from the Prismic team will review your work. This review will at
+# least consider the PR's general direction, code style, and test coverage.
+
+# When ready, PRs should be merged using the "Squash and merge" option.
+```
+
+## :rocket: Publish
+
+> [!CAUTION]
+> Publishing is restricted to the Prismic team.[^4]
+
+```sh
+# Checkout the master branch and pull the latest changes.
+git checkout master
+git pull
+
+# Perform a dry-run and verify the output.
+# If it looks good, release a new # version.
+npm run release:dry
+npm run release
+
+# Or release an alpha.
+# Perform a dry-run and verify the output.
+# If it looks good, release a new # alpha version.
+npm run release:alpha:dry
+npm run release:alpha
+```
+
+[^1]: This package is maintained by the DevX team. Prismic employees can ask for help or a review in the [#team-devx](https://prismic-team.slack.com/archives/C014VAACCQL) Slack channel.
+[^2]: Prismic employees are highly encouraged to discuss changes with the DevX team in the [#team-devx](https://prismic-team.slack.com/archives/C014VAACCQL) Slack channel before starting.
+[^3]: Code should be reviewed by the DevX team before merging. Prismic employees can request a review in the [#team-devx](https://prismic-team.slack.com/archives/CPG31MDL1) Slack channel.
+[^4]: Prismic employees can ask the DevX team for [npm](https://www.npmjs.com) publish access.
