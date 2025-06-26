@@ -78,6 +78,7 @@ EXAMPLES:
 					"prismic.BooleanField",
 					"prismic.ColorField",
 					"prismic.ContentRelationshipField",
+					"ContentRelationshipFieldWithData",
 					"prismic.DateField",
 					"prismic.EmbedField",
 					"prismic.GeoPointField",
@@ -178,6 +179,58 @@ EXAMPLES:
 					`,
 				"prismic.ContentRelationshipField": `
 						No documentation available for this field type.
+				`,
+				ContentRelationshipFieldWithData: `
+						# Display content relationships
+
+						Content from a related document can be displayed like any other field.
+
+						IMPORTANT: When rendering fields within content relationship data, you MUST refer to the specific field type documentation.
+						Each nested field (like text, rich text, image, etc.) requires using the appropriate Prismic component and field access pattern as documented for that field type.
+
+						Before accessing nested content, use \`isFilled.contentRelationship\` to ensure the relationship has a document.
+
+						## Example for a blog post with an author and a profession
+
+						\`\`\`
+						${(() => {
+							switch (args.projectFramework) {
+								case "next":
+									return `
+										{
+											isFilled.contentRelationship(post.data.author) && (
+												<p>
+													Written by <PrismicText field={post.data.author.data?.name} />,
+													{isFilled.contentRelationship(post.data.author.data?.profession) && (
+														<PrismicText field={post.data.author.data.profession?.data.name} />
+													)}
+												</p>
+											);
+										}
+									`
+								case "nuxt":
+									return `
+										<p v-if="$prismic.isFilled.contentRelationship(post.data.author)">
+											Written by <PrismicText :field="post.data.author.data?.name" />,
+											<template v-if="$prismic.isFilled.contentRelationship(post.data.author.data?.profession)">
+												<PrismicText :field="post.data.author.data?.profession?.data.name" />
+											</template>
+										</p>
+									`
+								case "sveltekit":
+									return `
+										{#if isFilled.contentRelationship(post.data.author)}
+											<p>
+												Written by <PrismicText field={post.data.author.data?.name} />,
+												{#if isFilled.contentRelationship(post.data.author.data?.profession)}
+												<PrismicText field={post.data.author.data?.profession?.data.name} />
+												{/if}
+											</p>
+										{/if}
+									`
+							}
+						})()}
+						\`\`\`
 				`,
 				"prismic.DateField": `
 						Date fields can be used anywhere a date is needed. It is often helpful to first convert the date to a JavaScript \`Date\` object using \`asDate\` from \`@prismicio/client\`.
