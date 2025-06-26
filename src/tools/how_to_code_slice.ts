@@ -181,14 +181,7 @@ EXAMPLES:
 						No documentation available for this field type.
 				`,
 				ContentRelationshipFieldWithData: `
-						# Display content relationships
-
 						Content from a related document can be displayed like any other field.
-
-						IMPORTANT: When rendering fields within content relationship data, you MUST refer to the specific field type documentation.
-						Each nested field (like text, rich text, image, etc.) requires using the appropriate Prismic component and field access pattern as documented for that field type.
-						You MUST render each nested field and cannot skip any of them.
-
 						Before accessing nested content, use \`isFilled.contentRelationship\` to ensure the relationship has a document.
 
 						## Example for a blog post with an author and a profession
@@ -232,7 +225,15 @@ EXAMPLES:
 							}
 						})()}
 						\`\`\`
-				`,
+
+						## Important
+
+						- Always check each relationship with \`isFilled.contentRelationship()\` before accessing
+						- Always render all fields from the related document
+						- Always handle all nested relationships the same way
+						- Always use the appropriate field documentation for the correct way to render each field
+						- Use optional chaining (\`?\`) for safe access to nested data (e.g. \`post.data.author.data?.name\`)
+					`,
 				"prismic.DateField": `
 						Date fields can be used anywhere a date is needed. It is often helpful to first convert the date to a JavaScript \`Date\` object using \`asDate\` from \`@prismicio/client\`.
 
