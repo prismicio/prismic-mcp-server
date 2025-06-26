@@ -187,6 +187,7 @@ EXAMPLES:
 
 						IMPORTANT: When rendering fields within content relationship data, you MUST refer to the specific field type documentation.
 						Each nested field (like text, rich text, image, etc.) requires using the appropriate Prismic component and field access pattern as documented for that field type.
+						You MUST render each nested field and cannot skip any of them.
 
 						Before accessing nested content, use \`isFilled.contentRelationship\` to ensure the relationship has a document.
 
