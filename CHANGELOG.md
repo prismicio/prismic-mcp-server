@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.17 (2025-06-26)
+
+
+### Features
+
+* support content relationship with field selection ([#3](https://github.com/prismicio/prismic-mcp-server/issues/3)) ([bd7c97b](https://github.com/prismicio/prismic-mcp-server/commit/bd7c97b91b95172fb202424768837935a7e5dd8d))
+
 ### 0.0.17-alpha.7 (2025-06-26)
 
 ### 0.0.17-alpha.6 (2025-06-26)
