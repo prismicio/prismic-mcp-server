@@ -188,11 +188,11 @@ EXAMPLES:
 							2. For EACH relationship level:
 							- Render all fields from the related document
 							- Use the appropriate field documentation for the correct way to render each field
-							- Use \`isFilled.contentRelationship()\` before accessing
+							- Use \`isFilled.contentRelationship()\` before accessing data
 							- Use optional chaining (\`?\`) for ALL nested data access
 							- Apply appropriate styling for visual hierarchy
 
-						Failing to implement ALL levels of nested content relationships will result in incomplete data rendering and potential runtime errors.
+						Failing to implement ALL fields of all levels of content relationships will result in incomplete data rendering and potential runtime errors.
 
 						## Example for a blog post with an author and a profession
 
