@@ -1,6 +1,6 @@
 {
 	"name": "@prismicio/mcp-server",
-	"version": "0.0.17-alpha.4",
+	"version": "0.0.17-alpha.5",
 	"description": "Prismic Model Context Protocol (MCP) Server",
 	"keywords": [
 		"model context protocol",
