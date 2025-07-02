@@ -2,6 +2,11 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 
 import { name, version } from "../package.json"
 
+import {
+	get_all_documents,
+	get_all_documents_by_type,
+} from "./tools/get_all_documents"
+import { get_document_by_id, get_document_by_uid } from "./tools/get_document"
 import { get_repository_info } from "./tools/get_repository_info"
 import { get_repository_tags } from "./tools/get_repository_tags"
 import {
@@ -25,3 +30,9 @@ server.tool(...get_repository_total_by_type)
 server.tool(...get_repository_total_by_tag)
 server.tool(...get_repository_total_by_every_tag)
 server.tool(...get_repository_total_by_some_tags)
+
+server.tool(...get_document_by_id)
+server.tool(...get_document_by_uid)
+
+server.tool(...get_all_documents)
+server.tool(...get_all_documents_by_type)

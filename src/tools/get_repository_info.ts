@@ -1,12 +1,16 @@
-import { CreateClientParams, createCachedClient } from "../lib/CachedClient"
-import { tool } from "../lib/mcp"
+import { createClient } from "@prismicio/client"
 
-export const get_repository_info = tool(
+import * as mcp from "../lib/mcp"
+import { CreateClientParams } from "../lib/CreateClientParams"
+
+export const get_repository_info = mcp.tool(
 	"get_repository_info",
-	"Get comprehensive information about the repository including types, locales (languages), releases (refs), and URLs (links).",
+	`Get comprehensive information about the repository including types (you often need to know the exact type of a document to use other tools, so you can use this tool first to get from a "human readable" type like "Blog post" to the exact API type like "blog_post"), locales (languages, lang, when using other tools with a specific locale, you can use this tool first to get the exact locale available), releases (refs), and URLs (links).`,
 	CreateClientParams.shape,
 	async (args) => {
-		const client = createCachedClient(args)
+		const client = createClient(args.repository, {
+			accessToken: args.accessToken,
+		})
 
 		const { types, languages, refs } = await client.getRepository()
 
@@ -38,17 +42,19 @@ export const get_repository_info = tool(
 				{
 					type: "text",
 					text: [
-						"Types:",
+						`# Repository info for \`${args.repository}\``,
+						"",
+						"## Types",
 						...Object.entries(types).map(
 							([id, label]) => `  ${label} - \`${id}\``,
 						),
 						"",
-						"Locales:",
+						"## Locales",
 						...Object.entries(locales).map(
 							([id, locale]) => `  ${locale} - \`${id}\``,
 						),
 						"",
-						"Releases:",
+						"## Releases",
 						...(releases.length
 							? releases.map(
 									(release) =>
@@ -62,7 +68,7 @@ export const get_repository_info = tool(
 									}`,
 								]),
 						"",
-						"URLs (links):",
+						"## URLs (links)",
 						...Object.entries(urls).map(
 							([label, url]) => `  [${label}](${url})`,
 						),

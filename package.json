@@ -64,8 +64,8 @@
 	},
 	"dependencies": {
 		"@modelcontextprotocol/sdk": "^1.13.0",
-		"zod": "^3.25.67",
-		"@prismicio/client": "^7.17.3"
+		"@prismicio/client": "^7.17.3",
+		"zod": "^3.25.67"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.29.0",

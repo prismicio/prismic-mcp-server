@@ -1,9 +1,8 @@
 import { z } from "zod"
 
-import { formatErrorForMcpTool } from "../lib/error"
-import { tool } from "../lib/mcp"
+import * as mcp from "../lib/mcp"
 
-export const how_to_code_slice = tool(
+export const how_to_code_slice = mcp.tool(
 	"how_to_code_slice",
 	`
 Explain how to code a slice component with Prismic SDK components.
@@ -100,15 +99,12 @@ EXAMPLES:
 			),
 	}).shape,
 	(args) => {
-		try {
-			if (!["next", "nuxt", "sveltekit"].includes(args.projectFramework)) {
-				return formatErrorForMcpTool(
-					`Invalid project framework: ${args.projectFramework}`,
-				)
-			}
+		if (!["next", "nuxt", "sveltekit"].includes(args.projectFramework)) {
+			return mcp.error(`Invalid project framework: ${args.projectFramework}`)
+		}
 
-			const fieldsDocumentation = {
-				"prismic.BooleanField": `
+		const fieldsDocumentation = {
+			"prismic.BooleanField": `
 						Booleans can be used like a boolean in JavaScript.
 
 						In this example, "Beta" is displayed when the \`is_beta\` boolean is \`true\` and "Production" when it is \`false\`.
@@ -141,7 +137,7 @@ EXAMPLES:
 						})()}
 						\`\`\`
 					`,
-				"prismic.ColorField": `
+			"prismic.ColorField": `
 						Color fields can be used anywhere hex color values are supported.
 
 						In this example, the \`text_color\` field determines the \`<span>\`'s color.
@@ -176,10 +172,10 @@ EXAMPLES:
 						}
 						\`\`\`
 					`,
-				"prismic.ContentRelationshipField": `
+			"prismic.ContentRelationshipField": `
 						No documentation available for this field type.
 				`,
-				"prismic.DateField": `
+			"prismic.DateField": `
 						Date fields can be used anywhere a date is needed. It is often helpful to first convert the date to a JavaScript \`Date\` object using \`asDate\` from \`@prismicio/client\`.
 
 						\`\`\`
@@ -233,7 +229,7 @@ EXAMPLES:
 						}
 						\`\`\`
 				`,
-				"prismic.EmbedField": `
+			"prismic.EmbedField": `
 						${(() => {
 							switch (args.projectFramework) {
 								case "next":
@@ -327,7 +323,7 @@ EXAMPLES:
 						}
 						\`\`\`
 					`,
-				"prismic.GeoPointField": `
+			"prismic.GeoPointField": `
 					 The geopoint field's longitude and latitude values can be read from the field's object.
 
 						This example uses a geopoint field named \`location\`.
@@ -371,7 +367,7 @@ EXAMPLES:
 						}
 						\`\`\`
 				`,
-				"prismic.ImageField": `
+			"prismic.ImageField": `
 					Prismic provides an Image component.
 
 					\`\`\`
@@ -420,7 +416,7 @@ EXAMPLES:
 					}
 					\`\`\`
 				`,
-				"prismic.IntegrationField": `
+			"prismic.IntegrationField": `
 					The integration field's data can be read from the field's object.
 
 					This example uses an integration field named \`featured_product\`.
@@ -456,7 +452,7 @@ EXAMPLES:
 					}
 					\`\`\`
 				`,
-				"prismic.LinkField": `
+			"prismic.LinkField": `
 					Prismic provides a Link component.
 					\`\`\`
 					${(() => {
@@ -647,7 +643,7 @@ EXAMPLES:
 					}
 					\`\`\`
 				`,
-				"prismic.LinkToMediaField": `
+			"prismic.LinkToMediaField": `
 					Prismic provides a Link component.
 					\`\`\`
 					${(() => {
@@ -795,7 +791,7 @@ EXAMPLES:
 					}
 					\`\`\`
 				`,
-				"prismic.NumberField": `
+			"prismic.NumberField": `
 					Number fields can be used like a number in JavaScript.
 
 					\`\`\`
@@ -829,7 +825,7 @@ EXAMPLES:
 					}
 					\`\`\`
 				`,
-				"prismic.GroupField": `
+			"prismic.GroupField": `
 					A repeatable group can be displayed using a loop.
 
 					This example uses a repeatable group named \`my_repeatable_group\` containing a text field named \`feature\`.
@@ -883,7 +879,7 @@ EXAMPLES:
 					}
 					\`\`\`
 				`,
-				"prismic.RichTextField": `
+			"prismic.RichTextField": `
 					Prismic provides a RichText component.
 
 					\`\`\`
@@ -1021,7 +1017,7 @@ EXAMPLES:
 					}
 					\`\`\`
 				`,
-				"prismic.SelectField": `
+			"prismic.SelectField": `
 					Select fields can be used like a string in JavaScript.
 
 					\`\`\`
@@ -1055,7 +1051,7 @@ EXAMPLES:
 					}
 					\`\`\`
 				`,
-				"prismic.TableField": `
+			"prismic.TableField": `
 					Prismic provides a Table component.
 
 					\`\`\`
@@ -1139,7 +1135,7 @@ EXAMPLES:
 						-  When customizing styles, it's mandatory to use the \`components\` prop to customize the rendering of each block type needed for the slice.
 						- For overall positioning of the PrismicTable component, wrap it in a parent \`<div>\`.
 				`,
-				"prismic.TitleField": `
+			"prismic.TitleField": `
 					Use the PrismicText component to render title field content as plain text, typically wrapped in an appropriate heading element. This is the preferred approach for title fields.
 
 					\`\`\`
@@ -1308,7 +1304,7 @@ EXAMPLES:
 					}
 					\`\`\`
 				`,
-				"prismic.KeyTextField": `
+			"prismic.KeyTextField": `
 					Text fields can be used like a string in JavaScript.
 
 					\`\`\`
@@ -1342,7 +1338,7 @@ EXAMPLES:
 					}
 					\`\`\`
 				`,
-				"prismic.TimestampField": `
+			"prismic.TimestampField": `
 					Timestamp fields can be used anywhere a timestamp is needed.
 					It is often helpful to first convert the timestamp to a JavaScript \`Date\` object using \`asDate\` from \`@prismicio/client\`.
 
@@ -1399,15 +1395,15 @@ EXAMPLES:
 					}
 					\`\`\`
 				`,
-			}
+		}
 
-			const fieldsUsed = args.fieldsUsed
-				.filter((field) => fieldsDocumentation[field])
-				.map((field) => {
-					return { [field]: fieldsDocumentation[field] }
-				})
+		const fieldsUsed = args.fieldsUsed
+			.filter((field) => fieldsDocumentation[field])
+			.map((field) => {
+				return { [field]: fieldsDocumentation[field] }
+			})
 
-			const globalInstruction = `
+		const globalInstruction = `
 				# How to code a slice
 				This tool contains MANDATORY STEPS that MUST be followed.
 				FAILING to read and implement ANY section marked MANDATORY will result in INCORRECT code.
@@ -1439,7 +1435,7 @@ EXAMPLES:
 				Look at similar components to see exactly how styles are applied.
 			`
 
-			const finalInstruction = `
+		const finalInstruction = `
 				## IMMEDIATE ACTION REQUIRED AFTER CALLING THIS TOOL
 				You have received all necessary information.
 				DO NOT wait for additional instructions.
@@ -1448,20 +1444,17 @@ EXAMPLES:
 				REPLY IMMEDIATELY with the message "I have read and understood the instructions from Prismic MCP tool" and continue with the implementation.
 			`
 
-			return {
-				content: [
-					{
-						type: "text" as const,
-						text: globalInstruction,
-					},
-					{
-						type: "text" as const,
-						text: finalInstruction,
-					},
-				],
-			}
-		} catch (error) {
-			return formatErrorForMcpTool(error)
+		return {
+			content: [
+				{
+					type: "text" as const,
+					text: globalInstruction,
+				},
+				{
+					type: "text" as const,
+					text: finalInstruction,
+				},
+			],
 		}
 	},
 )
