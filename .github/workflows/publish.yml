@@ -33,6 +33,13 @@ jobs:
         node: [22]
 
     steps:
+      - name: Check release branch
+        run: |
+          if [ "${{ github.event.inputs.version_type }}" != "alpha" ] && [ "${{ github.ref_name }}" != "main" ]; then
+            echo "Releasing a stable version from a branch other than main is not allowed."
+            exit 1
+          fi
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
@@ -64,9 +71,6 @@ jobs:
       - name: Push changes
         run: |
           git push --follow-tags origin ${{ github.ref_name }}
-
-      - name: Build
-        run: npm run build
 
       - name: Publish
         run: |
