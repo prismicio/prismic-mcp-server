@@ -13,8 +13,6 @@ export const API_TOKENS: APITokens = (() => {
 			return {
 				SegmentKey: "Ng5oKJHCGpSWplZ9ymB7Pu7rm0sTDeiG",
 			}
-		case undefined:
-		case "":
 		case APPLICATION_MODE.Production:
 		default:
 			return {

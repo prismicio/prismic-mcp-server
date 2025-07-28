@@ -11,25 +11,43 @@ import { getRepositoryName } from "./repository"
 import { getUserShortId } from "./user"
 
 type TelemetryTrackArgs = {
-	event: string
 	sliceMachineConfigAbsolutePath: string
-	properties: Record<string, unknown>
+} & {
+	event: "MCP Tool - How to code a slice"
+	sliceMachineConfigAbsolutePath: string
+	properties: {
+		framework: string
+		fieldsUsed: string[]
+	}
 }
 
 export class Telemetry {
-	private _segmentClient: (() => Analytics) | undefined = undefined
+	private _segmentClient: Analytics | undefined = undefined
 	private _userID: string | undefined = undefined
 	private _anonymousId: string | undefined = undefined
 
-	async initTelemetry(): Promise<void> {
-		this._segmentClient = () => {
-			const analytics = new Analytics({
+	initTelemetry(): void {
+		try {
+			this._segmentClient = new Analytics({
 				writeKey: API_TOKENS.SegmentKey,
-				// Since it's a local app, we do not benefit from event batching the way a server would normally do, all tracking event will be awaited.
+				// Since it's a local server, we do not benefit from event batching
+				// the way a remote server would normally do, all tracking event will be awaited.
 				maxEventsInBatch: 1,
 			})
 
-			return analytics
+			this._segmentClient.on("error", (error) => {
+				// noop, we don't wanna block the mcp server if a tracking event is unsuccessful.
+				// Some users or networks intentionally block Segment,
+				// so we can't block the mcp server if a tracking event is unsuccessful.
+				if (process.env.DEBUG) {
+					console.error("Error while tracking event:", error)
+				}
+			})
+		} catch (error) {
+			// noop, we don't wanna block the mcp server if the telemetry is not initialized
+			if (process.env.DEBUG) {
+				console.error("Error while initializing telemetry:", error)
+			}
 		}
 
 		this._anonymousId = randomUUID()
@@ -37,27 +55,45 @@ export class Telemetry {
 
 	async track(args: TelemetryTrackArgs): Promise<void> {
 		assertTelemetryInitialized(this._segmentClient)
+		const { event, sliceMachineConfigAbsolutePath, properties } = args
 
 		try {
 			await this.identify()
-		} catch {
+		} catch (error) {
 			// noop, we don't wanna block tracking if the identify fails
+			if (process.env.DEBUG) {
+				console.error("Error while identifying user:", error)
+			}
 		}
 
-		const { event, sliceMachineConfigAbsolutePath, properties } = args
-
-		let repositoryName
+		let repository
 		try {
-			repositoryName = getRepositoryName(sliceMachineConfigAbsolutePath)
-		} catch {
-			// noop, happen only when the user is not in a project
+			repository = getRepositoryName(sliceMachineConfigAbsolutePath)
+		} catch (error) {
+			// noop, we don't wanna block tracking if the repository name is not found
+			if (process.env.DEBUG) {
+				console.error("Error while getting repository name:", error)
+			}
 		}
 
 		let mcpVersion
 		try {
 			mcpVersion = __PACKAGE_VERSION__
-		} catch {
-			mcpVersion = "unknown"
+		} catch (error) {
+			// noop, we don't wanna block tracking if the mcp version is not found
+			if (process.env.DEBUG) {
+				console.error("Error while getting MCP version:", error)
+			}
+		}
+
+		let nodeVersion
+		try {
+			nodeVersion = process.versions.node
+		} catch (error) {
+			// noop, we don't wanna block tracking if the node version is not found
+			if (process.env.DEBUG) {
+				console.error("Error while getting node version:", error)
+			}
 		}
 
 		const payload: TrackParams = {
@@ -65,21 +101,18 @@ export class Telemetry {
 			properties: {
 				...properties,
 				mcpVersion,
-				nodeVersion: process.versions.node,
-				repository: repositoryName,
+				nodeVersion,
+				repository,
 			},
 			...(this._userID
 				? { userId: this._userID }
 				: { anonymousId: this._anonymousId! }),
+			...(repository
+				? { context: { groupId: { Repository: repository } } }
+				: {}),
 		}
 
-		if (repositoryName) {
-			payload.context ||= {}
-			payload.context.groupId ||= {}
-			payload.context.groupId.Repository = repositoryName
-		}
-
-		this._segmentClient().track(payload)
+		this._segmentClient.track(payload)
 	}
 
 	async identify(): Promise<void> {
@@ -88,8 +121,12 @@ export class Telemetry {
 		let userShortId
 		try {
 			userShortId = await getUserShortId()
-		} catch {
+			this._userID = userShortId
+		} catch (error) {
 			// noop, we will use the anonymous ID instead
+			if (process.env.DEBUG) {
+				console.error("Error while getting user short ID:", error)
+			}
 		}
 
 		const payload: IdentifyParams = {
@@ -98,13 +135,12 @@ export class Telemetry {
 				: { anonymousId: this._anonymousId! }),
 		}
 
-		this._userID = userShortId
-		this._segmentClient().identify(payload)
+		this._segmentClient.identify(payload)
 	}
 }
 
 function assertTelemetryInitialized(
-	segmentClient: (() => Analytics) | undefined,
+	segmentClient: Analytics | undefined,
 ): asserts segmentClient is NonNullable<typeof segmentClient> {
 	if (segmentClient === undefined) {
 		throw new Error("Telemetry has not been initialized.")

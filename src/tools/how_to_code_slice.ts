@@ -124,8 +124,14 @@ EXAMPLES:
 						fieldsUsed: args.fieldsUsed,
 					},
 				})
-			} catch {
-				// no-op, it's ok if we can't track the tool call
+			} catch (error) {
+				// noop, we don't wanna block the tool call if the tracking fails
+				if (process.env.DEBUG) {
+					console.error(
+						"Error while tracking 'how_to_code_slice' tool call:",
+						error,
+					)
+				}
 			}
 
 			const fieldsDocumentation = {

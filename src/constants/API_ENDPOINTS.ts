@@ -7,13 +7,10 @@ export type APIEndpoints = {
 export const API_ENDPOINTS: APIEndpoints = (() => {
 	switch (process.env.PRISMIC_ENV) {
 		case APPLICATION_MODE.Staging: {
-			const apiEndpoints: APIEndpoints = {
+			return {
 				UserService: "https://user-service.wroom.io/",
 			}
-
-			return apiEndpoints
 		}
-
 		case APPLICATION_MODE.DevTools:
 		case APPLICATION_MODE.MarketingTools:
 		case APPLICATION_MODE.Platform: {
@@ -21,8 +18,7 @@ export const API_ENDPOINTS: APIEndpoints = (() => {
 				UserService: `https://user-service.${process.env.SM_ENV}-wroom.com/`,
 			}
 		}
-
-		case "production":
+		case APPLICATION_MODE.Production:
 		default: {
 			return {
 				UserService: "https://user-service.prismic.io/",

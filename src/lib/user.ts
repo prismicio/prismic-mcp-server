@@ -9,30 +9,33 @@ import { USER_AGENT } from "../constants/USER_AGENT"
 
 const PrismicAuthState = z.object({
 	base: z.string(),
-	cookies: z
-		.object({
-			["prismic-auth"]: z.string().optional(),
-			SESSION: z.string().optional(),
-		})
-		.catchall(z.string()),
+	cookies: z.object({
+		["prismic-auth"]: z.string().optional(),
+		SESSION: z.string().optional(),
+	}),
 })
-export type PrismicAuthState = z.infer<typeof PrismicAuthState>
+type PrismicAuthState = z.infer<typeof PrismicAuthState>
 
 export async function getUserShortId(): Promise<string | undefined> {
-	let authStateFileContents: string = JSON.stringify({})
-	let rawAuthState: Record<string, unknown> = {}
-
 	const authStateFilePath = `${os.homedir()}/.prismic`
-	authStateFileContents = fs.readFileSync(authStateFilePath, "utf8")
-	rawAuthState = JSON.parse(authStateFileContents)
+	const authStateFileContents = fs.readFileSync(authStateFilePath, "utf8")
+	const rawAuthState = JSON.parse(authStateFileContents)
 
 	if (typeof rawAuthState.cookies === "string") {
 		rawAuthState.cookies = parseCookies(rawAuthState.cookies)
 	}
 
-	const authState = PrismicAuthState.parse(rawAuthState)
+	let authState: PrismicAuthState
+	try {
+		authState = PrismicAuthState.parse(rawAuthState)
+	} catch (error) {
+		throw new Error("Failed to parse auth state file.", {
+			cause: error,
+		})
+	}
 
 	if (!authState.cookies["prismic-auth"]) {
+		// No auth token found, user is not logged in.
 		return undefined
 	}
 
@@ -43,7 +46,7 @@ export async function getUserShortId(): Promise<string | undefined> {
 	return shortId
 }
 
-const parseCookies = (cookies: string): Record<string, string | undefined> => {
+function parseCookies(cookies: string): Record<string, string | undefined> {
 	return cookie.parse(cookies, {
 		// Don't escape any values.
 		decode: (value) => value,
@@ -73,7 +76,16 @@ async function getProfileForAuthenticationToken(
 	if (res.ok) {
 		const json = await res.json()
 
-		return PrismicUserProfile.parse(json)
+		let profile: PrismicUserProfile
+		try {
+			profile = PrismicUserProfile.parse(json)
+		} catch (error) {
+			throw new Error("Failed to parse profile.", {
+				cause: error,
+			})
+		}
+
+		return profile
 	} else {
 		const text = await res.text()
 		throw new Error(
