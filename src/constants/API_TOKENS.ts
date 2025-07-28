@@ -5,7 +5,7 @@ type APITokens = {
 }
 
 export const API_TOKENS: APITokens = (() => {
-	switch (process.env.SM_ENV) {
+	switch (process.env.PRISMIC_ENV) {
 		case APPLICATION_MODE.Staging:
 		case APPLICATION_MODE.DevTools:
 		case APPLICATION_MODE.MarketingTools:
