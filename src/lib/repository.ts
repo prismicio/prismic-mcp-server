@@ -7,5 +7,5 @@ export function getRepositoryName(
 		fs.readFileSync(sliceMachineConfigAbsolutePath, "utf8"),
 	)
 
-	return sliceMachineConfig.repository
+	return sliceMachineConfig.repositoryName
 }
