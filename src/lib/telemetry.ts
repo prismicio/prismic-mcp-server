@@ -38,7 +38,11 @@ export class Telemetry {
 	async track(args: TelemetryTrackArgs): Promise<void> {
 		assertTelemetryInitialized(this._segmentClient)
 
-		await this.identify()
+		try {
+			await this.identify()
+		} catch {
+			// noop, we don't wanna block tracking if the identify fails
+		}
 
 		const { event, sliceMachineConfigAbsolutePath, properties } = args
 
@@ -95,7 +99,6 @@ export class Telemetry {
 		}
 
 		this._userID = userShortId
-
 		this._segmentClient().identify(payload)
 	}
 }
