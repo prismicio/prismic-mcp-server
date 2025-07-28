@@ -19,7 +19,7 @@ type TelemetryTrackArgs = {
 export class Telemetry {
 	private _segmentClient: (() => Analytics) | undefined = undefined
 	private _userID: string | undefined = undefined
-	private _anonymousID: string | undefined = undefined
+	private _anonymousId: string | undefined = undefined
 
 	async initTelemetry(): Promise<void> {
 		this._segmentClient = () => {
@@ -32,7 +32,7 @@ export class Telemetry {
 			return analytics
 		}
 
-		this._anonymousID = randomUUID()
+		this._anonymousId = randomUUID()
 	}
 
 	async track(args: TelemetryTrackArgs): Promise<void> {
@@ -66,7 +66,7 @@ export class Telemetry {
 			},
 			...(this._userID
 				? { userId: this._userID }
-				: { anonymousId: this._anonymousID! }),
+				: { anonymousId: this._anonymousId! }),
 		}
 
 		if (repositoryName) {
@@ -81,12 +81,17 @@ export class Telemetry {
 	async identify(): Promise<void> {
 		assertTelemetryInitialized(this._segmentClient)
 
-		const userShortId = await getUserShortId()
+		let userShortId
+		try {
+			userShortId = await getUserShortId()
+		} catch {
+			// noop, we will use the anonymous ID instead
+		}
 
 		const payload: IdentifyParams = {
 			...(userShortId
 				? { userId: userShortId }
-				: { anonymousId: this._anonymousID! }),
+				: { anonymousId: this._anonymousId! }),
 		}
 
 		this._userID = userShortId
