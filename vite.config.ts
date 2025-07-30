@@ -1,14 +1,7 @@
-import { readFileSync } from "fs"
-import { dirname, resolve } from "path"
-import { fileURLToPath } from "url"
 import { defineConfig } from "vite"
 import sdk from "vite-plugin-sdk"
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-const packageJson = JSON.parse(
-	readFileSync(resolve(__dirname, "package.json"), "utf-8"),
-)
+import pkg from "./package.json"
 
 export default defineConfig({
 	build: {
@@ -28,6 +21,6 @@ export default defineConfig({
 		setupFiles: ["./test/__setup__.ts"],
 	},
 	define: {
-		__PACKAGE_VERSION__: JSON.stringify(packageJson.version),
+		__PACKAGE_VERSION__: JSON.stringify(pkg.version),
 	},
 })
