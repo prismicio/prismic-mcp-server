@@ -1,6 +1,6 @@
 {
 	"name": "@prismicio/mcp-server",
-	"version": "0.0.17",
+	"version": "0.0.18-alpha.6",
 	"description": "Prismic Model Context Protocol (MCP) Server",
 	"keywords": [
 		"model context protocol",
@@ -63,8 +63,10 @@
 		"test": "npm run lint && npm run types && npm run unit && npm run build && npm run size"
 	},
 	"dependencies": {
-		"@modelcontextprotocol/sdk": "^1.13.0",
-		"zod": "^3.25.67"
+		"@modelcontextprotocol/sdk": "1.13.0",
+		"@segment/analytics-node": "2.3.0",
+		"cookie": "1.0.2",
+		"zod": "3.25.67"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.29.0",

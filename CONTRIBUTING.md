@@ -37,7 +37,16 @@ npm run preview
 	"mcpServers": {
 		"Prismic (Local)": {
 			"command": "node",
-			"args": ["~/projects/prismic/mcp/bin/stdio"]
+			"args": ["~/projects/prismic/mcp/bin/stdio"],
+
+			# Only necessary for other envs than production
+			"env": {
+				# Available envs: "staging" | "dev-tools" | "marketing-tools" | "platform"
+				"PRISMIC_ENV": "staging",
+
+				# Activate debug mode to see more logs (Output tab of your IDE console)
+				"DEBUG": true
+			}
 		}
 	}
 }

@@ -3,6 +3,8 @@ import { z } from "zod"
 import { formatErrorForMcpTool } from "../lib/error"
 import { tool } from "../lib/mcp"
 
+import { telemetryClient } from "../server"
+
 export const how_to_code_slice = tool(
 	"how_to_code_slice",
 	`
@@ -72,6 +74,11 @@ EXAMPLES:
 		modelAbsolutePath: z
 			.string()
 			.describe("The absolute path to the `model.json` file of the slice"),
+		sliceMachineConfigAbsolutePath: z
+			.string()
+			.describe(
+				"The absolute path to the `slicemachine.config.json` file of the project",
+			),
 		fieldsUsed: z
 			.array(
 				z.enum([
@@ -106,6 +113,25 @@ EXAMPLES:
 				return formatErrorForMcpTool(
 					`Invalid project framework: ${args.projectFramework}`,
 				)
+			}
+
+			try {
+				telemetryClient.track({
+					event: "MCP Tool - How to code a slice",
+					sliceMachineConfigAbsolutePath: args.sliceMachineConfigAbsolutePath,
+					properties: {
+						framework: args.projectFramework,
+						fieldsUsed: args.fieldsUsed,
+					},
+				})
+			} catch (error) {
+				// noop, we don't wanna block the tool call if the tracking fails
+				if (process.env.DEBUG) {
+					console.error(
+						"Error while tracking 'how_to_code_slice' tool call:",
+						error,
+					)
+				}
 			}
 
 			const fieldsDocumentation = {

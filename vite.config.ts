@@ -1,6 +1,8 @@
 import { defineConfig } from "vite"
 import sdk from "vite-plugin-sdk"
 
+import pkg from "./package.json"
+
 export default defineConfig({
 	build: {
 		lib: {
@@ -17,5 +19,8 @@ export default defineConfig({
 			reporter: ["lcovonly", "text"],
 		},
 		setupFiles: ["./test/__setup__.ts"],
+	},
+	define: {
+		__PACKAGE_VERSION__: JSON.stringify(pkg.version),
 	},
 })
