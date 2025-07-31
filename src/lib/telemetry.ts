@@ -31,7 +31,7 @@ export class Telemetry {
 			this._segmentClient = new Analytics({
 				writeKey: API_TOKENS.SegmentKey,
 				// Since it's a local server, we do not benefit from event batching
-				// the way a remote server would normally do, all tracking event will be awaited.
+				// the way a remote server would normally do, all tracking events will be awaited.
 				maxEventsInBatch: 1,
 			})
 
