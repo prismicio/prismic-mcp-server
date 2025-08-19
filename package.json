@@ -63,7 +63,7 @@
 		"test": "npm run lint && npm run types && npm run unit && npm run build && npm run size"
 	},
 	"dependencies": {
-		"@modelcontextprotocol/sdk": "1.13.0",
+		"@modelcontextprotocol/sdk": "1.17.3",
 		"@segment/analytics-node": "2.3.0",
 		"cookie": "1.0.2",
 		"zod": "3.25.67"
