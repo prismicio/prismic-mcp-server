@@ -60,7 +60,8 @@
 		"unit": "vitest run --coverage",
 		"unit:watch": "vitest watch",
 		"size": "size-limit",
-		"test": "npm run lint && npm run types && npm run unit && npm run build && npm run size"
+		"test": "npm run lint && npm run types && npm run unit && npm run build && npm run size",
+		"test:e2e": "playwright test --config __tests__/integration/playwright.config.ts"
 	},
 	"dependencies": {
 		"@modelcontextprotocol/sdk": "1.13.0",
@@ -70,6 +71,7 @@
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.29.0",
+		"@playwright/test": "^1.55.0",
 		"@size-limit/preset-small-lib": "^11.2.0",
 		"@trivago/prettier-plugin-sort-imports": "^5.2.2",
 		"@types/node": "^24.0.3",
