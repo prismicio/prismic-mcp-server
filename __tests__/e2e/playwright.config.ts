@@ -1,4 +1,4 @@
-import { defineConfig, devices } from "@playwright/test"
+import { defineConfig } from "@playwright/test"
 
 const CI = !!process.env["CI"]
 
@@ -33,16 +33,6 @@ export default defineConfig({
 		// example in `await expect(locator).toHaveText();`
 		timeout: 30_000,
 	},
-
-	// Configure projects for major browsers.
-	projects: [
-		{
-			name: "chromium",
-			use: {
-				...devices["Desktop Chrome"],
-			},
-		},
-	],
 
 	// Directory that will be recursively scanned for test files.
 	testDir: ".",
