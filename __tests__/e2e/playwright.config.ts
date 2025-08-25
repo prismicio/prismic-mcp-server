@@ -3,9 +3,6 @@ import { defineConfig, devices } from "@playwright/test"
 const CI = !!process.env["CI"]
 
 export default defineConfig({
-	/* Run tests in parallel across files only in the local environment, as the CI environment is limited to a single worker. */
-	fullyParallel: true,
-
 	// Opt out of parallel tests on CI to prioritize stability and reproducibility.
 	// See: https://playwright.dev/docs/ci#workers
 	workers: CI ? 1 : undefined,
