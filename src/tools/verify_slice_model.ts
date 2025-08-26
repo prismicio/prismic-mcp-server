@@ -70,9 +70,7 @@ export const verify_slice_model = tool(
 **Validation Errors:**
 ${errors}
 
-**Suggestion:** Fix the validation errors above. If you're unsure about slice modelling, consider learning about Prismic slice structure and field types.
-
-**Note:** If the model is invalid, it might be because you need to learn more about how to properly model a slice. Consider calling the \`how_to_code_slice\` tool to understand slice modelling best practices.`,
+**Suggestion:** Fix the validation errors above. If you're unsure about slice modelling, consider learning about the slice model schema from other existing slices.`,
 					},
 				],
 			}
