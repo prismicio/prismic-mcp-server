@@ -3,10 +3,7 @@ import { z } from "zod"
 
 import { formatErrorForMcpTool } from "../lib/error"
 import { tool } from "../lib/mcp"
-import {
-	SharedSlice,
-	type Variation,
-} from "@prismicio/types-internal/lib/customtypes"
+import { SharedSlice } from "@prismicio/types-internal/lib/customtypes"
 
 export const verify_slice_model = tool(
 	"verify_slice_model",
@@ -14,11 +11,11 @@ export const verify_slice_model = tool(
 	Verifies that a model.json file for a Prismic slice is valid according to the SharedSlice schema.
 	
 	This tool reads and validates the JSON structure of a slice model file to ensure it conforms
-	to Prismic's slice modeling requirements. If the model is invalid, it provides detailed error
+	to Prismic's slice modelling requirements. If the model is invalid, it provides detailed error
 	messages to help fix the issues.
 	
 	If validation fails, it might be because you need to learn more about how to properly model
-	a slice - consider calling tools to understand slice modeling best practices.
+	a slice - consider calling tools to understand slice modelling best practices.
 `.trim(),
 	z.object({
 		modelAbsolutePath: z
@@ -26,11 +23,11 @@ export const verify_slice_model = tool(
 			.describe("The absolute path to the `model.json` file of the slice"),
 	}).shape,
 	(args) => {
-		try {
-			// Read the model.json file
-			const fileContent = readFileSync(args.modelAbsolutePath, "utf-8")
+		const { modelAbsolutePath } = args
 
-			// Parse JSON
+		try {
+			const fileContent = readFileSync(modelAbsolutePath, "utf-8")
+
 			let parsedModel
 			try {
 				parsedModel = JSON.parse(fileContent)
@@ -38,8 +35,8 @@ export const verify_slice_model = tool(
 				return {
 					content: [
 						{
-							type: "text" as const,
-							text: `❌ Invalid JSON format in ${args.modelAbsolutePath}
+							type: "text",
+							text: `❌ Invalid JSON format in ${modelAbsolutePath}
 
 **Error:** ${jsonError instanceof Error ? jsonError.message : String(jsonError)}
 
@@ -49,63 +46,35 @@ export const verify_slice_model = tool(
 				}
 			}
 
-			// Validate against SharedSlice schema using io-ts
 			const validationResult = SharedSlice.decode(parsedModel)
 
 			if (validationResult._tag === "Right") {
-				const slice = validationResult.right
-				const variations = slice.variations.map((v: Variation) => ({
-					id: v.id,
-					name: v.name,
-					hasItems: Boolean(v.items && Object.keys(v.items).length > 0),
-					hasPrimary: Boolean(v.primary && Object.keys(v.primary).length > 0),
-				}))
-
 				return {
 					content: [
 						{
-							type: "text" as const,
-							text: `✅ The slice model at ${args.modelAbsolutePath} is valid!
-
-**Slice Details:**
-- ID: ${slice.id}
-- Name: ${slice.name}
-- Type: ${slice.type}
-- Variations: ${slice.variations.length}
-${slice.description ? `- Description: ${slice.description}` : ""}
-
-**Variations:**
-${variations
-	.map(
-		(variation) =>
-			`- ${variation.name} (${variation.id}): ${variation.hasPrimary ? "✓ Primary fields" : "✗ No primary"}, ${variation.hasItems ? "✓ Items fields" : "✗ No items"}`,
-	)
-	.join("\n")}
-
-The slice model follows the correct SharedSlice schema structure and can be safely used with Slice Machine.`,
+							type: "text",
+							text: `✅ The slice model at ${modelAbsolutePath} is valid!`,
 						},
 					],
 				}
-			} else {
-				// Format io-ts validation errors
+			}
 
-				const errors = validationResult.left.map(formatError).join("\n")
+			const errors = validationResult.left.map(formatDecodeError).join("\n")
 
-				return {
-					content: [
-						{
-							type: "text" as const,
-							text: `❌ The slice model at ${args.modelAbsolutePath} has validation errors:
+			return {
+				content: [
+					{
+						type: "text",
+						text: `❌ The slice model at ${modelAbsolutePath} has validation errors:
 
 **Validation Errors:**
 ${errors}
 
-**Suggestion:** Fix the validation errors above. If you're unsure about slice modeling, consider learning about Prismic slice structure and field types.
+**Suggestion:** Fix the validation errors above. If you're unsure about slice modelling, consider learning about Prismic slice structure and field types.
 
-**Note:** If the model is invalid, it might be because you need to learn more about how to properly model a slice. Consider calling the \`how_to_code_slice\` tool to understand slice modeling best practices.`,
-						},
-					],
-				}
+**Note:** If the model is invalid, it might be because you need to learn more about how to properly model a slice. Consider calling the \`how_to_code_slice\` tool to understand slice modelling best practices.`,
+					},
+				],
 			}
 		} catch (error) {
 			return formatErrorForMcpTool(error)
@@ -113,7 +82,7 @@ ${errors}
 	},
 )
 
-function formatError(error: {
+function formatDecodeError(error: {
 	message?: string
 	context?: ReadonlyArray<{ key?: string; type?: { name: string } }>
 	value?: unknown
