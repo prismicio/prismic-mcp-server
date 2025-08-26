@@ -113,7 +113,7 @@ test.describe("how_to_code_slice tool", () => {
 		expect(result.length).toBeGreaterThan(100)
 	})
 
-	test.only("should handle missing parameters gracefully", async ({ mcp }) => {
+	test("should handle missing parameters gracefully", async ({ mcp }) => {
 		try {
 			await mcp.callTool("how_to_code_slice", {
 				projectFramework: "next",
