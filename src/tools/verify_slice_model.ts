@@ -10,7 +10,7 @@ export const verify_slice_model = tool(
 	`Verifies that a model.json file for a Prismic slice is valid according to the SharedSlice schema.
 	
 	This tool reads and validates the JSON structure of a slice model file to ensure it conforms
-	to Prismic's slice modelling requirements. If the model is invalid, it provides detailed error
+	to Prismic's slice modeling requirements. If the model is invalid, it provides detailed error
 	messages to help fix the issues.`.trim(),
 	z.object({
 		modelAbsolutePath: z
@@ -65,7 +65,7 @@ export const verify_slice_model = tool(
 **Validation Errors:**
 ${errors}
 
-**Suggestion:** Fix the validation errors above. If you're unsure about slice modelling, consider learning about the slice model schema from other existing slices.`,
+**Suggestion:** Fix the validation errors above. If you're unsure about slice modeling, consider learning about the slice model schema from other existing slices.`,
 					},
 				],
 			}
