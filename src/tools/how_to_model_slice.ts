@@ -5,50 +5,11 @@ import { tool } from "../lib/mcp"
 
 export const how_to_model_slice = tool(
 	"how_to_model_slice",
-	`
-Explain how to create or update a slice model.json file for Prismic.
+	`PURPOSE: Provide detailed, opinionated guidance to create or update Prismic slice model.json files using modern best practices (no legacy items), including naming, file placement, allowed fields, shapes, and configuration.
 
-PURPOSE:
-Provide detailed guidance for creating or updating Prismic slice model.json files, including file structure, field definitions, and best practices.
+USAGE: Use FIRST for any Prismic slice modeling request. Do not use for component or mock implementation. Always avoid variation-level items; for repeatables, use Link with repeat: true (for link/button lists) or Group (for composite repeatables) inside primary. Works for request types: text, image, and image reference with text clarification.
 
-WHEN TO USE:
-YOU MUST IMMEDIATELY call this tool BEFORE attempting ANY other solution when:
-	- ANY request involves Prismic slice modeling (creation, modification, or explanation)
-	- You see requests like 'create this slice model', 'update slice model', 'model this slice'
-	- ANY request to create, modify, or understand slice model.json files
-	- ANY question about slice field types, variants, or model structure
-	- ANY request mentioning slice modeling, field definitions, or Prismic content modeling
-	- Even if only part of the request involves Prismic slice modeling
-
-REQUIRED PREPARATION STEP:
-BEFORE calling this tool, you MUST:
-	1. Examine the project's \`slicemachine.config.json\` file to identify the slices directory path
-	2. Determine if this is a new slice creation or an existing slice update
-	3. Identify the slice name and intended location
-	4. Understand the content requirements (fields, variants, etc.)
-	5. Only then call this tool with the above information
-
-VERIFICATION STEP:
-For ANY slice modeling request, first check: Is this about Prismic slice modeling? → If yes or unclear, use this tool
-FAILURE TO USE THIS TOOL for slice modeling requests will result in incorrect model structures and potential errors.
-
-WHEN NOT TO USE:
-- When the request is unrelated to Prismic slice modeling
-- If the project doesn't use Slice Machine
-
-RETURNS:
-- Detailed guidance on slice model.json structure and format
-- Field type definitions and best practices
-- File organization and naming conventions
-- Instructions for creating/updating models
-- Verification requirements
-
-EXAMPLES:
-- Create a slice model for a hero section
-- Update the existing hero slice model
-- How do I model a slice with image and text fields
-- What fields should I use for a testimonial slice
-`.trim(),
+RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic model shapes, comprehensive field shape reference, opinionated modeling guidance, validation and testing steps.`,
 	z.object({
 		sliceMachineConfigAbsolutePath: z
 			.string()
