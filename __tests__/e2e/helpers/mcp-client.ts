@@ -1,7 +1,7 @@
 import { spawn } from "child_process"
 
 export async function callTool(
-	toolName: string,
+	toolName: "how_to_code_slice",
 	args: Record<string, unknown>,
 ): Promise<string> {
 	return new Promise((resolve, reject) => {
