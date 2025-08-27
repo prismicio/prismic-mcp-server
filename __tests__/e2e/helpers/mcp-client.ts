@@ -1,103 +1,90 @@
-import { type ChildProcess, spawn } from "child_process"
+import { spawn } from "child_process"
 
-interface ToolCallRequest {
-	jsonrpc: "2.0"
-	id: string
-	method: "tools/call"
-	params: { name: string; arguments: Record<string, unknown> }
-}
+export async function callTool(
+	toolName: string,
+	args: Record<string, unknown>,
+): Promise<string> {
+	return new Promise((resolve, reject) => {
+		const inspectorArgs = [
+			"@modelcontextprotocol/inspector",
+			"--cli",
+			"node",
+			"bin/stdio.js",
+			"--method",
+			"tools/call",
+			"--tool-name",
+			toolName,
+		]
 
-interface ToolCallResponse {
-	jsonrpc: "2.0"
-	id: string
-	result?: {
-		content: Array<{
-			type: string
-			text: string
-		}>
-	}
-	error?: {
-		message: string
-	}
-}
-
-export class McpClient {
-	private process: ChildProcess | null = null
-
-	async start(): Promise<void> {
-		return new Promise((resolve, reject) => {
-			this.process = spawn("node", ["bin/stdio.js"], {
-				stdio: ["pipe", "pipe", "pipe"],
-				cwd: process.cwd(),
-			})
-
-			this.process.on("error", reject)
-
-			// Give the server time to start
-			setTimeout(resolve, 1000)
+		Object.entries(args).forEach(([key, value]) => {
+			const serializedValue =
+				typeof value === "object" ? JSON.stringify(value) : String(value)
+			inspectorArgs.push("--tool-arg", `${key}=${serializedValue}`)
 		})
-	}
 
-	async stop(): Promise<void> {
-		this.process?.kill()
-		this.process = null
-	}
+		const inspectorProcess = spawn("npx", inspectorArgs, {
+			stdio: ["pipe", "pipe", "pipe"],
+			cwd: process.cwd(),
+		})
 
-	async callTool(
-		toolName: "how_to_code_slice",
-		args: Record<string, unknown>,
-	): Promise<string> {
-		if (!this.process?.stdin) {
-			throw new Error("Server not running")
-		}
+		let stdout = ""
+		let stderr = ""
 
-		const request: ToolCallRequest = {
-			jsonrpc: "2.0",
-			id: "test-1",
-			method: "tools/call",
-			params: { name: toolName, arguments: args },
-		}
+		inspectorProcess.stdout?.on("data", (data: Buffer) => {
+			stdout += data.toString()
+		})
 
-		return new Promise((resolve, reject) => {
-			const timeout = setTimeout(() => reject(new Error("Timeout")), 15000)
-			let responseData = ""
+		inspectorProcess.stderr?.on("data", (data: Buffer) => {
+			stderr += data.toString()
+		})
 
-			const dataHandler = (data: Buffer) => {
-				responseData += data.toString()
+		inspectorProcess.on("close", (code: number) => {
+			if (code === 0) {
+				try {
+					const response = JSON.parse(stdout.trim())
 
-				const lines = responseData.split("\n")
-				// Remove and store the last line, which is potentially incomplete
-				responseData = lines.pop() || ""
-
-				for (const line of lines) {
-					if (line.trim()) {
-						try {
-							const response: ToolCallResponse = JSON.parse(line)
-							if (response.id === "test-1") {
-								clearTimeout(timeout)
-								this.process!.stdout!.off("data", dataHandler)
-
-								if (response.error) {
-									reject(new Error(response.error.message))
-								} else {
-									// Combine all content text
-									const content = response.result?.content || []
-									const text = content
-										.filter((item) => item.type === "text")
-										.map((item) => item.text)
-										.join("\n")
-									resolve(text)
-								}
-							}
-						} catch {
-							// Ignore parsing errors for incomplete messages
-						}
-					}
+					const text =
+						response.content
+							?.filter(
+								(item: { type: string; text: string }) => item.type === "text",
+							)
+							?.map((item: { type: string; text: string }) =>
+								unescapeString(item.text),
+							)
+							?.join("\n") || stdout.trim()
+					resolve(text)
+				} catch {
+					// If JSON parsing fails, try to handle the raw stdout as if it's already escaped content
+					const unescapedStdout = unescapeString(stdout.trim())
+					resolve(unescapedStdout)
 				}
+			} else {
+				reject(new Error(`Inspector failed with code ${code}: ${stderr}`))
 			}
-
-			this.process!.stdout!.on("data", dataHandler)
-			this.process!.stdin!.write(JSON.stringify(request) + "\n")
 		})
-	}
+
+		inspectorProcess.on("error", (error) => {
+			reject(error)
+		})
+	})
+}
+
+const unescapeString = (str: string): string => {
+	let result = str
+
+	// Handle double-escaped sequences first
+	result = result.replace(/\\\\"/g, '"') // \\\" -> "
+	result = result.replace(/\\\\n/g, "\n") // \\\\n -> \n
+	result = result.replace(/\\\\t/g, "\t") // \\\\t -> \t
+	result = result.replace(/\\\\r/g, "\r") // \\\\r -> \r
+	result = result.replace(/\\\\\\\\/g, "\\") // \\\\\\ -> \\
+
+	// Then handle single-escaped sequences
+	result = result.replace(/\\"/g, '"') // \" -> "
+	result = result.replace(/\\n/g, "\n") // \n -> \n
+	result = result.replace(/\\t/g, "\t") // \t -> \t
+	result = result.replace(/\\r/g, "\r") // \r -> \r
+	result = result.replace(/\\\\/g, "\\") // \\ -> \
+
+	return result
 }
