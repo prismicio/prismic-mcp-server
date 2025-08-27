@@ -7,7 +7,6 @@ type TestFixtures = {
 }
 
 export const test = base.extend<TestFixtures>({
-	// eslint-disable-next-line no-empty-pattern
 	mcp: async ({}, use) => {
 		const client = new McpClient()
 		await client.start()
