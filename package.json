@@ -61,7 +61,8 @@
 		"unit:watch": "vitest watch",
 		"size": "size-limit",
 		"test": "npm run lint && npm run types && npm run unit && npm run build && npm run size",
-		"test:e2e": "playwright test --config __tests__/e2e/playwright.config.ts"
+		"test:e2e": "playwright test --config __tests__/e2e/playwright.config.ts",
+		"test:e2e:update": "npm run test:e2e -- --update-snapshots"
 	},
 	"dependencies": {
 		"@modelcontextprotocol/sdk": "1.13.0",

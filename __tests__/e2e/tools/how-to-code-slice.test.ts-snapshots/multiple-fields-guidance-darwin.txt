@@ -1,0 +1,199 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "
+				# How to code a slice
+				This tool contains MANDATORY STEPS that MUST be followed.
+				FAILING to read and implement ANY section marked MANDATORY will result in INCORRECT code.
+				YOU MUST read this ENTIRE output from beginning to end BEFORE writing a SINGLE line of code.
+				NO EXCEPTIONS - ALL steps are required.
+
+				## Fields documentation [MANDATORY]
+				Fields documentation to follow: [{"prismic.RichTextField":"
+					Prismic provides a RichText component.
+
+					```
+					
+									<PrismicRichText :field="slice.primary.my_rich_text_field" />
+								
+					```
+
+
+					# Tips
+
+					## Styling
+
+					You can style the component using a wrapper `<div>` element with CSS classes. The wrapper element can target child elements to apply styles.
+
+					```
+					
+									<div class="rich-text">
+										<PrismicRichText :field="slice.primary.my_rich_text_field" />
+									</div>
+								
+					```
+
+					```css
+					.rich-text h1 {
+						font-size: 2rem;
+						margin-bottom: 1rem;
+					}
+
+					.rich-text p {
+						margin-bottom: 0.75rem;
+						line-height: 1.6;
+					}
+
+					.rich-text strong {
+						font-weight: bold;
+					}
+					```
+
+					## Advanced Styling with Components
+
+					The `components` prop is primarily used for advanced use cases where you need to use another UI component or if you prefer not using cascading CSS.
+
+					```
+					
+									<PrismicRichText
+										:field="slice.primary.my_rich_text_field"
+										:components="{
+											heading1: Heading,
+											paragraph: Paragraph,
+										}"
+									/>
+								
+					```
+
+					## Use `isFilled.richText()` to check if a rich text field has a value
+
+					```ts
+					import { isFilled } from "@prismicio/client";
+
+					if (isFilled.richText(slice.primary.my_rich_text_field)) {
+						// Do something if `my_rich_text_field` has a value.
+					}
+					```
+				"},{"prismic.ImageField":"
+					Prismic provides an Image component.
+
+					```
+					
+									<PrismicImage :field="slice.primary.my_image_field" />
+								
+					```
+
+					# Tips
+
+					## `alt` and `fallbackAlt` attributes
+
+					The `alt` and `fallbackAlt` attributes are manage automatically by the Image component.
+					DO NOT provide an `alt` or `fallbackAlt` attribute to the component.
+
+					## Styling
+
+					IMPORTANT: Apply classes directly via the class prop, don't wrap the component in a `<div>`.
+
+					## Use `isFilled.image()` to check if an image field has a value
+
+					```ts
+					import { isFilled } from "@prismicio/client";
+
+					if (isFilled.image(slice.primary.my_image_field)) {
+						// Do something if `my_image_field` has a value.
+					}
+					```
+				"},{"prismic.LinkField":"
+					Prismic provides a Link component.
+					```
+					
+									<PrismicLink :field="slice.primary.my_link_field" />
+								
+					```
+
+					A repeatable link field can be displayed using a loop.
+
+					```
+					
+									<ul>
+										<li v-for="link in slice.primary.my_link_field">
+											<PrismicLink :field="link" />
+										</li>
+									</ul>
+								
+					```
+
+					# Tips
+
+					## Use display text as labels
+
+					The link's text label can be managed in Prismic when display text is enabled. Prismic's link components automatically display the text.
+					you MUST verify `model.json` file to check if display text is enabled for the link field with the property `allowText`.
+
+					When `allowText` is enabled, you must never provide children to the component:
+					```
+					
+									// CORRECT: No children
+									<PrismicLink :field="slice.primary.my_link_field" />
+
+									// INCORRECT: Adding children
+									<PrismicLink :field="slice.primary.my_link_field">
+										Learn more
+									</PrismicLink>
+								
+					```
+
+					## Use variants to style links
+
+					Link variants can determine how links are styled. This example adds a CSS class based on the selected variant.
+
+					```
+					
+									// This example uses Vue's `:class` directive to conditionally apply class names.
+									<PrismicLink
+										:field="slice.primary.button"
+										class="button"
+										:class="{
+											primary: slice.primary.button.variant === 'Primary',
+											secondary: slice.primary.button.variant === 'Secondary',
+										}"
+									/>
+								
+					```
+
+					## Styling
+
+					IMPORTANT: Apply classes directly via the class prop, don't wrap the component in a `<div>`.
+
+					## Use `isFilled.link()` to check if a link field has a value
+
+					```ts
+					import { isFilled } from "@prismicio/client";
+
+					if (isFilled.link(slice.primary.button)) {
+						// Do something if `button` has a value.
+					}
+					```
+				"}]
+				IMPORTANT:
+					- Look at similar components to see how fields are coded
+					- Use the SAME approach as existing components
+				CRITICAL: ANY content visible to users MUST come from Prismic fields. Never hardcode ANY values directly - everything must be dynamic.
+
+				## Model analysis [MANDATORY]
+				BEFORE writing ANY code, you MUST:
+					1. Read the /tmp/model.json file completely
+					2. Create a formal table of fields with the following format:
+						| Field         | Type       | Config                    | Implementation Plan      |
+						|---------------|------------|---------------------------|--------------------------|
+						| cta_link      | Link       | allowText: true           | No children needed       |
+						| description   | RichText   | multi: paragraph,em,link  | Handle these block types |
+				CRITICAL: You MUST complete this model analysis BEFORE writing ANY implementation code.
+				The analysis should reflect EXACTLY what is in the `model.json` file, not assumptions.
+				The system will verify you have performed this analysis before accepting any code.
+				NEVER update the `model.json` file, you can ONLY read it.
+
+				## Styling implementation [MANDATORY]
+				Use the `stylingSystemToUse` parameter to identify the styling system to use for the slice.
+				Lo

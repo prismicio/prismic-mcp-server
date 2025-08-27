@@ -1,0 +1,111 @@
+
+				# How to code a slice
+				This tool contains MANDATORY STEPS that MUST be followed.
+				FAILING to read and implement ANY section marked MANDATORY will result in INCORRECT code.
+				YOU MUST read this ENTIRE output from beginning to end BEFORE writing a SINGLE line of code.
+				NO EXCEPTIONS - ALL steps are required.
+
+				## Fields documentation [MANDATORY]
+				Fields documentation to follow: [{"prismic.RichTextField":"
+					Prismic provides a RichText component.
+
+					```
+					
+									import { PrismicRichText } from "@prismicio/react"
+
+									<PrismicRichText field={slice.primary.my_rich_text_field} />
+								
+					```
+
+
+					# Tips
+
+					## Styling
+
+					You can style the component using a wrapper `<div>` element with CSS classes. The wrapper element can target child elements to apply styles.
+
+					```
+					
+									<div className="rich-text">
+										<PrismicRichText field={slice.primary.my_rich_text_field} />
+									</div>
+								
+					```
+
+					```css
+					.rich-text h1 {
+						font-size: 2rem;
+						margin-bottom: 1rem;
+					}
+
+					.rich-text p {
+						margin-bottom: 0.75rem;
+						line-height: 1.6;
+					}
+
+					.rich-text strong {
+						font-weight: bold;
+					}
+					```
+
+					## Advanced Styling with Components
+
+					The `components` prop is primarily used for advanced use cases where you need to use another UI component or if you prefer not using cascading CSS.
+
+					```
+					
+									import { PrismicRichText } from "@prismicio/react"
+									import { Heading } from "@/components/Heading";
+
+									<PrismicRichText
+										field={slice.primary.my_rich_text_field}
+										components={{
+											// Use a component from another file.
+											heading1: ({ children }) => <Heading as="h1">{children}</Heading>,
+											// Use an HTML element with class names.
+											paragraph: ({ children }) => <p className="my-8">{children}</p>,
+										}}
+									/>;
+								
+					```
+
+					## Use `isFilled.richText()` to check if a rich text field has a value
+
+					```ts
+					import { isFilled } from "@prismicio/client";
+
+					if (isFilled.richText(slice.primary.my_rich_text_field)) {
+						// Do something if `my_rich_text_field` has a value.
+					}
+					```
+				"}]
+				IMPORTANT:
+					- Look at similar components to see how fields are coded
+					- Use the SAME approach as existing components
+				CRITICAL: ANY content visible to users MUST come from Prismic fields. Never hardcode ANY values directly - everything must be dynamic.
+
+				## Model analysis [MANDATORY]
+				BEFORE writing ANY code, you MUST:
+					1. Read the /tmp/model.json file completely
+					2. Create a formal table of fields with the following format:
+						| Field         | Type       | Config                    | Implementation Plan      |
+						|---------------|------------|---------------------------|--------------------------|
+						| cta_link      | Link       | allowText: true           | No children needed       |
+						| description   | RichText   | multi: paragraph,em,link  | Handle these block types |
+				CRITICAL: You MUST complete this model analysis BEFORE writing ANY implementation code.
+				The analysis should reflect EXACTLY what is in the `model.json` file, not assumptions.
+				The system will verify you have performed this analysis before accepting any code.
+				NEVER update the `model.json` file, you can ONLY read it.
+
+				## Styling implementation [MANDATORY]
+				Use the `stylingSystemToUse` parameter to identify the styling system to use for the slice.
+				Look at similar components to see exactly how styles are applied.
+			
+
+				## IMMEDIATE ACTION REQUIRED AFTER CALLING THIS TOOL
+				You have received all necessary information.
+				DO NOT wait for additional instructions.
+				NO further confirmation needed.
+				PROCEED now to implementation FOLLOWING THE GUIDELINES above.
+				REPLY IMMEDIATELY with the message "I have read and understood the instructions from Prismic MCP tool" and continue with the implementation.
+			
