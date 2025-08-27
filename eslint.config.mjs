@@ -41,11 +41,4 @@ export default tseslint.config(
 			"tsdoc/syntax": "warn",
 		},
 	},
-	{
-		name: "E2E test.ts files",
-		files: ["__tests__/e2e/**/*.ts"],
-		rules: {
-			"no-empty-pattern": ["error", { allowObjectPatternsAsParameters: true }],
-		},
-	},
 )
