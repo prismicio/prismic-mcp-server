@@ -44,7 +44,7 @@ export class McpClient {
 	}
 
 	async callTool(
-		toolName: string,
+		toolName: "how_to_code_slice",
 		args: Record<string, unknown>,
 	): Promise<string> {
 		if (!this.process?.stdin) {
