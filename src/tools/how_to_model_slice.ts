@@ -11,11 +11,6 @@ USAGE: Use FIRST for any Prismic slice modeling request. Do not use for componen
 
 RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic model shapes, comprehensive field shape reference, opinionated modeling guidance, validation and testing steps.`,
 	z.object({
-		sliceMachineConfigAbsolutePath: z
-			.string()
-			.describe(
-				"The absolute path to the `slicemachine.config.json` file of the project",
-			),
 		sliceName: z
 			.string()
 			.describe(
@@ -39,9 +34,7 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 	}).shape,
 	(args) => {
 		try {
-			const sliceName = args.sliceName
-			const isNewSlice = args.isNewSlice
-			const requestType = args.requestType
+			const { sliceName, isNewSlice, contentRequirements, requestType } = args
 
 			const instructions = `
  # How to Model a Prismic Slice
@@ -55,7 +48,7 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
  - **Slice Name**: ${sliceName}
  - **Request Type**: ${requestType === "text" ? "Text-based description" : requestType === "image" ? "Image reference" : "Image reference with text clarification"}
  - **Operation**: ${isNewSlice ? "Creating new slice" : "Updating existing slice"}
- - **Content Requirements**: ${args.contentRequirements}
+ - **Content Requirements**: ${contentRequirements}
  
  ## Naming Conventions [MANDATORY]
  
@@ -103,7 +96,7 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 			.toLowerCase()}",
    "type": "SharedSlice",
    "name": "${sliceName}",
-   "description": "A ${args.contentRequirements.toLowerCase()}",
+   "description": "A ${contentRequirements.toLowerCase()}",
    "variations": [
      {
        "id": "default",
