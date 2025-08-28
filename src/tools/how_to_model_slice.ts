@@ -5,16 +5,21 @@ import { tool } from "../lib/mcp"
 
 export const how_to_model_slice = tool(
 	"how_to_model_slice",
-	`PURPOSE: Provide detailed, opinionated guidance to create or update Prismic slice model.json files using modern best practices (no legacy items), including naming, file placement, allowed fields, shapes, and configuration.
+	`PURPOSE: Provide detailed, opinionated guidance to create or update Prismic slice model.json files using modern best practices, including naming, file placement, allowed fields, shapes, and configuration.
 
-USAGE: Use FIRST for any Prismic slice modeling request. Do not use for component or mock implementation. Always avoid variation-level items; for repeatables, use Link with repeat: true (for link/button lists) or Group (for composite repeatables) inside primary. Works for request types: text, image, and image reference with text clarification.
+USAGE: Use FIRST for any Prismic slice modeling request. Do not use for component or mock implementation. Works for request types: text, image, and image reference with text clarification.
 
 RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic model shapes, comprehensive field shape reference, opinionated modeling guidance, validation and testing steps.`,
 	z.object({
+		sliceLibraryAbsolutePath: z
+			.string()
+			.describe(
+				"Absolute path to the slice library directory where slices live (from slicemachine.config.json)",
+			),
 		sliceName: z
 			.string()
 			.describe(
-				"The name of the slice (e.g., 'Hero', 'Testimonial', 'Feature')",
+				"The name of the slice, it MUST be PascalCase, e.g., 'SliceName', cannot start with a number, and with no special characters allowed",
 			),
 		isNewSlice: z
 			.boolean()
@@ -34,15 +39,16 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 	}).shape,
 	(args) => {
 		try {
-			const { sliceName, isNewSlice, contentRequirements, requestType } = args
+			const {
+				sliceLibraryAbsolutePath,
+				sliceName,
+				isNewSlice,
+				contentRequirements,
+				requestType,
+			} = args
 
 			const instructions = `
  # How to Model a Prismic Slice
- 
- This tool contains MANDATORY STEPS that MUST be followed for creating or updating Prismic slice models.
- FAILING to read and implement ANY section marked MANDATORY will result in INCORRECT models.
- YOU MUST read this ENTIRE output from beginning to end BEFORE writing a SINGLE line of code.
- NO EXCEPTIONS - ALL steps are required.
  
  ## Request Analysis [MANDATORY]
  - **Slice Name**: ${sliceName}
@@ -52,11 +58,6 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
  
  ## Naming Conventions [MANDATORY]
  
- ### Slice Name
- - MUST be PascalCase (TitleCase), e.g., "SliceName"
- - Cannot start with a number
- - No special characters allowed
- 
  ### Slice ID
  - MUST be kebab-case of the slice name, e.g., "slice-name"
  - Used as the model's "id" field
@@ -64,30 +65,18 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
  
  ## Opinionated Modeling Guidance (Prismic best practices) [MANDATORY]
 
-- Never use variation-level "items"; use Link with repeat or Group within primary.
-- Use Group only for repeatable sets of multiple related fields (e.g., an item with image + title + description). Do not use Group to model lists of adjacent links/buttons; use a single Link field with repeat: true instead.
-- For StructuredText:
-  - Headings: use label "title" and a single element specifying the heading level (start from heading1). Avoid inline elements in titles.
-  - Descriptions: use elements "paragraph", "strong", "em", "hyperlink" and allow line breaks where needed.
-- For Link:
-  - allowText enables button text; repeat creates lists of links/buttons; variants provides style options (e.g., Primary, Secondary).
-- For Image:
-  - Avoid naming fields "background" unless the image is truly a full background.
-- For Group:
-  - Use for carousels/sliders or any repeating composite content; avoid left/right or numbered pairs by design—make a repeatable item instead.
+- Prefer simple, predictable models that align with Prismic’s latest DX.
+- When modeling, review other existing slices for inspiration and consistency, but always tailor the model to the specific requirements of this slice.
+- Avoid legacy constructs; follow guidance in the relevant sections below.
  
- ### Directory Structure
+ ## File Paths [MANDATORY]
  
- src/slices/
- └── ${sliceName}/
-     └── model.json          # Slice model definition
- 
- ### File Path
- - **Model File**: \`src/slices/${sliceName}/model.json\`
+ - Slice directory: ${sliceLibraryAbsolutePath}/${sliceName}
+ - Model file: ${sliceLibraryAbsolutePath}/${sliceName}/model.json
  
  ## Model.json Structure [MANDATORY]
  
- ### Basic Structure (no items)
+ ### Basic Structure
  
  {
    "id": "${sliceName
@@ -114,28 +103,10 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
  
  ### IMPORTANT: Do not use "items" (deprecated)
  - The variation-level "items" object is deprecated and MUST NOT be used.
- - For repeatable content:
-   - If it is a list of links/buttons: use a Link field with "repeat: true" in its config.
-   - If it is a grouped set of fields that repeats: use a Group field inside "primary" and define its "fields".
-   - Avoid using "items". All repeatable modeling should be handled via "repeat" on fields or Group.
  
- ## Field Types Reference [MANDATORY]
+ ## Field Types [MANDATORY]
  
- ### Available Field Types
- - StructuredText, Text, Image, Link, Boolean, Number, Date, Timestamp, Color, Embed, GeoPoint, UID, ContentRelationship, LinkToMedia, Group
- 
- ### Link Field: Repeatable and Variants [MANDATORY]
- - Repeatable link lists (buttons, menus): set "repeat: true" in the Link field config. The API returns an array of links.
- - Variants (style options like Primary/Secondary): set "variants": ["Primary", "Secondary"] in the Link field config.
- - Other common options: "allowText", "select", "allowTargetBlank".
- 
- ### Group Field
- - Use for repeatable sets of multiple fields (e.g., an item with image + title + description).
- - Define the Group inside "primary" and specify its "fields".
- 
- ## Field Shapes (Source of Truth) [MANDATORY]
- 
- The following are the valid field types for slice "primary" and their JSON shapes with supported configuration options. Only use these shapes.
+ The following are the valid field types for slice "primary" and their JSON shapes with supported configuration options. Only use these types.
  
  ### StructuredText
  
@@ -207,7 +178,7 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
  Notes:
  - Use "repeat: true" to model lists of links/buttons (returned as an array).
  - Use "variants" to provide style options for buttons (e.g., Primary/Secondary).
- - If "select" is "document", use "customtypes"/"tags" to scope allowed documents.
+ - If "select" is "document", use "customtypes" to scope allowed documents.
  - Do not model multiple adjacent buttons as separate fields; use one Link field with repeat: true.
  
  ### ContentRelationship
@@ -354,29 +325,26 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
  
  Notes:
  - Use Group when you need a set of multiple fields to repeat together.
- - Do not use variation-level "items".
  - Do not use Group to model lists of links/buttons—prefer a single repeatable Link field.
  
  ## Implementation Steps [MANDATORY]
  
- 1) Create the directory \`src/slices/${sliceName}/\` if it doesn't exist
- 2) Create \`model.json\` with the structure above
- 3) Ensure:
-    - Name is PascalCase (e.g., ${sliceName})
-    - ID is kebab-case (e.g., slice-name)
-    - No "items" is present on any variation
+ 1) Create the slice directory (if it doesn't exist)
+ 2) Create or update the model.json with the structure above inside the slice directory
  
  ## Content Analysis Guidelines [MANDATORY]
  
- - Text-based: derive fields from the description
- - Image-based: derive fields from visual elements
- - Image reference with text clarification: combine image analysis with the provided text
- - Map content to fields:
-   - Text content → StructuredText or Text
-   - Images → Image (use Group if images must repeat with additional data)
-   - Buttons/links → Link with "repeat: true" for lists and "variants" when styles are needed
-   - Layout differences → additional variations (if necessary)
- 
+ ${
+		requestType === "text"
+			? `- Focus: Parse the description for explicit content elements and hierarchy
+  - Extract: titles, paragraphs, lists, buttons/links, media references
+  - Don’t infer layout beyond what’s stated; if ambiguous, prefer simpler fields`
+			: requestType === "image"
+				? `- Focus: Identify visual elements and their repeatability
+  - Detect: headings, body text blocks, CTAs, icons/images, repeated cards/tiles`
+				: `- Focus: Use the image as the initial layout and reference for the fields involved; then refine based on the text clarification`
+ }
+  
  ## Example Patterns (do NOT auto-apply) [MANDATORY]
  
  ### Hero
@@ -436,18 +404,9 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
  - Do not auto-pick templates. Prioritize the user's prompt/image.
  - Use examples as reference only; customize to the request.
  
- ## Validation and Testing [MANDATORY]
- 
- - JSON is valid
- - Name is PascalCase, ID is kebab-case
- - No "items" present; repeatables modeled via Link repeat or Group
- - Link lists use "repeat: true"; button styles via "variants"
- 
  ## Final Instructions [MANDATORY]
  
  - Focus only on model.json
- - Do NOT add "items" to variations
- - Prefer Link "repeat" for lists of links; use Group for repeatable multi-field items
  - After implementation, call the verify_model tool to ensure correctness
  `
 
