@@ -126,7 +126,6 @@ Notes:
  - Titles: prefer a single heading level without inline marks.
  - Descriptions: allow paragraphs with inline marks (strong, em, hyperlink) and line breaks when necessary.
  
-
  **Text**
 \`\`\`typescript
 {
