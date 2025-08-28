@@ -2,198 +2,258 @@
   "content": [
     {
       "type": "text",
-      "text": "
-				# How to code a slice
-				This tool contains MANDATORY STEPS that MUST be followed.
-				FAILING to read and implement ANY section marked MANDATORY will result in INCORRECT code.
-				YOU MUST read this ENTIRE output from beginning to end BEFORE writing a SINGLE line of code.
-				NO EXCEPTIONS - ALL steps are required.
+      "text": "# Prismic Slice Implementation Guide
 
-				## Fields documentation [MANDATORY]
-				Fields documentation to follow: [{"prismic.RichTextField":"
-					Prismic provides a RichText component.
+## Required Steps
+1. **Analyze model.json** at /tmp/model.json
+   - Create field analysis table: Field | Type | Config | Implementation
+   - Use exact model configuration, not assumptions
 
-					```
-					
-									<PrismicRichText :field="slice.primary.my_rich_text_field" />
-								
-					```
+2. **Follow project patterns**
+   - Framework: nuxt
+   - Styling: Match existing slices if available, otherwise use project's styling system
+   - Code: Analyze codebase for consistent patterns and conventions
 
+3. **Implement fields dynamically**
+   - All content must come from Prismic fields
+   - Never hardcode visible content
+   - Use appropriate components for each field type based on the following field documentation
 
-					# Tips
+## Field Documentation
+### prismic.RichTextField
+---
+title: "Rich Text"
+description: "This article explains what the rich text field is and how to configure it."
+meta_title: "Rich Text"
+category: "fields"
+---
 
-					## Styling
+The rich text field allows content writers to write formatted content, including paragraphs, headings, lists, and more.
 
-					You can style the component using a wrapper `<div>` element with CSS classes. The wrapper element can target child elements to apply styles.
+> The [text field](https://prismic.io/docs/fields/text.md) and rich text field look similar. Use the text field for simple text that does not need formatting. Use the rich text field for text that requires formatting.
 
-					```
-					
-									<div class="rich-text">
-										<PrismicRichText :field="slice.primary.my_rich_text_field" />
-									</div>
-								
-					```
+# Add a rich text field to a content model
 
-					```css
-					.rich-text h1 {
-						font-size: 2rem;
-						margin-bottom: 1rem;
-					}
+1. **Open Slice Machine**
 
-					.rich-text p {
-						margin-bottom: 0.75rem;
-						line-height: 1.6;
-					}
+   In your Prismic project, start Slice Machine to begin editing content models.
 
-					.rich-text strong {
-						font-weight: bold;
-					}
-					```
+   ```sh
+   npx start-slicemachine --open
+   ```
 
-					## Advanced Styling with Components
+2. **Add a rich text field**
 
-					The `components` prop is primarily used for advanced use cases where you need to use another UI component or if you prefer not using cascading CSS.
+   In Slice Machine, navigate to the slice, page type, or custom type you want to modify. Add a **rich text** field.
 
-					```
-					
-									<PrismicRichText
-										:field="slice.primary.my_rich_text_field"
-										:components="{
-											heading1: Heading,
-											paragraph: Paragraph,
-										}"
-									/>
-								
-					```
+   The **label** determines the label shown to content writers in the [Page Builder](https://prismic.io/docs/guides/page-builder.md). Use an easily understood name.
 
-					## Use `isFilled.richText()` to check if a rich text field has a value
+   The **API ID** determines the property name in the Content API. Use a short, snake-cased name.
 
-					```ts
-					import { isFilled } from "@prismicio/client";
+   The **Allow target blank for links** checkbox determines if a content writer can configure links to open in a new window.
 
-					if (isFilled.richText(slice.primary.my_rich_text_field)) {
-						// Do something if `my_rich_text_field` has a value.
-					}
-					```
-				"},{"prismic.ImageField":"
-					Prismic provides an Image component.
+   The **Allow multiple paragraphs** checkbox determines if a content writer can write multiple blocks of content.
 
-					```
-					
-									<PrismicImage :field="slice.primary.my_image_field" />
-								
-					```
+3. **(Optional) Allow a subset of formatting options**
 
-					# Tips
+   By default, rich text fields support all formatting options. In some cases, you may want to restrict formatting options, such as only allowing H1, H2, and H3 headings.
 
-					## `alt` and `fallbackAlt` attributes
+   Open the field settings and enable or disable formatting options under the **Accept** section.
 
-					The `alt` and `fallbackAlt` attributes are manage automatically by the Image component.
-					DO NOT provide an `alt` or `fallbackAlt` attribute to the component.
+# Use labels for custom formatting
 
-					## Styling
+Rich text fields support standard text formatting options, like bold and emphasized text. If the formatting you need is not supported, add custom formatting options using **labels**.
 
-					IMPORTANT: Apply classes directly via the class prop, don't wrap the component in a `<div>`.
+Content writers can select text and apply a label. In your website's code, you can read the label and apply custom formatting by, for example, adding a custom CSS class.
 
-					## Use `isFilled.image()` to check if an image field has a value
+You can register as many labels as needed.
 
-					```ts
-					import { isFilled } from "@prismicio/client";
+## How to add a label to a rich text field
 
-					if (isFilled.image(slice.primary.my_image_field)) {
-						// Do something if `my_image_field` has a value.
-					}
-					```
-				"},{"prismic.LinkField":"
-					Prismic provides a Link component.
-					```
-					
-									<PrismicLink :field="slice.primary.my_link_field" />
-								
-					```
+Unlike other rich text options, labels cannot be configured through [Slice Machine](https://prismic.io/docs/slice-machine.md). Instead, they must be added by editing your content model's JSON file.
 
-					A repeatable link field can be displayed using a loop.
+1. **Open your content model's JSON file**
 
-					```
-					
-									<ul>
-										<li v-for="link in slice.primary.my_link_field">
-											<PrismicLink :field="link" />
-										</li>
-									</ul>
-								
-					```
+   In your Prismic project, open the slice, page type, or custom type JSON file you want to modify. The file location depends on the content type:
 
-					# Tips
+   * **Slices**: Typically in `src/slices/<name>/model.json`.
+   * **Page types**: `customtypes/<name>/index.json`.
+   * **Custom types**: `customtypes/<name>/index.json`.
 
-					## Use display text as labels
+2. **Add a label**
 
-					The link's text label can be managed in Prismic when display text is enabled. Prismic's link components automatically display the text.
-					you MUST verify `model.json` file to check if display text is enabled for the link field with the property `allowText`.
+   Add a `labels` property to the rich text field like the following. The value should be an array of strings, one for each label.
 
-					When `allowText` is enabled, you must never provide children to the component:
-					```
-					
-									// CORRECT: No children
-									<PrismicLink :field="slice.primary.my_link_field" />
+   This example adds a label named **superscript** to a field named `text`.
 
-									// INCORRECT: Adding children
-									<PrismicLink :field="slice.primary.my_link_field">
-										Learn more
-									</PrismicLink>
-								
-					```
+   ```json {14}
+   {
+     "id": "text_with_image",
+     "type": "SharedSlice",
+     "name": "TextWithImage",
+     "description": "TextWithImage",
+     "variations": [
+       {
+         // ...
+         "primary": {
+           "text": {
+             "type": "StructuredText",
+             "config": {
+               "label": "Text",
+               "labels": ["superscript"],
+               "multi": "paragraph,strong,em"
+             }
+           }
+         }
+         // ...
+       }
+     ]
+   }
+   ```
 
-					## Use variants to style links
+3. **Display rich text with custom formatting**
 
-					Link variants can determine how links are styled. This example adds a CSS class based on the selected variant.
+   Use a custom component for `label` blocks and read the block's `node.data.label` property to conditionally style the text.
 
-					```
-					
-									// This example uses Vue's `:class` directive to conditionally apply class names.
-									<PrismicLink
-										:field="slice.primary.button"
-										class="button"
-										:class="{
-											primary: slice.primary.button.variant === 'Primary',
-											secondary: slice.primary.button.variant === 'Secondary',
-										}"
-									/>
-								
-					```
+   This example displays a `<sup>` HTML element when the label is **superscript**.
 
-					## Styling
+   **Next.js example:**
 
-					IMPORTANT: Apply classes directly via the class prop, don't wrap the component in a `<div>`.
+   ```tsx {4-8}
+   <PrismicRichText
+     field={slice.primary.text}
+     components={{
+       label: ({ node, children }) => {
+         if (node.data.label === "superscript") {
+           return <sup>{children}</sup>;
+         }
+       },
+     }}
+   />
+   ```
 
-					## Use `isFilled.link()` to check if a link field has a value
+   **Nuxt example:**
 
-					```ts
-					import { isFilled } from "@prismicio/client";
+   ```vue-html {4}
+   <PrismicRichText
+     :field="slice.primary.my_rich_text_field"
+     :components="{
+       label: Label,
+     }"
+   />
+   ```
 
-					if (isFilled.link(slice.primary.button)) {
-						// Do something if `button` has a value.
-					}
-					```
-				"}]
-				IMPORTANT:
-					- Look at similar components to see how fields are coded
-					- Use the SAME approach as existing components
-				CRITICAL: ANY content visible to users MUST come from Prismic fields. Never hardcode ANY values directly - everything must be dynamic.
+   ```vue filename=components/Label.vue
+   <script setup lang="ts">
+   defineProps(getRichTextComponentProps("label"));
+   </script>
 
-				## Model analysis [MANDATORY]
-				BEFORE writing ANY code, you MUST:
-					1. Read the /tmp/model.json file completely
-					2. Create a formal table of fields with the following format:
-						| Field         | Type       | Config                    | Implementation Plan      |
-						|---------------|------------|---------------------------|--------------------------|
-						| cta_link      | Link       | allowText: true           | No children needed       |
-						| description   | RichText   | multi: paragraph,em,link  | Handle these block types |
-				CRITICAL: You MUST complete this model analysis BEFORE writing ANY implementation code.
-				The analysis should reflect EXACTLY what is in the `model.json` file, not assumptions.
-				The system will verify you have performed this analysis before accepting any code.
-				NEVER update the `model.json` file, you can ONLY read it.
+   <template>
+     <sup v-if="node.data.label === 'superscript'"><slot /></sup>
+     <span v-else :class="node.data.label"><slot /></span>
+   </template>
+   ```
 
-				## Styling implementation [MANDATORY]
-				Use the `stylingSystemToUse` parameter to identify the styling system to use for the slice.
-				Lo
+   **SvelteKit example:**
+
+   ```svelte {8}
+   <script>
+     import { Label } from "$lib/components/Label";
+   </script>
+
+   <PrismicRichText
+     field={slice.primary.my_rich_text_field}
+     components={{
+       label: Label,
+     }}
+   />
+   ```
+
+   ```svelte filename=src/lib/components/Label.svelte
+   <script lang="ts">
+     import type { RTLabelNode } from "@prismicio/client";
+     import type { Snippet } from "svelte";
+
+     type Props = {
+       node: RTLabelNode;
+       children: Snippet;
+     };
+
+     let { node, children }: Props = $props();
+   </script>
+
+   {#if node.data.label === "superscript"}
+     <sup>{@render children()}</sup>
+   {:else}
+     <span class={node.data.label}>{@render children()}</span>
+   {/if}
+   ```
+
+   [Learn more about using custom UI components](#use-custom-ui-components)
+
+# Display rich text
+
+Prismic provides rich text components for Next.js, Nuxt, and SvelteKit.
+
+**Next.js example:**
+
+```tsx
+<PrismicRichText field={slice.primary.my_rich_text_field} />
+```
+
+**Nuxt example:**
+
+```vue-html
+<PrismicRichText :field="slice.primary.my_rich_text_field" />
+```
+
+**SvelteKit example:**
+
+```svelte
+<PrismicRichText field={slice.primary.my_rich_text_field} />
+```
+
+Prismic also provides components for displaying rich text as plain text.
+
+**Next.js example:**
+
+```tsx
+<PrismicText field={slice.primary.my_rich_text_field} />
+```
+
+See the [`<PrismicRichText>` documentation](https://prismic.io/docs/technical-reference/prismicio-react/v3.md#prismicrichtext) and [`<PrismicText>` documentation](https://prismic.io/docs/technical-reference/prismicio-react/v3.md#prismictext) to learn more.
+
+**Nuxt example:**
+
+```vue-html
+<PrismicText :field="slice.primary.my_rich_text_field" />
+```
+
+See the [`<PrismicRichText>` documentation](https://prismic.io/docs/technical-reference/prismicio-vue/v5.md#prismicrichtext) and [`<PrismicText>` documentation](https://prismic.io/docs/technical-reference/prismicio-vue/v5.md#prismictext) to learn more.
+
+**SvelteKit example:**
+
+```svelte
+<PrismicText field={slice.primary.my_rich_text_field} />
+```
+
+See the [`<PrismicRichText>` documentation](https://prismic.io/docs/technical-reference/prismicio-svelte/v2.md#prismicrichtext) and [`<PrismicText>` documentation](https://prismic.io/docs/technical-reference/prismicio-svelte/v2.md#prismictext) to learn more.
+
+# Tips
+
+* **Style rich text**
+
+  Rich text can be styled using CSS and a wrapper element.
+
+  * **Markup:**
+
+    **Next.js example:**
+
+    ```tsx
+    <div className="rich-text">
+      <PrismicRichText field={slice.primary.my_rich_text_field} />
+    </div>
+    ```
+
+    **Nuxt example:**
+
