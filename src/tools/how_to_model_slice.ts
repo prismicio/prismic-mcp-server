@@ -74,258 +74,251 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
  - Slice directory: ${sliceLibraryAbsolutePath}/${sliceName}
  - Model file: ${sliceLibraryAbsolutePath}/${sliceName}/model.json
  
- ## Model.json Structure [MANDATORY]
+ ## Basic Structure [MANDATORY]
  
- ### Basic Structure
- 
+ ### Slice Model
+
+ \`\`\`typescript
  {
-   "id": "${sliceName
-			.replace(/([a-z0-9])([A-Z])/g, "$1-$2")
-			.replace(/_/g, "-")
-			.toLowerCase()}",
+   "id": string,           // kebab-case slice ID (e.g., "slice-name")
    "type": "SharedSlice",
-   "name": "${sliceName}",
-   "description": "A ${contentRequirements.toLowerCase()}",
-   "variations": [
-     {
-       "id": "default",
-       "name": "Default",
-       "docURL": "...",
-       "version": "initial",
-       "description": "Default variation",
-       "imageUrl": "",
-       "primary": {
-         // Define fields here
-       }
-     }
-   ]
+   "name": string,         // PascalCase slice name (e.g., "SliceName")
+   "description": string,  // Human-readable description
+   "variations": Variation[]
  }
+ \`\`\`
  
- ### IMPORTANT: Do not use "items" (deprecated)
+ ### Slice Variation
+ \`\`\`typescript
+ {
+   "id": string,           // Variation identifier (e.g., "default")
+   "name": string,         // Human-readable variation name (e.g., "Default")
+   "docURL": "...",       
+   "version": "initial",
+   "description": string,  // Variation description (e.g., "Default variation")
+   "imageUrl": "",     // Screenshot URL
+   "primary": Record<string, Field>  // Non-repeatable fields
+ }
+ \`\`\`
+ 
+ Notes:
  - The variation-level "items" object is deprecated and MUST NOT be used.
  
  ## Field Types [MANDATORY]
  
- The following are the valid field types for slice "primary" and their JSON shapes with supported configuration options. Only use these types.
- 
- ### StructuredText
- 
- {
-   "type": "StructuredText",
-   "config": {
-     "label": "Text label",
-     "placeholder": "Optional placeholder",
-     "single": "heading1|heading2|heading3|heading4|heading5|heading6|paragraph|preformatted",
-     "multi": "paragraph,preformatted,hyperlink,embed,rtl,strong,em,list-item,o-list-item",
-     "allowTargetBlank": true
-   }
- }
- 
- Notes:
+ ### Basic Fields
+
+**StructuredText**
+\`\`\`typescript
+{
+  type: "StructuredText";
+  config: {
+    label: string;
+    single?: string; // e.g. "heading1,heading2,heading3,heading4,heading5,heading6,paragraph,preformatted"
+    multi?: string; // e.g. "heading1,heading2,heading3,heading4,heading5,heading6,paragraph,preformatted,hyperlink,embed,rtl,strong,em,list-item,o-list-item"
+    placeholder?: string;
+    allowTargetBlank?: boolean;
+  };
+}
+\`\`\`
+Notes:
  - Use "single" for a single block type OR "multi" for multiple.
  - Do not set both "single" and "multi" at the same time.
  - Titles: prefer a single heading level without inline marks.
  - Descriptions: allow paragraphs with inline marks (strong, em, hyperlink) and line breaks when necessary.
  
- ### Text
+
+ **Text**
+\`\`\`typescript
+{
+  type: "Text";
+  config: {
+    label: string;
+    placeholder?: string;
+  };
+}
+\`\`\`
+Notes:
+- Use for simple text without formatting.
+- Avoid for content that needs rich text capabilities.
  
- {
-   "type": "Text",
-   "config": {
-     "label": "Text label",
-     "placeholder": "Optional placeholder"
-   }
- }
+ **Image**
+\`\`\`typescript
+{
+  type: "Image";
+  config: {
+    label: string;
+    constraint?: {
+      width?: number;
+      height?: number;
+    };
+    thumbnails?: Array<{
+      name: string;
+      width?: number;
+      height?: number;
+    }>;
+  };
+}
+\`\`\`
+Notes:
+- Use constraint for aspect ratio control.
+- thumbnails for predefined image sizes.
+- Avoid using "background" in field names unless specifically meant as full background.
  
- ### Image
+ **Link**
+\`\`\`typescript
+{
+  type: "Link";
+  config: {
+    label: string;
+    allowText?: boolean;
+    repeat?: boolean;
+    variants?: string[];
+    select?: "document" | "media" | "web";
+    customtypes?: string[] | Array<{
+      id: string;
+      fields?: string[] | Array<{
+        id: string;
+        fields?: string[] | Array<{
+          id: string;
+          fields?: string[];
+        }>;
+      }>;
+    }>;
+  };
+}
+\`\`\`
+Notes:
+- Use repeat: true for lists of buttons/links (better than Group for this use case).
+- Use variants for different button styles (e.g., ["Primary", "Secondary"]).
+- Use allowText to enable custom display text.
+- For ContentRelationship, use complex customtypes structure with field whitelisting.
+
+**Boolean**
+\`\`\`typescript
+{
+  type: "Boolean";
+  config: {
+    label: string;
+  };
+}
+\`\`\`
+Notes:
+- Use for true/false toggles.
+
+**Number**
+\`\`\`typescript
+{
+  type: "Number";
+  config: {
+    label: string;
+  };
+}
+\`\`\`
+Notes:
+- Use for integers or floats.
+
+**Select**
+\`\`\`typescript
+{
+  type: "Select";
+  config: {
+    label: string;
+    options: string[];
+  };
+}
+\`\`\`
+Notes:
+- Use for predefined choice lists.
+
+**Date**
+\`\`\`typescript
+{
+  type: "Date";
+  config: {
+    label: string;
+  };
+}
+\`\`\`
+Notes:
+- Use for date selection.
+
+**Timestamp**
+\`\`\`typescript
+{
+  type: "Timestamp";
+  config: {
+    label: string;
+  };
+}
+\`\`\`
+Notes:
+- Use for date and time selection.
+
+**Color**
+\`\`\`typescript
+{
+  type: "Color";
+  config: {
+    label: string;
+  };
+}
+\`\`\`
+Notes:
+- Use for color picker.
+
+**Embed**
+\`\`\`typescript
+{
+  type: "Embed";
+  config: {
+    label: string;
+  };
+}
+\`\`\`
+Notes:
+- Use for external content embeds (videos, social media posts).
+
+**GeoPoint**
+\`\`\`typescript
+{
+  type: "GeoPoint";
+  config: {
+    label: string;
+  };
+}
+\`\`\`
+Notes:
+- Use for geographical coordinates.
+
+**Table**
+\`\`\`typescript
+{
+  type: "Table";
+  config: {
+    label: string;
+  };
+}
+\`\`\`
+Notes:
+- Use for tabular data.
  
- {
-   "type": "Image",
-   "config": {
-     "label": "Image label",
-     "constraint": {
-       "width": 1200,
-       "height": 800
-     },
-     "thumbnails": [
-       { "name": "mobile", "width": 600, "height": 400 }
-     ]
-   }
- }
- 
- Notes:
- - Omit "constraint" and "thumbnails" if not needed.
- - Do not name generic content images "background" unless it is a full background image field.
- 
- ### Link
- 
- {
-   "type": "Link",
-   "config": {
-     "label": "Link label",
-     "placeholder": "Optional placeholder",
-     "select": null, // one of: null | "web" | "media" | "document"
-     "customtypes": ["page", "article"],
-     "masks": ["*"],
-     "tags": ["blog"],
-     "allowTargetBlank": true,
-     "allowText": true,
-     "repeat": true,
-     "variants": ["Primary", "Secondary"]
-   }
- }
- 
- Notes:
- - Use "repeat: true" to model lists of links/buttons (returned as an array).
- - Use "variants" to provide style options for buttons (e.g., Primary/Secondary).
- - If "select" is "document", use "customtypes" to scope allowed documents.
- - Do not model multiple adjacent buttons as separate fields; use one Link field with repeat: true.
- 
- ### ContentRelationship
- 
- {
-   "type": "ContentRelationship",
-   "config": {
-     "label": "Relationship label",
-     "customtypes": [
-       {
-         "id": "page",
-         "fields": [
-           "title",
-           { "id": "author", "fields": ["name"] }
-         ]
-       },
-       {
-         "id": "article",
-         "fields": ["title", "category"]
-       }
-     ],
-     "tags": ["featured"]
-   }
- }
- 
- Notes:
- - Use when you need a typed relationship to other Prismic documents.
- - The customtypes array supports per-type field whitelisting via a nested "fields" array (strings or grouped field objects).
- 
- ### LinkToMedia
- 
- {
-   "type": "LinkToMedia",
-   "config": {
-     "label": "Media link label"
-   }
- }
- 
- ### Boolean
- 
- {
-   "type": "Boolean",
-   "config": {
-     "label": "Boolean label"
-   }
- }
- 
- ### Number
- 
- {
-   "type": "Number",
-   "config": {
-     "label": "Number label",
-     "placeholder": "Optional placeholder",
-     "min": 0,
-     "max": 100,
-     "step": 1
-   }
- }
- 
- Notes:
- - \`min\`, \`max\`, and \`step\` are optional.
- 
- ### Select
- 
- {
-   "type": "Select",
-   "config": {
-     "label": "Select label",
-     "placeholder": "Optional placeholder",
-     "options": ["Option A", "Option B", "Option C"],
-     "default_value": "Option A"
-   }
- }
- 
- ### Date
- 
- {
-   "type": "Date",
-   "config": {
-     "label": "Date label",
-     "placeholder": "Optional placeholder"
-   }
- }
- 
- ### Timestamp
- 
- {
-   "type": "Timestamp",
-   "config": {
-     "label": "Timestamp label",
-     "placeholder": "Optional placeholder"
-   }
- }
- 
- ### Color
- 
- {
-   "type": "Color",
-   "config": {
-     "label": "Color label"
-   }
- }
- 
- ### Embed
- 
- {
-   "type": "Embed",
-   "config": {
-     "label": "Embed label",
-     "placeholder": "Paste URL or embed code"
-   }
- }
- 
- ### GeoPoint
- 
- {
-   "type": "GeoPoint",
-   "config": {
-     "label": "Location label"
-   }
- }
- 
- ### Table
- 
- {
-   "type": "Table",
-   "config": {
-     "label": "Table label"
-   }
- }
- 
- ### Group (repeatable set of fields)
- 
- {
-   "type": "Group",
-   "config": {
-     "label": "Group label",
-     "fields": {
-       "field_key": { /* any valid field shape from this section */ }
-     }
-   }
- }
- 
- Notes:
- - Use Group when you need a set of multiple fields to repeat together.
- - Do not use Group to model lists of links/buttons—prefer a single repeatable Link field.
+ ### Composite Fields
+
+**Group**
+\`\`\`typescript
+{
+  type: "Group";
+  config: {
+    label: string;
+    fields: Record<string, NestableField>;
+  };
+}
+\`\`\`
+Notes:
+- Use for repeating groups of fields.
+- Use for lists of items that can be navigated (sliders, carousels).
+- Never use for left/right or numbered pairs - use Group instead.
  
  ## Implementation Steps [MANDATORY]
  
@@ -344,61 +337,7 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
   - Detect: headings, body text blocks, CTAs, icons/images, repeated cards/tiles`
 				: `- Focus: Use the image as the initial layout and reference for the fields involved; then refine based on the text clarification`
  }
-  
- ## Example Patterns (do NOT auto-apply) [MANDATORY]
- 
- ### Hero
- 
- {
-   "primary": {
-     "title": {
-       "type": "StructuredText",
-       "config": { "label": "Title", "single": "heading1" }
-     },
-     "description": {
-       "type": "StructuredText",
-       "config": { "label": "Description", "single": "paragraph" }
-     },
-     "cta": {
-       "type": "Link",
-       "config": {
-         "label": "CTA Button",
-         "allowText": true,
-         "allowTargetBlank": true,
-         "repeat": false,
-         "variants": ["Primary", "Secondary"]
-       }
-     },
-     "cta_list": {
-       "type": "Link",
-       "config": {
-         "label": "CTA Buttons",
-         "allowText": true,
-         "allowTargetBlank": true,
-         "repeat": true,
-         "variants": ["Primary", "Secondary"]
-       }
-     }
-   }
- }
- 
- ### Feature grid (repeatable grouped items)
- 
- {
-   "primary": {
-     "features": {
-       "type": "Group",
-       "config": {
-         "label": "Features",
-         "fields": {
-           "icon": { "type": "Image", "config": { "label": "Icon" } },
-           "title": { "type": "Text", "config": { "label": "Title" } },
-           "description": { "type": "StructuredText", "config": { "label": "Description", "single": "paragraph" } }
-         }
-       }
-     }
-   }
- }
+
  
  ### Template usage policy
  - Do not auto-pick templates. Prioritize the user's prompt/image.
