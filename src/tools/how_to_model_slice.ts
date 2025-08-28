@@ -336,7 +336,6 @@ Notes:
 				: `- Focus: Use the image as the initial layout and reference for the fields involved; then refine based on the text clarification`
  }
 
- 
  ### Template usage policy
  - Do not auto-pick templates. Prioritize the user's prompt/image.
  - Use examples as reference only; customize to the request.
