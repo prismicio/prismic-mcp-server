@@ -50,31 +50,31 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 			const instructions = `
  # How to Model a Prismic Slice
  
- ## Request Analysis [MANDATORY]
+ ## Request Analysis
  - **Slice Name**: ${sliceName}
  - **Request Type**: ${requestType === "text" ? "Text-based description" : requestType === "image" ? "Image reference" : "Image reference with text clarification"}
  - **Operation**: ${isNewSlice ? "Creating new slice" : "Updating existing slice"}
  - **Content Requirements**: ${contentRequirements}
  
- ## Naming Conventions [MANDATORY]
+ ## Naming Conventions
  
  ### Slice ID
  - MUST be kebab-case of the slice name, e.g., "slice-name"
  - Used as the model's "id" field
  
  
- ## Opinionated Modeling Guidance (Prismic best practices) [MANDATORY]
+ ## Opinionated Modeling Guidance (Prismic best practices)
 
 - Prefer simple, predictable models that align with Prismic’s latest DX.
 - When modeling, review other existing slices for inspiration and consistency, but always tailor the model to the specific requirements of this slice.
 - Avoid legacy constructs; follow guidance in the relevant sections below.
  
- ## File Paths [MANDATORY]
+ ## File Paths
  
  - Slice directory: ${sliceLibraryAbsolutePath}/${sliceName}
  - Model file: ${sliceLibraryAbsolutePath}/${sliceName}/model.json
  
- ## Basic Structure [MANDATORY]
+ ## Basic Structure
  
  ### Slice Model
 
@@ -104,7 +104,7 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
  Notes:
  - The variation-level "items" object is deprecated and MUST NOT be used.
  
- ## Field Types [MANDATORY]
+ ## Field Types
  
  ### Basic Fields
 
@@ -320,12 +320,12 @@ Notes:
 - Use for lists of items that can be navigated (sliders, carousels).
 - Never use for left/right or numbered pairs - use Group instead.
  
- ## Implementation Steps [MANDATORY]
+ ## Implementation Steps
  
  1) Create the slice directory (if it doesn't exist)
  2) Create or update the model.json with the structure above inside the slice directory
  
- ## Content Analysis Guidelines [MANDATORY]
+ ## Content Analysis Guidelines
  
  ${
 		requestType === "text"
@@ -343,7 +343,7 @@ Notes:
  - Do not auto-pick templates. Prioritize the user's prompt/image.
  - Use examples as reference only; customize to the request.
  
- ## Final Instructions [MANDATORY]
+ ## Final Instructions
  
  - Focus only on model.json
  - After implementation, call the verify_model tool to ensure correctness
