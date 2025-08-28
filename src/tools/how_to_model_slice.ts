@@ -62,7 +62,6 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
  - MUST be kebab-case of the slice name, e.g., "slice-name"
  - Used as the model's "id" field
  
- 
  ## Opinionated Modeling Guidance (Prismic best practices)
 
 - Prefer simple, predictable models that align with Prismic’s latest DX.
