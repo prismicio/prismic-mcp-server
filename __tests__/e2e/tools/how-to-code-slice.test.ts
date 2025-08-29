@@ -1,26 +1,46 @@
-import { expect, test } from "@playwright/test"
-
+import { expect, test } from "../fixtures/project"
 import { callTool } from "../helpers/mcp-client"
 
+const normalizeResult = ({
+	result,
+	modelAbsolutePath,
+}: {
+	result: string
+	modelAbsolutePath: string
+}) => {
+	return result.replace(modelAbsolutePath, "model.json")
+}
+
 test.describe("how_to_code_slice tool", () => {
-	test("should provide guidance for slice with RichTextField", async () => {
+	test("should provide guidance for slice with RichTextField", async ({
+		projectPaths,
+	}) => {
 		const result = await callTool("how_to_code_slice", {
 			projectFramework: "next",
 			stylingSystemToUse: "tailwind",
-			modelAbsolutePath: "/tmp/model.json",
-			sliceMachineConfigAbsolutePath: "/tmp/slicemachine.config.json",
+			modelAbsolutePath: projectPaths.modelJson,
+			sliceMachineConfigAbsolutePath: projectPaths.slicemachineConfig,
 			fieldsUsed: ["prismic.RichTextField"],
 		})
 
-		await expect(result).toMatchSnapshot("rich-text-field-guidance.txt")
+		const normalizedResult = normalizeResult({
+			result,
+			modelAbsolutePath: projectPaths.modelJson,
+		})
+
+		await expect(normalizedResult).toMatchSnapshot(
+			"rich-text-field-guidance.txt",
+		)
 	})
 
-	test("should provide guidance for slice with multiple fields", async () => {
+	test("should provide guidance for slice with multiple fields", async ({
+		projectPaths,
+	}) => {
 		const result = await callTool("how_to_code_slice", {
 			projectFramework: "nuxt",
 			stylingSystemToUse: "scss",
-			modelAbsolutePath: "/tmp/model.json",
-			sliceMachineConfigAbsolutePath: "/tmp/slicemachine.config.json",
+			modelAbsolutePath: projectPaths.modelJson,
+			sliceMachineConfigAbsolutePath: projectPaths.slicemachineConfig,
 			fieldsUsed: [
 				"prismic.RichTextField",
 				"prismic.ImageField",
@@ -28,15 +48,24 @@ test.describe("how_to_code_slice tool", () => {
 			],
 		})
 
-		await expect(result).toMatchSnapshot("multiple-fields-guidance.txt")
+		const normalizedResult = normalizeResult({
+			result,
+			modelAbsolutePath: projectPaths.modelJson,
+		})
+
+		await expect(normalizedResult).toMatchSnapshot(
+			"multiple-fields-guidance.txt",
+		)
 	})
 
-	test("should provide comprehensive field documentation", async () => {
+	test("should provide comprehensive field documentation", async ({
+		projectPaths,
+	}) => {
 		const result = await callTool("how_to_code_slice", {
 			projectFramework: "next",
 			stylingSystemToUse: "tailwind",
-			modelAbsolutePath: "/tmp/model.json",
-			sliceMachineConfigAbsolutePath: "/tmp/slicemachine.config.json",
+			modelAbsolutePath: projectPaths.modelJson,
+			sliceMachineConfigAbsolutePath: projectPaths.slicemachineConfig,
 			fieldsUsed: [
 				"prismic.TitleField",
 				"prismic.RichTextField",
@@ -59,7 +88,12 @@ test.describe("how_to_code_slice tool", () => {
 			],
 		})
 
-		await expect(result).toMatchSnapshot(
+		const normalizedResult = normalizeResult({
+			result,
+			modelAbsolutePath: projectPaths.modelJson,
+		})
+
+		await expect(normalizedResult).toMatchSnapshot(
 			"comprehensive-field-documentation.txt",
 		)
 	})
