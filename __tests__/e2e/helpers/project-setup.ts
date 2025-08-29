@@ -1,11 +1,7 @@
 import { randomUUID } from "crypto"
 import { copyFileSync, mkdirSync, readdirSync, rmSync } from "fs"
 import { tmpdir } from "os"
-import { dirname, join } from "path"
-import { fileURLToPath } from "url"
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
+import { join } from "path"
 
 export interface ProjectPaths {
 	root: string
@@ -18,16 +14,19 @@ export class ProjectSetup {
 	private tempDir: string | null = null
 
 	async setupProject(): Promise<ProjectPaths> {
-		const fixturePath = join(__dirname, "..", "projects", "multi-page-starter")
+		const templateCache = process.env.TEMPLATE_CACHE_DIR
+		if (!templateCache) {
+			throw new Error("Template cache not found. Global setup may have failed.")
+		}
+
+		// Create individual test copy
 		this.tempDir = join(tmpdir(), `prismic-mcp-test-${randomUUID()}`)
-
 		mkdirSync(this.tempDir, { recursive: true })
-
-		this.copyDirectory(fixturePath, this.tempDir)
+		this.copyDirectory(templateCache, this.tempDir)
 
 		return {
 			root: this.tempDir,
-			modelJson: join(this.tempDir, "src", "slices", "hero", "model.json"),
+			modelJson: join(this.tempDir, "src", "slices", "Hero", "model.json"),
 			slicemachineConfig: join(this.tempDir, "slicemachine.config.json"),
 			prismicioTypes: join(this.tempDir, "prismicio-types.d.ts"),
 		}
@@ -44,6 +43,20 @@ export class ProjectSetup {
 				)
 			} finally {
 				this.tempDir = null
+			}
+		}
+	}
+
+	// Call this in global teardown to cleanup the template cache
+	static async cleanupTemplate(): Promise<void> {
+		const templateCache = process.env.TEMPLATE_CACHE_DIR
+		if (templateCache) {
+			try {
+				console.info("Cleaning up template cache...")
+				rmSync(templateCache, { recursive: true, force: true })
+				delete process.env.TEMPLATE_CACHE_DIR
+			} catch (error) {
+				console.warn("Failed to cleanup template cache:", error)
 			}
 		}
 	}
