@@ -5,7 +5,7 @@ import tseslint from "typescript-eslint"
 
 export default tseslint.config(
 	{
-		ignores: ["dist"],
+		ignores: ["dist", "__tests__/e2e/projects/**"],
 	},
 	eslint.configs.recommended,
 	tseslint.configs.recommended,
@@ -39,6 +39,13 @@ export default tseslint.config(
 			"@typescript-eslint/explicit-module-boundary-types": "error",
 			"@typescript-eslint/consistent-type-imports": "error",
 			"tsdoc/syntax": "warn",
+		},
+	},
+	{
+		name: "E2E test.ts files",
+		files: ["__tests__/e2e/**/*.ts"],
+		rules: {
+			"no-empty-pattern": ["error", { allowObjectPatternsAsParameters: true }],
 		},
 	},
 )
