@@ -60,7 +60,7 @@ SUGGESTION: Check that the JSON syntax is valid - look for missing commas, quote
 				content: [
 					{
 						type: "text",
-						text: `❌ The slice model at ${modelAbsolutePath} has validation errors:
+						text: `❌ The slice model at ${modelAbsolutePath} has validation errors.
 
 Validation Errors:
 ${errors}
