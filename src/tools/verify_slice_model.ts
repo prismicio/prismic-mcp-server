@@ -15,7 +15,7 @@ RETURNS: A message indicating whether the slice model is valid or not, and detai
 	z.object({
 		modelAbsolutePath: z
 			.string()
-			.describe("The absolute path to the `model.json` file of the slice"),
+			.describe("Absolute path to the slice's 'model.json' file"),
 	}).shape,
 	(args) => {
 		const { modelAbsolutePath } = args
