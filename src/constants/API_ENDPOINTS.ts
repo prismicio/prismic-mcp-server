@@ -15,7 +15,7 @@ export const API_ENDPOINTS: APIEndpoints = (() => {
 		case APPLICATION_MODE.MarketingTools:
 		case APPLICATION_MODE.Platform: {
 			return {
-				UserService: `https://user-service.${process.env.SM_ENV}-wroom.com/`,
+				UserService: `https://user-service.${process.env.PRISMIC_ENV}-wroom.com/`,
 			}
 		}
 		case APPLICATION_MODE.Production:
