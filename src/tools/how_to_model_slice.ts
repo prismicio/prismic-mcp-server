@@ -3,6 +3,8 @@ import { z } from "zod"
 import { formatErrorForMcpTool } from "../lib/error"
 import { tool } from "../lib/mcp"
 
+import { telemetryClient } from "../server"
+
 export const how_to_model_slice = tool(
 	"how_to_model_slice",
 	`PURPOSE: Provide detailed, opinionated guidance to create or update Prismic slice model.json files using modern best practices, including naming, file placement, allowed fields, shapes, and configuration.
@@ -11,7 +13,7 @@ USAGE: Use FIRST for any Prismic slice modeling request. Do not use for componen
 
 RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic model shapes, comprehensive field shape reference, opinionated modeling guidance, validation and testing steps.`,
 	z.object({
-		sliceLibraryAbsolutePath: z
+		sliceMachineConfigAbsolutePath: z
 			.string()
 			.describe(
 				"Absolute path to the slice library directory where slices live (from slicemachine.config.json)",
@@ -44,12 +46,33 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 	(args) => {
 		try {
 			const {
-				sliceLibraryAbsolutePath,
+				sliceMachineConfigAbsolutePath,
 				sliceName,
 				isNewSlice,
 				contentRequirements,
 				requestType,
 			} = args
+
+			try {
+				telemetryClient.track({
+					event: "MCP Tool - How to model a slice",
+					sliceMachineConfigAbsolutePath,
+					properties: {
+						sliceName,
+						isNewSlice,
+						contentRequirements,
+						requestType,
+					},
+				})
+			} catch (error) {
+				// noop, we don't wanna block the tool call if the tracking fails
+				if (process.env.DEBUG) {
+					console.error(
+						"Error while tracking 'how_to_model_slice' tool call:",
+						error,
+					)
+				}
+			}
 
 			const instructions = `
 # How to Model a Prismic Slice
@@ -74,8 +97,8 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 
 ## File Paths
 
-- Slice directory: ${sliceLibraryAbsolutePath}/${sliceName}
-- Model file: ${sliceLibraryAbsolutePath}/${sliceName}/model.json
+- Slice directory: ${sliceMachineConfigAbsolutePath}/${sliceName}
+- Model file: ${sliceMachineConfigAbsolutePath}/${sliceName}/model.json
 
 ## Basic Structure
 
