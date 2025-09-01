@@ -33,7 +33,7 @@ RETURNS: A message indicating whether the slice model is valid or not, and detai
 							type: "text",
 							text: `❌ Invalid JSON format in ${modelAbsolutePath}
 
-**Error:** ${jsonError instanceof Error ? jsonError.message : String(jsonError)}
+Error: ${jsonError instanceof Error ? jsonError.message : String(jsonError)}
 
 SUGGESTION: Check that the JSON syntax is valid - look for missing commas, quotes, or brackets.`,
 						},
@@ -62,7 +62,7 @@ SUGGESTION: Check that the JSON syntax is valid - look for missing commas, quote
 						type: "text",
 						text: `❌ The slice model at ${modelAbsolutePath} has validation errors:
 
-**Validation Errors:**
+Validation Errors:
 ${errors}
 
 SUGGESTION: Fix the validation errors above. If you're unsure about slice modeling, you need to learn how to model a slice at Prismic first.`,
