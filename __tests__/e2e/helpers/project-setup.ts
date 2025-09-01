@@ -3,17 +3,10 @@ import { copyFileSync, mkdirSync, readdirSync, rmSync } from "fs"
 import { tmpdir } from "os"
 import { join } from "path"
 
-export interface ProjectPaths {
-	root: string
-	modelJson: string
-	slicemachineConfig: string
-	prismicioTypes: string
-}
-
 export class ProjectSetup {
 	private tempDir: string | null = null
 
-	async setupProject(): Promise<ProjectPaths> {
+	async setupProject(): Promise<string> {
 		const templateCache = process.env.TEMPLATE_CACHE_DIR
 		if (!templateCache) {
 			throw new Error("Template cache not found. Global setup may have failed.")
@@ -24,12 +17,7 @@ export class ProjectSetup {
 		mkdirSync(this.tempDir, { recursive: true })
 		this.copyDirectory(templateCache, this.tempDir)
 
-		return {
-			root: this.tempDir,
-			modelJson: join(this.tempDir, "src", "slices", "Hero", "model.json"),
-			slicemachineConfig: join(this.tempDir, "slicemachine.config.json"),
-			prismicioTypes: join(this.tempDir, "prismicio-types.d.ts"),
-		}
+		return this.tempDir
 	}
 
 	async cleanup(): Promise<void> {

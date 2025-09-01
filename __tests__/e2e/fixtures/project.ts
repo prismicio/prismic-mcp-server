@@ -1,16 +1,16 @@
 import { test as base } from "@playwright/test"
 
-import { type ProjectPaths, ProjectSetup } from "../helpers/project-setup"
+import { ProjectSetup } from "../helpers/project-setup"
 
 type TestFixtures = {
-	projectPaths: ProjectPaths
+	projectRoot: string
 }
 
 export const test = base.extend<TestFixtures>({
-	projectPaths: async ({}, use) => {
+	projectRoot: async ({}, use) => {
 		const projectSetup = new ProjectSetup()
-		const paths = await projectSetup.setupProject()
-		await use(paths)
+		const projectRoot = await projectSetup.setupProject()
+		await use(projectRoot)
 		await projectSetup.cleanup()
 	},
 })
