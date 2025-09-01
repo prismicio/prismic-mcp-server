@@ -65,7 +65,7 @@ RETURNS: A message indicating whether the slice model is valid or not, and detai
 **Validation Errors:**
 ${errors}
 
-**Suggestion:** Fix the validation errors above. If you're unsure about slice modeling, you need to learn how to model a slice at Prismic first.`,
+SUGGESTION: Fix the validation errors above. If you're unsure about slice modeling, you need to learn how to model a slice at Prismic first.`,
 					},
 				],
 			}
