@@ -7,11 +7,11 @@ import { SharedSlice } from "@prismicio/types-internal/lib/customtypes"
 
 export const verify_slice_model = tool(
 	"verify_slice_model",
-	`Verifies that a model.json file for a Prismic slice is valid according to the SharedSlice schema.
-	
-	This tool reads and validates the JSON structure of a slice model file to ensure it conforms
-	to Prismic's slice modeling requirements. If the model is invalid, it provides detailed error
-	messages to help fix the issues.`.trim(),
+	`
+PURPOSE: Verifies that a model.json file for a Prismic slice is valid according to the schema.\n
+USAGE: Use to verify the validity of a slice model before implementing a slice. \n
+RETURNS: A message indicating whether the slice model is valid or not, and detailed error messages if it is not.
+`.trim(),
 	z.object({
 		modelAbsolutePath: z
 			.string()
