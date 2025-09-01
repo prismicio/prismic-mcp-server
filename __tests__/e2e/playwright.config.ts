@@ -42,4 +42,8 @@ export default defineConfig({
 
 	// Maximum time one test can run for.
 	timeout: 120_000,
+
+	// Global setup and teardown
+	globalSetup: "./global-setup.ts",
+	globalTeardown: "./global-teardown.ts",
 })
