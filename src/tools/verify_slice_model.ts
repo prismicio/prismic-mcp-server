@@ -35,7 +35,7 @@ RETURNS: A message indicating whether the slice model is valid or not, and detai
 
 **Error:** ${jsonError instanceof Error ? jsonError.message : String(jsonError)}
 
-**Suggestion:** Check that the JSON syntax is valid - look for missing commas, quotes, or brackets.`,
+SUGGESTION: Check that the JSON syntax is valid - look for missing commas, quotes, or brackets.`,
 						},
 					],
 				}
