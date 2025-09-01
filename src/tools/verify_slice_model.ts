@@ -65,7 +65,7 @@ SUGGESTION: Check that the JSON syntax is valid - look for missing commas, quote
 Validation Errors:
 ${errors}
 
-SUGGESTION: Fix the validation errors above. If you're unsure about slice modeling, you need to learn how to model a slice at Prismic first.`,
+SUGGESTION: Fix the validation errors above. If you're unsure about slice modeling, you need to learn how to model a Prismic slice first.`,
 					},
 				],
 			}
