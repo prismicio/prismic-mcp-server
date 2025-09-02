@@ -34,12 +34,12 @@ RETURNS: TBD
 		try {
 			// Read custom type models
 
-			const libraryDir = joinPath(projectRoot, "customtypes")
-			const childDirs = await readdir(libraryDir, { withFileTypes: true })
+			const ctsLibraryPath = joinPath(projectRoot, "customtypes")
+			const ctPaths = await readdir(ctsLibraryPath, { withFileTypes: true })
 
 			const customTypeModels = await Promise.all(
-				childDirs.map(async (childDir) => {
-					const modelPath = joinPath(libraryDir, childDir.name, "index.json")
+				ctPaths.map(async (ctPath) => {
+					const modelPath = joinPath(ctsLibraryPath, ctPath.name, "index.json")
 					const modelContents = JSON.parse(await readFile(modelPath, "utf8"))
 
 					const parsedModel = CustomType.decode(modelContents)
@@ -55,29 +55,27 @@ RETURNS: TBD
 
 			// Read shared slice models
 
-			const configFilePath = joinPath(projectRoot, "slicemachine.config.json")
-			const config = await readFile(configFilePath, "utf8")
-
-			const libraryPaths = SliceMachineConfig.parse(
-				JSON.parse(config),
+			const smConfigPath = joinPath(projectRoot, "slicemachine.config.json")
+			const sliceLibraryPaths = SliceMachineConfig.parse(
+				JSON.parse(await readFile(smConfigPath, "utf8")),
 			).libraries
 
 			const sharedSliceModels: SharedSlice[] = []
 
 			await Promise.all(
-				libraryPaths.map(async (libraryPath) => {
-					const libraryDir = joinPath(projectRoot, libraryPath)
-					const childDirs = await readdir(libraryDir, { withFileTypes: true })
+				sliceLibraryPaths.map(async (relativeLibraryPath) => {
+					const libraryPath = joinPath(projectRoot, relativeLibraryPath)
+					const slicePaths = await readdir(libraryPath, { withFileTypes: true })
 
 					await Promise.all(
-						childDirs.map(async (childDir) => {
-							if (!childDir.isDirectory()) {
+						slicePaths.map(async (slicePath) => {
+							if (!slicePath.isDirectory()) {
 								return
 							}
 
 							const modelPath = joinPath(
-								libraryDir,
-								childDir.name,
+								libraryPath,
+								slicePath.name,
 								"model.json",
 							)
 							const modelContents = JSON.parse(
