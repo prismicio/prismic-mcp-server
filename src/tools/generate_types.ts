@@ -1,4 +1,5 @@
 import { join as joinPath } from "path"
+import { detectTypesProvider, generateTypes } from "prismic-ts-codegen"
 import { z } from "zod"
 
 import { formatErrorForMcpTool } from "../lib/error"
@@ -18,24 +19,30 @@ USAGE: Use to generate TypeScript types for a given library of Prismic models. \
 RETURNS: TBD
 `.trim(),
 	z.object({
-		projectRootPath: z.string().describe("Absolute path to the project root"),
+		projectRoot: z.string().describe("Absolute path to the project root"),
 	}).shape,
 	async (args) => {
-		const { projectRootPath } = args
+		const { projectRoot } = args
 
 		try {
-			const customTypeModels = await readAllCustomTypeModels({
-				projectRootPath,
-			})
-			const sliceModels = await readAllSliceModels({
-				projectRootPath,
+			const customTypeModels = await readAllCustomTypeModels({ projectRoot })
+			const sharedSliceModels = await readAllSliceModels({ projectRoot })
+
+			const typeDefinitions = generateTypes({
+				customTypeModels,
+				sharedSliceModels,
+				clientIntegration: {
+					includeCreateClientInterface: true,
+					includeContentNamespace: true,
+				},
+				typesProvider: await detectTypesProvider({ cwd: projectRoot }),
 			})
 
 			return {
 				content: [
 					{
 						type: "text",
-						text: JSON.stringify({ customTypeModels, sliceModels }, null, 2),
+						text: typeDefinitions,
 					},
 				],
 			}
@@ -45,10 +52,10 @@ RETURNS: TBD
 	},
 )
 
-async function readAllCustomTypeModels(args: { projectRootPath: string }) {
-	const { projectRootPath } = args
+async function readAllCustomTypeModels(args: { projectRoot: string }) {
+	const { projectRoot } = args
 
-	const libraryDir = joinPath(projectRootPath, "customtypes")
+	const libraryDir = joinPath(projectRoot, "customtypes")
 	const childDirs = await readdir(libraryDir, { withFileTypes: true })
 
 	return Promise.all(
@@ -68,15 +75,15 @@ async function readAllCustomTypeModels(args: { projectRootPath: string }) {
 	)
 }
 
-async function readAllSliceModels(args: { projectRootPath: string }) {
-	const { projectRootPath } = args
+async function readAllSliceModels(args: { projectRoot: string }) {
+	const { projectRoot } = args
 
 	const slices: SharedSlice[] = []
-	const libraryPaths = await getSliceLibraryPaths(projectRootPath)
+	const libraryPaths = await getSliceLibraryPaths(projectRoot)
 
 	await Promise.all(
 		libraryPaths.map(async (libraryPath) => {
-			const libraryDir = joinPath(projectRootPath, libraryPath)
+			const libraryDir = joinPath(projectRoot, libraryPath)
 			const childDirs = await readdir(libraryDir, { withFileTypes: true })
 
 			await Promise.all(

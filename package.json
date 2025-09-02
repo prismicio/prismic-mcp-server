@@ -66,6 +66,7 @@
 		"@modelcontextprotocol/sdk": "1.17.4",
 		"@prismicio/types-internal": "^3.16.1",
 		"@segment/analytics-node": "2.3.0",
+		"prismic-ts-codegen": "^0.1.27",
 		"cookie": "1.0.2",
 		"zod": "3.25.67"
 	},
