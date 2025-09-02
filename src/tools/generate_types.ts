@@ -1,11 +1,10 @@
+import * as codegen from "prismic-ts-codegen"
 import { stripIndent } from "common-tags"
 import { join as joinPath } from "path"
 import {
 	format as prettierFormat,
 	resolveConfig as resolvePrettierConfig,
 } from "prettier"
-import { detectTypesProvider } from "prismic-ts-codegen/dist/detectTypesProvider"
-import { generateTypes } from "prismic-ts-codegen/dist/generateTypes"
 import { z } from "zod"
 
 import { formatErrorForMcpTool } from "../lib/error"
@@ -101,14 +100,14 @@ RETURNS: A success message indicating the path to the generated types file or an
 
 			// Generate types definitions
 
-			let typeDefinitions = generateTypes({
+			let typeDefinitions = codegen.generateTypes({
 				customTypeModels,
 				sharedSliceModels,
 				clientIntegration: {
 					includeCreateClientInterface: true,
 					includeContentNamespace: true,
 				},
-				typesProvider: await detectTypesProvider({ cwd: projectRoot }),
+				typesProvider: await codegen.detectTypesProvider({ cwd: projectRoot }),
 			})
 			typeDefinitions = `${NON_EDITABLE_FILE_BANNER}\n\n${typeDefinitions}`
 
