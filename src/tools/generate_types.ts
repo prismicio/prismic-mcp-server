@@ -1,6 +1,9 @@
-import * as prettier from "prettier"
 import { stripIndent } from "common-tags"
 import { join as joinPath } from "path"
+import {
+	format as prettierFormat,
+	resolveConfig as resolvePrettierConfig,
+} from "prettier"
 import { detectTypesProvider, generateTypes } from "prismic-ts-codegen"
 import { z } from "zod"
 
@@ -113,8 +116,8 @@ RETURNS: A success message indicating the path to the generated types file or an
 			const typesFilePath = joinPath(projectRoot, "prismicio-types.d.ts")
 
 			let formattedTypes = stripIndent(typeDefinitions)
-			const prettierOptions = await prettier.resolveConfig(projectRoot)
-			formattedTypes = await prettier.format(formattedTypes, {
+			const prettierOptions = await resolvePrettierConfig(projectRoot)
+			formattedTypes = await prettierFormat(formattedTypes, {
 				...prettierOptions,
 				filepath: typesFilePath,
 			})
