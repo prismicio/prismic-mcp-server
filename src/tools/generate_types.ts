@@ -1,3 +1,5 @@
+import * as prettier from "prettier"
+import { stripIndent } from "common-tags"
 import { join as joinPath } from "path"
 import { detectTypesProvider, generateTypes } from "prismic-ts-codegen"
 import { z } from "zod"
@@ -58,7 +60,15 @@ async function writeTypeDefinitions(
 	projectRoot: string,
 ) {
 	const filePath = joinPath(projectRoot, "prismicio-types.d.ts")
-	await writeFile(filePath, typeDefinitions)
+
+	const stripped = stripIndent(typeDefinitions)
+	const formatted = await prettier.format(stripped, {
+		parser: "typescript",
+		printWidth: 60,
+		includeNewlineAtEnd: false,
+	})
+
+	await writeFile(filePath, formatted)
 
 	return filePath
 }
