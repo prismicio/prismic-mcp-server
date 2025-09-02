@@ -4,7 +4,8 @@ import {
 	format as prettierFormat,
 	resolveConfig as resolvePrettierConfig,
 } from "prettier"
-import { detectTypesProvider, generateTypes } from "prismic-ts-codegen"
+import { detectTypesProvider } from "prismic-ts-codegen/dist/detectTypesProvider"
+import { generateTypes } from "prismic-ts-codegen/dist/generateTypes"
 import { z } from "zod"
 
 import { formatErrorForMcpTool } from "../lib/error"
