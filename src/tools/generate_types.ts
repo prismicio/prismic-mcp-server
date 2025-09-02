@@ -61,10 +61,13 @@ async function writeTypeDefinitions(
 ) {
 	const filePath = joinPath(projectRoot, "prismicio-types.d.ts")
 
-	const stripped = stripIndent(typeDefinitions)
-	let formatted = await prettier.format(stripped, {
-		parser: "typescript",
-		printWidth: 60,
+	let formatted = stripIndent(typeDefinitions)
+
+	const prettierOptions = await prettier.resolveConfig(projectRoot)
+
+	formatted = await prettier.format(formatted, {
+		...prettierOptions,
+		filepath: filePath,
 	})
 
 	formatted = formatted.replace(/[\r\n]+$/, "")
