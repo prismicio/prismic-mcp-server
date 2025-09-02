@@ -108,7 +108,7 @@ RETURNS: TBD
 			})
 			typeDefinitions = `${NON_EDITABLE_FILE_BANNER}\n\n${typeDefinitions}`
 
-			// Format
+			// Format file content
 
 			const typesFilePath = joinPath(projectRoot, "prismicio-types.d.ts")
 
