@@ -34,12 +34,12 @@ RETURNS: A success message indicating the path to the generated types file or an
 		try {
 			// Read custom type models
 
-			const ctsLibraryPath = joinPath(projectRoot, "customtypes")
-			const ctPaths = await readdir(ctsLibraryPath, { withFileTypes: true })
+			const ctLibraryPath = joinPath(projectRoot, "customtypes")
+			const ctPaths = await readdir(ctLibraryPath, { withFileTypes: true })
 
 			const customTypeModels = await Promise.all(
 				ctPaths.map(async (ctPath) => {
-					const modelPath = joinPath(ctsLibraryPath, ctPath.name, "index.json")
+					const modelPath = joinPath(ctLibraryPath, ctPath.name, "index.json")
 					const modelContents = JSON.parse(await readFile(modelPath, "utf8"))
 
 					const parsedModel = CustomType.decode(modelContents)
