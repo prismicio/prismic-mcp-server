@@ -64,6 +64,7 @@
 	},
 	"dependencies": {
 		"@modelcontextprotocol/sdk": "1.17.4",
+		"@prismicio/mocks": "^2.0.0",
 		"@prismicio/types-internal": "^3.16.1",
 		"@segment/analytics-node": "2.3.0",
 		"cookie": "1.0.2",

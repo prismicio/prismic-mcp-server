@@ -29,6 +29,15 @@ type TelemetryTrackArgs =
 				requestType: string
 			}
 	  }
+	| {
+			event: "MCP Tool - How to upsert a slice mock"
+			sliceMachineConfigAbsolutePath: string
+			properties: {
+				operation: "create" | "update"
+				sliceName: string
+				userIntent: string
+			}
+	  }
 
 export class Telemetry {
 	private _segmentClient: Analytics | undefined = undefined
