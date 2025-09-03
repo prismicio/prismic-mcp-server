@@ -5,8 +5,8 @@ import { Telemetry } from "./lib/telemetry"
 import { name, version } from "../package.json"
 
 import { how_to_code_slice } from "./tools/how_to_code_slice"
+import { how_to_upsert_mock_slice } from "./tools/how_to_mock_slice"
 import { how_to_model_slice } from "./tools/how_to_model_slice"
-import { how_to_upsert_mock_slice } from "./tools/how_to_upsert_mock_slice"
 import { verify_slice_model } from "./tools/verify_slice_model"
 
 export const telemetryClient = new Telemetry()
