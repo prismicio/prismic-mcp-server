@@ -12,9 +12,11 @@ import { telemetryClient } from "../server"
 
 export const how_to_upsert_mock_slice = tool(
 	"how_to_upsert_mock_slice",
-	`PURPOSE: Upsert slice mocks (mocks.json) using @prismicio/mocks and return the preliminary JSON for the host LLM to refine texts.
+	`PURPOSE: Generate a model-valid slice mock (mocks.json) and provide guidance for text-only refinements.
 
-RETURNS: A JSON stringified SharedSliceContent[] covering all variations, plus guidance for text-only refinements.`,
+USAGE: Use when creating or updating slice mocks.
+
+RETURNS: A JSON mock covering all variations, plus guidance for text-only refinements.`,
 	z.object({
 		sliceMachineConfigAbsolutePath: z
 			.string()
