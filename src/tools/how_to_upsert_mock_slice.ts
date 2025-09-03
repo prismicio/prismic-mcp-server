@@ -82,9 +82,7 @@ RETURNS: A JSON stringified SharedSliceContent[] covering all variations, plus g
 				}[args.operation],
 				"- Repeatables (Groups, repeatable Links, legacy items if present): this mock includes a single element as reference. Choose a small, natural final count (typically 2–3) when appropriate and as implied by user intent.",
 				`User intent: ${args.userIntent}`,
-			]
-				.filter(Boolean)
-				.join("\n")
+			].join("\n")
 
 			return {
 				content: [
