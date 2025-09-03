@@ -24,8 +24,8 @@ const SliceMachineConfig = z.object({ libraries: z.array(z.string()) })
 export const generate_types = tool(
 	"generate_types",
 	`
-PURPOSE: Generates TypeScript types for a given library of Prismic models.\n
-USAGE: Use to generate TypeScript types for a given library of Prismic models. \n
+PURPOSE: Generate TypeScript types from a library of Prismic models.\n
+USAGE: Use when you need TypeScript types to match your Prismic model definitions.\n
 RETURNS: A success message indicating the path to the generated types file or an error message if the generation fails.
 `.trim(),
 	z.object({
