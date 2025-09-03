@@ -70,7 +70,7 @@
 		"common-tags": "^1.8.2",
 		"cookie": "1.0.2",
 		"prettier": "^3.5.3",
-		"prismic-ts-codegen": "^0.1.27",
+		"prismic-ts-codegen": "^0.1.28-alpha.3",
 		"zod": "3.25.67"
 	},
 	"devDependencies": {
