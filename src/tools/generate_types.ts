@@ -32,25 +32,28 @@ RETURNS: A success message indicating the path to the generated types file or an
 		const { projectRoot } = args
 		const smConfigPath = joinPath(projectRoot, "slicemachine.config.json")
 
-		if (!existsSync(smConfigPath)) {
-			throw new Error(
-				`Could not find 'slicemachine.config.json' in your project root (${projectRoot})`,
-			)
-		}
-
 		try {
-			telemetryClient.track({
-				event: "MCP Tool - Generate types",
-				sliceMachineConfigAbsolutePath: smConfigPath,
-			})
-		} catch (error) {
-			// noop, we don't wanna block the tool call if the tracking fails
-			if (process.env.DEBUG) {
-				console.error("Error while tracking 'generate_types' tool call", error)
+			if (!existsSync(smConfigPath)) {
+				throw new Error(
+					`Could not find 'slicemachine.config.json' in your project root (${projectRoot})`,
+				)
 			}
-		}
 
-		try {
+			try {
+				telemetryClient.track({
+					event: "MCP Tool - Generate types",
+					sliceMachineConfigAbsolutePath: smConfigPath,
+				})
+			} catch (error) {
+				// noop, we don't wanna block the tool call if the tracking fails
+				if (process.env.DEBUG) {
+					console.error(
+						"Error while tracking 'generate_types' tool call",
+						error,
+					)
+				}
+			}
+
 			// Dynamic import to handle Node.js 18 CommonJS/ESM interop issues with prismic-ts-codegen
 			// TODO: Fix this issue in prismic-ts-codegen: https://linear.app/prismic/issue/DT-2886
 			const { detectTypesProvider, generateTypes, NON_EDITABLE_FILE_HEADER } =
