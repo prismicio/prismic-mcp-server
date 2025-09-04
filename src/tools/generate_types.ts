@@ -1,4 +1,5 @@
 import { stripIndent } from "common-tags"
+import { existsSync } from "fs"
 import { join as joinPath } from "path"
 import {
 	format as prettierFormat,
@@ -25,18 +26,22 @@ USAGE: Use when you need TypeScript types to match your Prismic model definition
 RETURNS: A success message indicating the path to the generated types file or an error message if the generation fails.`,
 	z.object({
 		projectRoot: z.string().describe("Absolute path to the project root"),
-		sliceMachineConfigAbsolutePath: z
-			.string()
-			.describe("Absolute path to 'slicemachine.config.json' file"),
 	}).shape,
 
 	async (args) => {
 		const { projectRoot } = args
+		const smConfigPath = joinPath(projectRoot, "slicemachine.config.json")
+
+		if (!existsSync(smConfigPath)) {
+			throw new Error(
+				`Could not find 'slicemachine.config.json' in your project root (${projectRoot})`,
+			)
+		}
 
 		try {
 			telemetryClient.track({
 				event: "MCP Tool - Generate types",
-				sliceMachineConfigAbsolutePath: args.sliceMachineConfigAbsolutePath,
+				sliceMachineConfigAbsolutePath: smConfigPath,
 			})
 		} catch (error) {
 			// noop, we don't wanna block the tool call if the tracking fails
@@ -74,7 +79,6 @@ RETURNS: A success message indicating the path to the generated types file or an
 
 			// Read shared slice models
 
-			const smConfigPath = joinPath(projectRoot, "slicemachine.config.json")
 			const sliceLibraryPaths = SliceMachineConfig.parse(
 				JSON.parse(await readFile(smConfigPath, "utf8")),
 			).libraries
