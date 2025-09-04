@@ -11,7 +11,7 @@ import { SharedSlice } from "@prismicio/types-internal/lib/customtypes"
 import { telemetryClient } from "../server"
 
 export const how_to_mock_slice = tool(
-	"how_to_upsert_mock_slice",
+	"how_to_mock_slice",
 	`PURPOSE: Generate a model-valid slice mock (mocks.json) and provide guidance for text-only refinements.
 
 USAGE: Use when creating or updating slice mocks.
