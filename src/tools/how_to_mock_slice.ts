@@ -46,8 +46,14 @@ RETURNS: A JSON mock covering all variations, plus guidance for text-only refine
 						userIntent: args.userIntent,
 					},
 				})
-			} catch {
-				// telemetry is best-effort
+			} catch (error) {
+				// noop, we don't wanna block the tool call if the tracking fails
+				if (process.env.DEBUG) {
+					console.error(
+						"Error while tracking 'how_to_mock_slice' tool call:",
+						error,
+					)
+				}
 			}
 
 			const modelPath = path.join(args.sliceDirectoryAbsolutePath, "model.json")

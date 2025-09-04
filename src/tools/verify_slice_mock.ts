@@ -37,8 +37,14 @@ RETURNS: A message indicating whether mocks.json is valid or not, with detailed 
 					sliceName: path.basename(sliceDirectoryAbsolutePath),
 				},
 			})
-		} catch {
-			// telemetry is best-effort
+		} catch (error) {
+			// noop, we don't wanna block the tool call if the tracking fails
+			if (process.env.DEBUG) {
+				console.error(
+					"Error while tracking 'verify_slice_mock' tool call:",
+					error,
+				)
+			}
 		}
 
 		try {
