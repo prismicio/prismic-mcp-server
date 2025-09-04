@@ -65,13 +65,13 @@
 	"dependencies": {
 		"@prismicio/client": "7.20.1",
 		"@modelcontextprotocol/sdk": "1.17.4",
-		"@prismicio/mocks": "^2.0.0",
-		"@prismicio/types-internal": "^3.16.1",
+		"@prismicio/mocks": "2.0.0",
+		"@prismicio/types-internal": "3.16.1",
 		"@segment/analytics-node": "2.3.0",
-		"common-tags": "^1.8.2",
+		"common-tags": "1.8.2",
 		"cookie": "1.0.2",
-		"prettier": "^3.5.3",
-		"prismic-ts-codegen": "^0.1.28",
+		"prettier": "3.5.3",
+		"prismic-ts-codegen": "0.1.28",
 		"zod": "3.25.67"
 	},
 	"devDependencies": {
