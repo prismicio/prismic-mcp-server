@@ -83,14 +83,14 @@ RETURNS: A success message indicating the path to the generated types file or an
 							modelContents = JSON.parse(await readFile(modelPath, "utf8"))
 						} catch (error) {
 							throw new Error(
-								`Invalid JSON format for custom type model at ${modelPath}:\n\n${getErrorMessage(error)}`,
+								`Invalid JSON format for custom type model at ${modelPath}: ${getErrorMessage(error)}`,
 							)
 						}
 
 						const parsedModel = CustomType.decode(modelContents)
 						if (parsedModel._tag === "Left") {
 							throw new Error(
-								`Invalid custom type model at ${modelPath}:\n\n${parsedModel.left.join(", ")}`,
+								`Invalid custom type model at ${modelPath}: ${parsedModel.left.join(", ")}`,
 							)
 						}
 
@@ -131,7 +131,7 @@ SUGGESTION: Fix the errors mentioned above before generating the types. If you'r
 							slicePaths = await readdir(libraryPath, { withFileTypes: true })
 						} catch (error) {
 							throw new Error(
-								`Failed to read slice library at ${libraryPath}:\n\n${getErrorMessage(error)}`,
+								`Failed to read slice library at ${libraryPath}: ${getErrorMessage(error)}`,
 							)
 						}
 
@@ -152,14 +152,14 @@ SUGGESTION: Fix the errors mentioned above before generating the types. If you'r
 									modelContents = JSON.parse(await readFile(modelPath, "utf8"))
 								} catch (error) {
 									throw new Error(
-										`Invalid JSON format for slice model at ${modelPath}:\n\n${getErrorMessage(error)}`,
+										`Invalid JSON format for slice model at ${modelPath}: ${getErrorMessage(error)}`,
 									)
 								}
 
 								const parsedModel = SharedSlice.decode(modelContents)
 								if (parsedModel._tag === "Left") {
 									throw new Error(
-										`Invalid slice model at ${modelPath}:\n\n${parsedModel.left.join(", ")}`,
+										`Invalid slice model at ${modelPath}: ${parsedModel.left.join(", ")}`,
 									)
 								}
 
