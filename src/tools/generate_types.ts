@@ -23,7 +23,7 @@ export const generate_types = tool(
 	`
 PURPOSE: Generate TypeScript types from a library of Prismic models.\n
 USAGE: Use when you need TypeScript types to match your Prismic model definitions, typically after creating or modifying a slice model to keep types in sync.\n
-RETURNS: A success message indicating the path to the generated types file or an error message if the generation fails.
+RETURNS: A success message indicating the path to the generated types file or an error message if the generation fails.\n
 `.trim(),
 	z.object({
 		projectRoot: z.string().describe("Absolute path to the project root"),
