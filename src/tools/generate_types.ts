@@ -8,7 +8,7 @@ import {
 } from "prettier"
 import { z } from "zod"
 
-import { formatErrorForMcpTool } from "../lib/error"
+import { formatDecodeError, formatErrorForMcpTool } from "../lib/error"
 import { tool } from "../lib/mcp"
 import {
 	CustomType,
@@ -89,8 +89,9 @@ RETURNS: A success message indicating the path to the generated types file or an
 
 						const parsedModel = CustomType.decode(modelContents)
 						if (parsedModel._tag === "Left") {
+							const errors = parsedModel.left.map(formatDecodeError).join("\n")
 							throw new Error(
-								`Invalid custom type model at ${modelPath}: ${parsedModel.left.join(", ")}`,
+								`Invalid custom type model at ${modelPath}:\n${errors}`,
 							)
 						}
 
@@ -159,7 +160,7 @@ SUGGESTION: Fix the errors mentioned above before generating the types. If you'r
 								const parsedModel = SharedSlice.decode(modelContents)
 								if (parsedModel._tag === "Left") {
 									throw new Error(
-										`Invalid slice model at ${modelPath}: ${parsedModel.left.join(", ")}`,
+										`Invalid slice model at ${modelPath}. Please use the 'verify_slice_model' tool to validate the model before generating the types.`,
 									)
 								}
 
