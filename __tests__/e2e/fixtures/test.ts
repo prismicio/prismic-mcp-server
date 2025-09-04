@@ -1,9 +1,11 @@
 import { test as base } from "@playwright/test"
 
+import { AIAgent } from "../helpers/ai-agent"
 import { ProjectSetup } from "../helpers/project-setup"
 
 type TestFixtures = {
 	projectRoot: string
+	aiAgent: AIAgent
 }
 
 export const test = base.extend<TestFixtures>({
@@ -12,6 +14,10 @@ export const test = base.extend<TestFixtures>({
 		const projectRoot = await projectSetup.setupProject()
 		await use(projectRoot)
 		await projectSetup.cleanup()
+	},
+	aiAgent: async ({ projectRoot }, use) => {
+		const aiAgent = new AIAgent(projectRoot)
+		await use(aiAgent)
 	},
 })
 
