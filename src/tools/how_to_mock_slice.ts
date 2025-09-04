@@ -38,7 +38,7 @@ RETURNS: A JSON mock covering all variations, plus guidance for text-only refine
 			const sliceName = path.basename(args.sliceDirectoryAbsolutePath)
 			try {
 				telemetryClient.track({
-					event: "MCP Tool - How to upsert a slice mock",
+					event: "MCP Tool - How to mock a slice",
 					sliceMachineConfigAbsolutePath: args.sliceMachineConfigAbsolutePath,
 					properties: {
 						operation: args.operation,

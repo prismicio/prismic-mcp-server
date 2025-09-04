@@ -1,9 +1,12 @@
 import { readFileSync } from "fs"
+import { basename, dirname } from "path"
 import { z } from "zod"
 
 import { formatErrorForMcpTool } from "../lib/error"
 import { tool } from "../lib/mcp"
 import { SharedSlice } from "@prismicio/types-internal/lib/customtypes"
+
+import { telemetryClient } from "../server"
 
 export const verify_slice_model = tool(
 	"verify_slice_model",
@@ -16,11 +19,36 @@ RETURNS: A message indicating whether the slice model is valid or not, and detai
 		modelAbsolutePath: z
 			.string()
 			.describe("Absolute path to the slice's 'model.json' file"),
+		sliceMachineConfigAbsolutePath: z
+			.string()
+			.describe("Absolute path to 'slicemachine.config.json' file"),
 	}).shape,
 	(args) => {
 		const { modelAbsolutePath } = args
 
 		try {
+			if (!modelAbsolutePath.endsWith("model.json")) {
+				throw new Error(
+					"The modelAbsolutePath must be the path to the slice's 'model.json' file",
+				)
+			}
+
+			try {
+				telemetryClient.track({
+					event: "MCP Tool - Verify slice model",
+					sliceMachineConfigAbsolutePath: args.sliceMachineConfigAbsolutePath,
+					properties: { sliceName: basename(dirname(modelAbsolutePath)) },
+				})
+			} catch (error) {
+				// noop, we don't wanna block the tool call if the tracking fails
+				if (process.env.DEBUG) {
+					console.error(
+						"Error while tracking 'verify_slice_model' tool call",
+						error,
+					)
+				}
+			}
+
 			const fileContent = readFileSync(modelAbsolutePath, "utf-8")
 
 			let parsedModel
