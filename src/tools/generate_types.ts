@@ -105,7 +105,7 @@ RETURNS: A success message indicating the path to the generated types file or an
 					content: [
 						{
 							type: "text",
-							text: `❌ Failed to read custom type models.
+							text: `Failed to read custom type models.
 
 Encountered errors:
 ${getErrorMessage(error)}
@@ -176,7 +176,7 @@ SUGGESTION: Fix the errors mentioned above before generating the types. If you'r
 					content: [
 						{
 							type: "text",
-							text: `❌ Failed to read slice models.
+							text: `Failed to read slice models.
 
 Encountered errors:
 ${getErrorMessage(error)}
@@ -220,7 +220,7 @@ SUGGESTION: Fix the errors mentioned above before generating the types. If you'r
 				content: [
 					{
 						type: "text",
-						text: `✅ Type definitions generated successfully at ${typesFilePath}`,
+						text: `Type definitions generated successfully at ${typesFilePath}`,
 					},
 				],
 			}

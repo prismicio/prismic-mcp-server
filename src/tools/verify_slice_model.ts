@@ -57,7 +57,7 @@ RETURNS: A message indicating whether the slice model is valid or not, and detai
 					content: [
 						{
 							type: "text",
-							text: `❌ Invalid JSON format in ${modelAbsolutePath}
+							text: `Invalid JSON format in ${modelAbsolutePath}
 
 Error: ${jsonError instanceof Error ? jsonError.message : String(jsonError)}
 
@@ -74,7 +74,7 @@ SUGGESTION: Check that the JSON syntax is valid - look for missing commas, quote
 					content: [
 						{
 							type: "text",
-							text: `✅ The slice model at ${modelAbsolutePath} is valid!`,
+							text: `The slice model at ${modelAbsolutePath} is valid!`,
 						},
 					],
 				}
@@ -86,7 +86,7 @@ SUGGESTION: Check that the JSON syntax is valid - look for missing commas, quote
 				content: [
 					{
 						type: "text",
-						text: `❌ The slice model at ${modelAbsolutePath} has validation errors.
+						text: `The slice model at ${modelAbsolutePath} has validation errors.
 
 Validation Errors:
 ${errors}
