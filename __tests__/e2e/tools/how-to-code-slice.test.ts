@@ -1,7 +1,37 @@
-import { expect, test } from "../fixtures/project"
+import { existsSync } from "fs"
+import { join } from "path"
+
+import { expect, test } from "../fixtures/test"
+import { checkToolUsage, isLLMConfigured } from "../helpers/ai-agent"
 import { callTool } from "../helpers/mcp-client"
 
 test.describe("how_to_code_slice tool", () => {
+	test("should be used by an AI Agent to create a simple slice", async ({
+		aiAgent,
+		projectRoot,
+	}) => {
+		test.skip(!isLLMConfigured(), "Skip this test if the LLM is not configured")
+		test.setTimeout(300_000) // 5 minutes
+
+		const userPrompt = `Can you help me make a simple "ImageWithText" slice?`
+		const messages = await aiAgent.query(userPrompt)
+
+		expect(messages.length).toBeGreaterThan(0)
+
+		const wasToolUsed = checkToolUsage({
+			messages,
+			toolName: "mcp__prismic__how_to_code_slice",
+		})
+		expect(wasToolUsed).toBe(true)
+
+		const sliceIndexPath = join(
+			projectRoot,
+			"/src/slices/ImageWithText/index.tsx",
+		)
+		const hasSliceIndex = existsSync(sliceIndexPath)
+		expect(hasSliceIndex).toBe(true)
+	})
+
 	test("should provide guidance for slice with RichTextField", async ({}) => {
 		const result = await callTool("how_to_code_slice", {
 			projectFramework: "next",
