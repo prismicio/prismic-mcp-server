@@ -4,7 +4,6 @@ import {
 	format as prettierFormat,
 	resolveConfig as resolvePrettierConfig,
 } from "prettier"
-import { detectTypesProvider, generateTypes } from "prismic-ts-codegen"
 import { z } from "zod"
 
 import { formatErrorForMcpTool } from "../lib/error"
@@ -35,6 +34,12 @@ RETURNS: A success message indicating the path to the generated types file or an
 		const { projectRoot } = args
 
 		try {
+			// Dynamic import to handle Node.js 18 CommonJS/ESM interop issues with prismic-ts-codegen
+			// TODO: Fix this issue in prismic-ts-codegen or @prismicio/client
+			const { detectTypesProvider, generateTypes } = await import(
+				"prismic-ts-codegen"
+			)
+
 			// Read custom type models
 
 			const ctLibraryPath = joinPath(projectRoot, "customtypes")
