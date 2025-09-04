@@ -7,8 +7,10 @@ import { telemetryClient } from "../server"
 
 export const how_to_code_slice = tool(
 	"how_to_code_slice",
-	`PURPOSE: Provides slice and field implementation guidance for Prismic slice components. \n
-USAGE: Use FIRST when working with any Prismic slice component or field implementation. \n
+	`PURPOSE: Provides slice and field implementation guidance for Prismic slice components.
+
+USAGE: Use FIRST when working with any Prismic slice component or field implementation.
+
 RETURNS: Prismic Framework-specific field documentation and code examples.`,
 	z.object({
 		projectFramework: z

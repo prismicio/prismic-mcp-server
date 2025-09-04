@@ -11,13 +11,11 @@ import { telemetryClient } from "../server"
 
 export const verify_slice_mock = tool(
 	"verify_slice_mock",
-	`
-PURPOSE: Verifies that a slice's mocks.json file is structurally valid.
+	`PURPOSE: Verifies that a slice's mocks.json file is structurally valid.
 
 USAGE: Use immediately after generating or editing a slice mock to ensure it is valid slice content.
 
-RETURNS: A message indicating whether mocks.json is valid or not, with detailed errors if invalid.
-`.trim(),
+RETURNS: A message indicating whether mocks.json is valid or not, with detailed errors if invalid.`,
 	z.object({
 		sliceMachineConfigAbsolutePath: z
 			.string()
