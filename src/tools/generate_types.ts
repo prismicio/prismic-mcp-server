@@ -27,7 +27,7 @@ RETURNS: A success message indicating the path to the generated types file or an
 	z.object({
 		projectRoot: z
 			.string()
-			.describe("Absolute path to the project root to generate types for"),
+			.describe("Absolute path to the project to generate types for"),
 	}).shape,
 
 	async (args) => {
