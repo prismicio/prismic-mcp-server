@@ -68,3 +68,24 @@ export function formatErrorForMcpTool(error: unknown): {
 		],
 	}
 }
+
+export function formatDecodeError(error: {
+	message?: string
+	context?: ReadonlyArray<{ key?: string; type?: { name: string } }>
+	value?: unknown
+}): string {
+	if (error.message) {
+		return `- ${error.context?.[0]?.key || "root"}: ${error.message}`
+	}
+
+	const path =
+		error.context
+			?.map((c) => c.key)
+			.filter(Boolean)
+			.join(".") || "root"
+
+	const expectedType =
+		error.context?.[error.context.length - 1]?.type?.name || "unknown"
+
+	return `- ${path}: Expected ${expectedType}, got ${typeof error.value} (${JSON.stringify(error.value)})`
+}
