@@ -179,7 +179,7 @@ SUGGESTION: Fix the errors mentioned above before generating the types. If you'r
 Encountered errors:
 ${getErrorMessage(error)}
 							
-SUGGESTION: Fix the errors mentioned above before generating the types. If you're not sure how to model a slice, you may use the 'how_to_model_slice' tool.`,
+SUGGESTION: Fix the errors mentioned above before generating the types. If you're unsure about custom type modeling, you need to learn how to model a Prismic slice first.`,
 						},
 					],
 				}
