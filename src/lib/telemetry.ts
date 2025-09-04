@@ -41,8 +41,9 @@ type TelemetryTrackArgs =
 	| {
 			event: "MCP Tool - Verify slice model"
 			sliceMachineConfigAbsolutePath: string
-			modelAbsolutePath: string
-			properties?: never
+			properties: {
+				modelAbsolutePath: string
+			}
 	  }
 
 export class Telemetry {

@@ -29,7 +29,9 @@ RETURNS: A message indicating whether the slice model is valid or not, and detai
 			telemetryClient.track({
 				event: "MCP Tool - Verify slice model",
 				sliceMachineConfigAbsolutePath: args.sliceMachineConfigAbsolutePath,
-				modelAbsolutePath: args.modelAbsolutePath,
+				properties: {
+					modelAbsolutePath: args.modelAbsolutePath,
+				},
 			})
 		} catch (error) {
 			// noop, we don't wanna block the tool call if the tracking fails
