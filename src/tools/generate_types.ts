@@ -1,4 +1,5 @@
 import { stripIndent } from "common-tags"
+import type { Dirent } from "fs"
 import { existsSync } from "fs"
 import { join as joinPath } from "path"
 import {
@@ -7,7 +8,7 @@ import {
 } from "prettier"
 import { z } from "zod"
 
-import { formatErrorForMcpTool } from "../lib/error"
+import { formatDecodeError, formatErrorForMcpTool } from "../lib/error"
 import { tool } from "../lib/mcp"
 import {
 	CustomType,
@@ -67,65 +68,122 @@ RETURNS: A success message indicating the path to the generated types file or an
 
 			// Read custom type models
 
-			const ctLibraryPath = joinPath(projectRoot, "customtypes")
-			const ctPaths = await readdir(ctLibraryPath, { withFileTypes: true })
+			const customTypeModels: CustomType[] = []
 
-			const customTypeModels = await Promise.all(
-				ctPaths.map(async (ctPath) => {
-					const modelPath = joinPath(ctLibraryPath, ctPath.name, "index.json")
-					const modelContents = JSON.parse(await readFile(modelPath, "utf8"))
+			try {
+				const ctLibraryPath = joinPath(projectRoot, "customtypes")
+				const ctPaths = await readdir(ctLibraryPath, { withFileTypes: true })
 
-					const parsedModel = CustomType.decode(modelContents)
-					if (parsedModel._tag === "Left") {
-						throw new Error(
-							`Invalid custom type model. ${parsedModel.left.join(", ")}`,
-						)
-					}
+				await Promise.all(
+					ctPaths.map(async (ctPath) => {
+						const modelPath = joinPath(ctLibraryPath, ctPath.name, "index.json")
 
-					return parsedModel.right
-				}),
-			)
+						let modelContents: unknown
+						try {
+							modelContents = JSON.parse(await readFile(modelPath, "utf8"))
+						} catch (error) {
+							throw new Error(
+								`Invalid JSON format for custom type model at ${modelPath}: ${getErrorMessage(error)}`,
+							)
+						}
+
+						const parsedModel = CustomType.decode(modelContents)
+						if (parsedModel._tag === "Left") {
+							const errors = parsedModel.left.map(formatDecodeError).join("\n")
+							throw new Error(
+								`Invalid custom type model at ${modelPath}:\n${errors}`,
+							)
+						}
+
+						customTypeModels.push(parsedModel.right)
+					}),
+				)
+			} catch (error) {
+				return {
+					content: [
+						{
+							type: "text",
+							text: `❌ Failed to read custom type models.
+
+Encountered errors:
+${getErrorMessage(error)}
+							
+SUGGESTION: Fix the errors mentioned above before generating the types. If you're unsure about custom type modeling, you need to learn how to model a Prismic custom type first.`,
+						},
+					],
+				}
+			}
 
 			// Read shared slice models
 
-			const sliceLibraryPaths = SliceMachineConfig.parse(
-				JSON.parse(await readFile(smConfigPath, "utf8")),
-			).libraries
-
 			const sharedSliceModels: SharedSlice[] = []
 
-			await Promise.all(
-				sliceLibraryPaths.map(async (relativeLibraryPath) => {
-					const libraryPath = joinPath(projectRoot, relativeLibraryPath)
-					const slicePaths = await readdir(libraryPath, { withFileTypes: true })
+			try {
+				const sliceLibraryPaths = SliceMachineConfig.parse(
+					JSON.parse(await readFile(smConfigPath, "utf8")),
+				).libraries
 
-					await Promise.all(
-						slicePaths.map(async (slicePath) => {
-							if (!slicePath.isDirectory()) {
-								return
-							}
+				await Promise.all(
+					sliceLibraryPaths.map(async (relativeLibraryPath) => {
+						const libraryPath = joinPath(projectRoot, relativeLibraryPath)
 
-							const modelPath = joinPath(
-								libraryPath,
-								slicePath.name,
-								"model.json",
+						let slicePaths: Dirent[] = []
+						try {
+							slicePaths = await readdir(libraryPath, { withFileTypes: true })
+						} catch (error) {
+							throw new Error(
+								`Failed to read slice library at ${libraryPath}: ${getErrorMessage(error)}`,
 							)
-							const modelContents = JSON.parse(
-								await readFile(modelPath, "utf8"),
-							)
+						}
 
-							const parsedModel = SharedSlice.decode(modelContents)
-							if (parsedModel._tag === "Left") {
-								throw new Error(
-									`Invalid slice model. ${parsedModel.left.join(", ")}`,
+						await Promise.all(
+							slicePaths.map(async (slicePath) => {
+								if (!slicePath.isDirectory()) {
+									return
+								}
+
+								const modelPath = joinPath(
+									libraryPath,
+									slicePath.name,
+									"model.json",
 								)
-							}
 
-							sharedSliceModels.push(parsedModel.right)
-						}),
-					)
-				}),
-			)
+								let modelContents: unknown
+								try {
+									modelContents = JSON.parse(await readFile(modelPath, "utf8"))
+								} catch (error) {
+									throw new Error(
+										`Invalid JSON format for slice model at ${modelPath}: ${getErrorMessage(error)}`,
+									)
+								}
+
+								const parsedModel = SharedSlice.decode(modelContents)
+								if (parsedModel._tag === "Left") {
+									throw new Error(
+										`Invalid slice model at ${modelPath}. Please use the 'verify_slice_model' tool to validate the model before generating the types.`,
+									)
+								}
+
+								sharedSliceModels.push(parsedModel.right)
+							}),
+						)
+					}),
+				)
+			} catch (error) {
+				return {
+					content: [
+						{
+							type: "text",
+							text: `❌ Failed to read slice models.
+
+Encountered errors:
+${getErrorMessage(error)}
+							
+SUGGESTION: Fix the errors mentioned above before generating the types. If you're unsure about custom type modeling, you need to learn how to model a Prismic slice first.`,
+						},
+					],
+				}
+			}
 
 			// Generate types definitions
 
@@ -169,3 +227,7 @@ RETURNS: A success message indicating the path to the generated types file or an
 		}
 	},
 )
+
+function getErrorMessage(error: unknown): string {
+	return error instanceof Error ? error.message : String(error)
+}

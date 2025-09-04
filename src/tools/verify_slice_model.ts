@@ -2,7 +2,7 @@ import { readFileSync } from "fs"
 import { basename, dirname } from "path"
 import { z } from "zod"
 
-import { formatErrorForMcpTool } from "../lib/error"
+import { formatDecodeError, formatErrorForMcpTool } from "../lib/error"
 import { tool } from "../lib/mcp"
 import { SharedSlice } from "@prismicio/types-internal/lib/customtypes"
 
@@ -102,24 +102,3 @@ SUGGESTION: Fix the validation errors above. If you're unsure about slice modeli
 		}
 	},
 )
-
-function formatDecodeError(error: {
-	message?: string
-	context?: ReadonlyArray<{ key?: string; type?: { name: string } }>
-	value?: unknown
-}): string {
-	if (error.message) {
-		return `- ${error.context?.[0]?.key || "root"}: ${error.message}`
-	}
-
-	const path =
-		error.context
-			?.map((c) => c.key)
-			.filter(Boolean)
-			.join(".") || "root"
-
-	const expectedType =
-		error.context?.[error.context.length - 1]?.type?.name || "unknown"
-
-	return `- ${path}: Expected ${expectedType}, got ${typeof error.value} (${JSON.stringify(error.value)})`
-}
