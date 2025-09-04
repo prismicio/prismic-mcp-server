@@ -38,6 +38,12 @@ type TelemetryTrackArgs =
 				userIntent: string
 			}
 	  }
+	| {
+			event: "MCP Tool - Verify slice model"
+			sliceMachineConfigAbsolutePath: string
+			modelAbsolutePath: string
+			properties?: never
+	  }
 
 export class Telemetry {
 	private _segmentClient: Analytics | undefined = undefined
