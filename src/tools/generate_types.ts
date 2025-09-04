@@ -35,7 +35,7 @@ RETURNS: A success message indicating the path to the generated types file or an
 
 		try {
 			// Dynamic import to handle Node.js 18 CommonJS/ESM interop issues with prismic-ts-codegen
-			// TODO: Fix this issue in prismic-ts-codegen or @prismicio/client
+			// TODO: Fix this issue in prismic-ts-codegen: https://linear.app/prismic/issue/DT-2886
 			const { detectTypesProvider, generateTypes } = await import(
 				"prismic-ts-codegen"
 			)
