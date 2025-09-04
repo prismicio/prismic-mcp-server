@@ -32,7 +32,7 @@ export class AIAgent {
 						"mcp__prismic__how_to_code_slice",
 					],
 					permissionMode: "bypassPermissions",
-					model: "haiku",
+					model: "sonnet",
 					mcpServers: {
 						prismic: {
 							command: "node",
@@ -62,6 +62,23 @@ export class AIAgent {
 			throw error
 		}
 	}
+}
+
+export function checkToolUsage({
+	messages,
+	toolName,
+}: {
+	messages: SDKMessage[]
+	toolName: string
+}): boolean {
+	const toolCallMessage = messages.find(
+		(message) =>
+			message.type === "assistant" &&
+			message.message.content[0].type === "tool_use" &&
+			message.message.content[0].name === toolName,
+	)
+
+	return toolCallMessage !== undefined
 }
 
 export function isLLMConfigured(): boolean {

@@ -2,7 +2,7 @@ import { existsSync } from "fs"
 import { join } from "path"
 
 import { expect, test } from "../fixtures/test"
-import { isLLMConfigured } from "../helpers/ai-agent"
+import { checkToolUsage, isLLMConfigured } from "../helpers/ai-agent"
 import { callTool } from "../helpers/mcp-client"
 
 test.describe("how_to_code_slice tool", () => {
@@ -10,9 +10,7 @@ test.describe("how_to_code_slice tool", () => {
 		aiAgent,
 		projectRoot,
 	}) => {
-		if (!isLLMConfigured()) {
-			test.skip()
-		}
+		test.skip(!isLLMConfigured(), "Skip this test if the LLM is not configured")
 		test.setTimeout(300_000) // 5 minutes
 
 		const userPrompt = `Can you help me make a simple "ImageWithText" slice?`
@@ -20,20 +18,18 @@ test.describe("how_to_code_slice tool", () => {
 
 		expect(messages.length).toBeGreaterThan(0)
 
-		const toolCallMessage = messages.find(
-			(message) =>
-				message.type === "assistant" &&
-				message.message.content[0].type === "tool_use" &&
-				message.message.content[0].name === "mcp__prismic__how_to_code_slice",
-		)
-		expect(toolCallMessage).toBeDefined()
+		const wasToolUsed = checkToolUsage({
+			messages,
+			toolName: "mcp__prismic__how_to_code_slice",
+		})
+		expect(wasToolUsed).toBe(true)
 
-		const packageJsonPath = join(
+		const sliceIndexPath = join(
 			projectRoot,
 			"/src/slices/ImageWithText/index.tsx",
 		)
-		const hasPackageJson = existsSync(packageJsonPath)
-		expect(hasPackageJson).toBe(true)
+		const hasSliceIndex = existsSync(sliceIndexPath)
+		expect(hasSliceIndex).toBe(true)
 	})
 
 	test("should provide guidance for slice with RichTextField", async ({}) => {
