@@ -13,6 +13,7 @@ import {
 	SharedSlice,
 } from "@prismicio/types-internal/lib/customtypes"
 
+import { telemetryClient } from "../server"
 import { readFile, readdir, writeFile } from "fs/promises"
 
 const SliceMachineConfig = z.object({ libraries: z.array(z.string()) })
@@ -26,11 +27,30 @@ RETURNS: A success message indicating the path to the generated types file or an
 `.trim(),
 	z.object({
 		projectRoot: z.string().describe("Absolute path to the project root"),
+		sliceMachineConfigAbsolutePath: z
+			.string()
+			.describe("Absolute path to 'slicemachine.config.json' file"),
 	}).shape,
+
 	async (args) => {
 		const { projectRoot } = args
 
 		try {
+			try {
+				telemetryClient.track({
+					event: "MCP Tool - Generate types",
+					sliceMachineConfigAbsolutePath: args.sliceMachineConfigAbsolutePath,
+				})
+			} catch (error) {
+				// noop, we don't wanna block the tool call if the tracking fails
+				if (process.env.DEBUG) {
+					console.error(
+						"Error while tracking 'generate_types' tool call",
+						error,
+					)
+				}
+			}
+
 			// Dynamic import to handle Node.js 18 CommonJS/ESM interop issues with prismic-ts-codegen
 			// TODO: Fix this issue in prismic-ts-codegen: https://linear.app/prismic/issue/DT-2886
 			const { detectTypesProvider, generateTypes, NON_EDITABLE_FILE_HEADER } =
