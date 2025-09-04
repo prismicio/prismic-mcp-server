@@ -76,9 +76,9 @@ RETURNS: A success message indicating the path to the generated types file or an
 
 				await Promise.all(
 					ctPaths.map(async (ctPath) => {
-						let modelContents: unknown
 						const modelPath = joinPath(ctLibraryPath, ctPath.name, "index.json")
 
+						let modelContents: unknown
 						try {
 							modelContents = JSON.parse(await readFile(modelPath, "utf8"))
 						} catch (error) {
@@ -124,15 +124,14 @@ SUGGESTION: Fix the errors mentioned above before generating the types. If you'r
 
 				await Promise.all(
 					sliceLibraryPaths.map(async (relativeLibraryPath) => {
-						let libraryPath: string
-						let slicePaths: Dirent[] = []
+						const libraryPath = joinPath(projectRoot, relativeLibraryPath)
 
+						let slicePaths: Dirent[] = []
 						try {
-							libraryPath = joinPath(projectRoot, relativeLibraryPath)
 							slicePaths = await readdir(libraryPath, { withFileTypes: true })
 						} catch (error) {
 							throw new Error(
-								`Failed to read slice library at ${relativeLibraryPath}:\n\n${getErrorMessage(error)}`,
+								`Failed to read slice library at ${libraryPath}:\n\n${getErrorMessage(error)}`,
 							)
 						}
 
@@ -147,8 +146,8 @@ SUGGESTION: Fix the errors mentioned above before generating the types. If you'r
 									slicePath.name,
 									"model.json",
 								)
-								let modelContents: unknown
 
+								let modelContents: unknown
 								try {
 									modelContents = JSON.parse(await readFile(modelPath, "utf8"))
 								} catch (error) {
