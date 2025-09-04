@@ -25,8 +25,10 @@ const NON_EDITABLE_FILE_HEADER =
 
 export const generate_types = tool(
 	"generate_types",
-	`PURPOSE: Generate TypeScript types from a library of Prismic models.\n
-USAGE: Use when you need TypeScript types to match your Prismic model definitions, typically after creating or modifying a slice model to keep types in sync.\n
+	`PURPOSE: Generate TypeScript types from a library of Prismic models.
+
+USAGE: Use when you need TypeScript types to match your Prismic model definitions, typically after creating or modifying a slice model to keep types in sync.
+
 RETURNS: A success message indicating the path to the generated types file or an error message if the generation fails.`,
 	z.object({
 		projectRoot: z
@@ -103,7 +105,7 @@ RETURNS: A success message indicating the path to the generated types file or an
 					content: [
 						{
 							type: "text",
-							text: `❌ Failed to read custom type models.
+							text: `Failed to read custom type models.
 
 Encountered errors:
 ${getErrorMessage(error)}
@@ -174,7 +176,7 @@ SUGGESTION: Fix the errors mentioned above before generating the types. If you'r
 					content: [
 						{
 							type: "text",
-							text: `❌ Failed to read slice models.
+							text: `Failed to read slice models.
 
 Encountered errors:
 ${getErrorMessage(error)}
@@ -218,7 +220,7 @@ SUGGESTION: Fix the errors mentioned above before generating the types. If you'r
 				content: [
 					{
 						type: "text",
-						text: `✅ Type definitions generated successfully at ${typesFilePath}`,
+						text: `Type definitions generated successfully at ${typesFilePath}`,
 					},
 				],
 			}

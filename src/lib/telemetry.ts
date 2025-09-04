@@ -30,7 +30,14 @@ type TelemetryTrackArgs =
 			}
 	  }
 	| {
-			event: "MCP Tool - How to upsert a slice mock"
+			event: "MCP Tool - Verify slice model"
+			sliceMachineConfigAbsolutePath: string
+			properties: {
+				sliceName: string
+			}
+	  }
+	| {
+			event: "MCP Tool - How to mock a slice"
 			sliceMachineConfigAbsolutePath: string
 			properties: {
 				operation: "create" | "update"
@@ -39,7 +46,7 @@ type TelemetryTrackArgs =
 			}
 	  }
 	| {
-			event: "MCP Tool - Verify slice model"
+			event: "MCP Tool - Verify slice mock"
 			sliceMachineConfigAbsolutePath: string
 			properties: {
 				sliceName: string

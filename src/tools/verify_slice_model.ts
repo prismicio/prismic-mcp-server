@@ -1,5 +1,5 @@
 import { readFileSync } from "fs"
-import { basename, dirname } from "path"
+import { basename, join as joinPath } from "path"
 import { z } from "zod"
 
 import { formatDecodeError, formatErrorForMcpTool } from "../lib/error"
@@ -10,34 +10,28 @@ import { telemetryClient } from "../server"
 
 export const verify_slice_model = tool(
 	"verify_slice_model",
-	`
-PURPOSE: Verifies that a model.json file for a Prismic slice is valid according to the schema.\n
-USAGE: Use to verify the validity of a slice model before implementing a slice. \n
-RETURNS: A message indicating whether the slice model is valid or not, and detailed error messages if it is not.
-`.trim(),
+	`PURPOSE: Verifies that a model.json file for a Prismic slice is valid according to the schema.
+
+USAGE: Use to verify the validity of a slice model before implementing a slice.
+
+RETURNS: A message indicating whether the slice model is valid or not, and detailed error messages if it is not.`,
 	z.object({
-		modelAbsolutePath: z
-			.string()
-			.describe("Absolute path to the slice's 'model.json' file"),
 		sliceMachineConfigAbsolutePath: z
 			.string()
 			.describe("Absolute path to 'slicemachine.config.json' file"),
+		sliceDirectoryAbsolutePath: z
+			.string()
+			.describe("Absolute path to the slice directory (contains 'model.json')"),
 	}).shape,
 	(args) => {
-		const { modelAbsolutePath } = args
+		const { sliceDirectoryAbsolutePath } = args
 
 		try {
-			if (!modelAbsolutePath.endsWith("model.json")) {
-				throw new Error(
-					"The modelAbsolutePath must be the path to the slice's 'model.json' file",
-				)
-			}
-
 			try {
 				telemetryClient.track({
 					event: "MCP Tool - Verify slice model",
 					sliceMachineConfigAbsolutePath: args.sliceMachineConfigAbsolutePath,
-					properties: { sliceName: basename(dirname(modelAbsolutePath)) },
+					properties: { sliceName: basename(sliceDirectoryAbsolutePath) },
 				})
 			} catch (error) {
 				// noop, we don't wanna block the tool call if the tracking fails
@@ -49,6 +43,10 @@ RETURNS: A message indicating whether the slice model is valid or not, and detai
 				}
 			}
 
+			const modelAbsolutePath = joinPath(
+				sliceDirectoryAbsolutePath,
+				"model.json",
+			)
 			const fileContent = readFileSync(modelAbsolutePath, "utf-8")
 
 			let parsedModel
@@ -59,7 +57,7 @@ RETURNS: A message indicating whether the slice model is valid or not, and detai
 					content: [
 						{
 							type: "text",
-							text: `❌ Invalid JSON format in ${modelAbsolutePath}
+							text: `Invalid JSON format in ${modelAbsolutePath}
 
 Error: ${jsonError instanceof Error ? jsonError.message : String(jsonError)}
 
@@ -76,7 +74,7 @@ SUGGESTION: Check that the JSON syntax is valid - look for missing commas, quote
 					content: [
 						{
 							type: "text",
-							text: `✅ The slice model at ${modelAbsolutePath} is valid!`,
+							text: `The slice model at ${modelAbsolutePath} is valid!`,
 						},
 					],
 				}
@@ -88,7 +86,7 @@ SUGGESTION: Check that the JSON syntax is valid - look for missing commas, quote
 				content: [
 					{
 						type: "text",
-						text: `❌ The slice model at ${modelAbsolutePath} has validation errors.
+						text: `The slice model at ${modelAbsolutePath} has validation errors.
 
 Validation Errors:
 ${errors}
