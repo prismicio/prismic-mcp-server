@@ -42,7 +42,7 @@ type TelemetryTrackArgs =
 			event: "MCP Tool - Verify slice model"
 			sliceMachineConfigAbsolutePath: string
 			properties: {
-				modelAbsolutePath: string
+				sliceName: string
 			}
 	  }
 

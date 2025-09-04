@@ -1,4 +1,5 @@
 import { readFileSync } from "fs"
+import { basename, dirname } from "path"
 import { z } from "zod"
 
 import { formatErrorForMcpTool } from "../lib/error"
@@ -26,24 +27,28 @@ RETURNS: A message indicating whether the slice model is valid or not, and detai
 		const { modelAbsolutePath } = args
 
 		try {
-			telemetryClient.track({
-				event: "MCP Tool - Verify slice model",
-				sliceMachineConfigAbsolutePath: args.sliceMachineConfigAbsolutePath,
-				properties: {
-					modelAbsolutePath: args.modelAbsolutePath,
-				},
-			})
-		} catch (error) {
-			// noop, we don't wanna block the tool call if the tracking fails
-			if (process.env.DEBUG) {
-				console.error(
-					"Error while tracking 'verify_slice_model' tool call",
-					error,
+			if (!modelAbsolutePath.endsWith("model.json")) {
+				throw new Error(
+					"The modelAbsolutePath must be the path to the slice's 'model.json' file",
 				)
 			}
-		}
 
-		try {
+			try {
+				telemetryClient.track({
+					event: "MCP Tool - Verify slice model",
+					sliceMachineConfigAbsolutePath: args.sliceMachineConfigAbsolutePath,
+					properties: { sliceName: basename(dirname(modelAbsolutePath)) },
+				})
+			} catch (error) {
+				// noop, we don't wanna block the tool call if the tracking fails
+				if (process.env.DEBUG) {
+					console.error(
+						"Error while tracking 'verify_slice_model' tool call",
+						error,
+					)
+				}
+			}
+
 			const fileContent = readFileSync(modelAbsolutePath, "utf-8")
 
 			let parsedModel
