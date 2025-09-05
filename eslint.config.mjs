@@ -5,7 +5,7 @@ import tseslint from "typescript-eslint"
 
 export default tseslint.config(
 	{
-		ignores: ["dist", "__tests__/e2e/projects/**"],
+		ignores: ["dist", "__tests__/e2e/reference/**"],
 	},
 	eslint.configs.recommended,
 	tseslint.configs.recommended,
