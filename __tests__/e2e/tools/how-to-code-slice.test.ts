@@ -1,4 +1,3 @@
-import { existsSync } from "fs"
 import { join } from "path"
 
 import { expect, test } from "../fixtures/test"
@@ -13,8 +12,16 @@ test.describe("how_to_code_slice tool", () => {
 		test.skip(!isLLMConfigured(), "Skip this test if the LLM is not configured")
 		test.setTimeout(300_000) // 5 minutes
 
-		const userPrompt = `Can you help me make a simple "ImageWithText" slice?`
-		const messages = await aiAgent.query(userPrompt)
+		const userPrompt = `
+Can you help me make a "Testimonials" slice?
+It should have a section heading and a list of testimonials with the following:
+- image
+- name
+- review
+- company
+- rating
+`
+		const messages = await aiAgent.simulateUserQuery(userPrompt)
 
 		expect(messages.length).toBeGreaterThan(0)
 
@@ -24,12 +31,18 @@ test.describe("how_to_code_slice tool", () => {
 		})
 		expect(wasToolUsed).toBe(true)
 
-		const sliceIndexPath = join(
-			projectRoot,
-			"/src/slices/ImageWithText/index.tsx",
+		const sliceDir = join(projectRoot, "/src/slices/Testimonials")
+		const referenceDir = join(
+			new URL(import.meta.url).pathname,
+			"../../reference/slices/Testimonials",
 		)
-		const hasSliceIndex = existsSync(sliceIndexPath)
-		expect(hasSliceIndex).toBe(true)
+		const grade = await aiAgent.gradeCode({
+			generatedDir: sliceDir,
+			referenceDir,
+			threshold: 7,
+		})
+		console.info("Grade:", grade)
+		expect(grade.pass).toBe(true)
 	})
 
 	test("should provide guidance for slice with RichTextField", async ({}) => {

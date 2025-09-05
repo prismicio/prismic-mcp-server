@@ -11,17 +11,34 @@ export class AIAgent {
 		this.projectRoot = projectRoot
 	}
 
-	async query(prompt: string): Promise<SDKMessage[]> {
+	async simulateUserQuery(prompt: string): Promise<SDKMessage[]> {
+		console.info("AI Agent simulating user query...")
+		const messages = await this.query({ prompt })
+		console.info("AI Agent simulated user query completed.")
+
+		return messages
+	}
+
+	async query({
+		prompt,
+		allowedTools,
+		disallowedTools,
+		additionalDirectories,
+	}: {
+		prompt: string
+		allowedTools?: string[]
+		disallowedTools?: string[]
+		additionalDirectories?: string[]
+	}): Promise<SDKMessage[]> {
 		const messages: SDKMessage[] = []
 
-		console.info("AI Agent working...")
 		try {
 			const response = claudeQuery({
 				prompt,
 				options: {
 					cwd: this.projectRoot,
 					abortController: new AbortController(),
-					allowedTools: [
+					allowedTools: allowedTools || [
 						"Bash",
 						"Read",
 						"Write",
@@ -31,6 +48,8 @@ export class AIAgent {
 						"MultiEdit",
 						"mcp__prismic__how_to_code_slice",
 					],
+					disallowedTools: disallowedTools || [],
+					additionalDirectories: additionalDirectories || [],
 					permissionMode: "bypassPermissions",
 					model: "sonnet",
 					mcpServers: {
@@ -62,6 +81,81 @@ export class AIAgent {
 			throw error
 		}
 	}
+
+	async gradeCode({
+		generatedDir,
+		referenceDir,
+		threshold = 7,
+		additionalInfo,
+	}: {
+		generatedDir: string
+		referenceDir: string
+		threshold?: 5 | 6 | 7 | 8 | 9
+		additionalInfo?: string
+	}): Promise<AIGrade> {
+		const prompt = `
+You are a reviewer for code using Prismic with Next.js/React.
+ONLY inspect these two directories:
+- GENERATED: ${generatedDir}
+- REFERENCE: ${referenceDir}
+
+Use Glob to enumerate files, Grep/Read to inspect content. Do NOT run Bash.
+Compare the GENERATED Slice to the REFERENCE implementation for the same slice type.
+
+Don't stress too much about the field naming.
+
+Score on a 10-point scale.
+
+Output STRICT JSON (no backticks, no prose) with this shape:
+{
+  "grade": <number>,
+  "threshold": ${threshold},
+  "pass": <boolean>,
+  "summary": "<two-liner>"
+}
+
+${additionalInfo}
+`
+
+		console.info("AI Agent grading output...")
+		const messages = await this.query({
+			prompt,
+			allowedTools: ["Read", "Glob", "Grep"],
+			disallowedTools: [
+				"Bash",
+				"Edit",
+				"MultiEdit",
+				"Write",
+				"WebFetch",
+				"WebSearch",
+				"Task",
+				"TodoWrite",
+				"NotebookRead",
+				"NotebookEdit",
+				"LS",
+				"mcp__prismic__how_to_code_slice",
+			],
+			additionalDirectories: [referenceDir],
+		})
+		console.info("AI Agent graded output completed.")
+
+		const resultText =
+			messages.find(
+				(message) => message.type === "result" && message.subtype === "success",
+			)?.result || ""
+
+		const match = resultText.match(/\{[\s\S]*\}$/)
+		const json = match ? match[0] : resultText
+
+		return JSON.parse(json)
+	}
+}
+
+type AIGrade = {
+	grade: number
+	threshold: number
+	pass: boolean
+	summary: string
 }
 
 export function checkToolUsage({
