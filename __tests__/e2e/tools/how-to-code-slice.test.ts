@@ -1,4 +1,3 @@
-import { existsSync } from "fs"
 import { join } from "path"
 
 import { expect, test } from "../fixtures/test"
@@ -13,9 +12,16 @@ test.describe("how_to_code_slice tool", () => {
 		test.skip(!isLLMConfigured(), "Skip this test if the LLM is not configured")
 		test.setTimeout(300_000) // 5 minutes
 
-		const userPrompt = `Can you help me make a simple "ImageWithText" slice?`
-		const messages = await aiAgent.query(userPrompt)
-
+		const userPrompt = `
+Can you help me make a "Testimonials" slice?
+It should have a section heading and a list of testimonials with the following:
+- image
+- name
+- review
+- company
+- rating
+`
+		const messages = await aiAgent.simulateUserQuery(userPrompt)
 		expect(messages.length).toBeGreaterThan(0)
 
 		const wasToolUsed = checkToolUsage({
@@ -24,12 +30,23 @@ test.describe("how_to_code_slice tool", () => {
 		})
 		expect(wasToolUsed).toBe(true)
 
-		const sliceIndexPath = join(
-			projectRoot,
-			"/src/slices/ImageWithText/index.tsx",
+		const sliceDir = join(projectRoot, "/src/slices/Testimonials/index.tsx")
+		const referenceDir = join(
+			new URL(import.meta.url).pathname,
+			"../../reference/slices/Testimonials/index.tsx",
 		)
-		const hasSliceIndex = existsSync(sliceIndexPath)
-		expect(hasSliceIndex).toBe(true)
+
+		const grade = await aiAgent.grade({
+			generatedPath: sliceDir,
+			referencePath: referenceDir,
+			instructions: `
+Grade the quality of the generated Testimonials slice.
+You can be flexible about the exact field names, just make sure they make sense.
+`,
+		})
+
+		console.info("Grade:", grade)
+		expect(grade.score).toBeGreaterThan(6)
 	})
 
 	test("should provide guidance for slice with RichTextField", async ({}) => {

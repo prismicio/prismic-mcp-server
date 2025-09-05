@@ -17,5 +17,5 @@
 		"types": ["node"],
 		"typeRoots": ["./node_modules/@types", "./src/types"]
 	},
-	"exclude": ["node_modules", "dist", "examples", "__tests__/e2e/projects"]
+	"exclude": ["node_modules", "dist", "examples", "__tests__/e2e/reference"]
 }

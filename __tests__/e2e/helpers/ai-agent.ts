@@ -11,10 +11,10 @@ export class AIAgent {
 		this.projectRoot = projectRoot
 	}
 
-	async query(prompt: string): Promise<SDKMessage[]> {
+	async simulateUserQuery(prompt: string): Promise<SDKMessage[]> {
 		const messages: SDKMessage[] = []
 
-		console.info("AI Agent working...")
+		console.info("AI Agent simulating user query...")
 		try {
 			const response = claudeQuery({
 				prompt,
@@ -45,16 +45,11 @@ export class AIAgent {
 			})
 
 			for await (const message of response) {
-				if (process.env.DEBUG_MODE === "true") {
-					console.info("Claude message received:", {
-						type: message.type || "unknown",
-						fullMessage: JSON.stringify(message, null, 2),
-					})
-				}
+				debugConsoleLog(message)
 				messages.push(message)
 			}
 
-			console.info("AI Agent completed.")
+			console.info("AI Agent simulated user query completed.")
 
 			return messages
 		} catch (error) {
@@ -62,6 +57,88 @@ export class AIAgent {
 			throw error
 		}
 	}
+
+	async grade({
+		generatedPath,
+		referencePath,
+		instructions,
+	}: {
+		generatedPath: string
+		referencePath: string
+		instructions?: string
+	}): Promise<Grade> {
+		const prompt = `
+You are an expert reviewer assigned to a task.
+ONLY inspect these two paths:
+- GENERATED: ${generatedPath}
+- REFERENCE: ${referencePath}
+
+Compare the GENERATED with the REFERENCE. Score on a 10-point scale.
+
+Instructions: ${instructions}
+
+Output STRICT JSON (no backticks, no prose) with this shape:
+{
+  "score": <number>,
+  "summary": "<two-liner>"
+}
+`
+		const messages: SDKMessage[] = []
+
+		console.info("AI Agent grading output...")
+		try {
+			const response = claudeQuery({
+				prompt,
+				options: {
+					cwd: this.projectRoot,
+					abortController: new AbortController(),
+					allowedTools: ["Read", "Glob", "Grep"],
+					disallowedTools: [
+						"Bash",
+						"Edit",
+						"MultiEdit",
+						"Write",
+						"WebFetch",
+						"WebSearch",
+						"Task",
+						"TodoWrite",
+						"NotebookRead",
+						"NotebookEdit",
+						"LS",
+					],
+					additionalDirectories: [referencePath],
+					permissionMode: "bypassPermissions",
+					model: "sonnet",
+				},
+			})
+
+			for await (const message of response) {
+				debugConsoleLog(message)
+				messages.push(message)
+			}
+
+			console.info("AI Agent graded output completed.")
+
+			const resultText =
+				messages.find(
+					(message) =>
+						message.type === "result" && message.subtype === "success",
+				)?.result || ""
+
+			const match = resultText.match(/\{[\s\S]*\}$/)
+			const json = match ? match[0] : resultText
+
+			return JSON.parse(json)
+		} catch (error) {
+			console.error("Error during Claude Code query:", error)
+			throw error
+		}
+	}
+}
+
+type Grade = {
+	score: number
+	summary: string
 }
 
 export function checkToolUsage({
@@ -83,4 +160,13 @@ export function checkToolUsage({
 
 export function isLLMConfigured(): boolean {
 	return !!process.env.ANTHROPIC_API_KEY
+}
+
+const debugConsoleLog = (message: SDKMessage) => {
+	if (process.env.DEBUG_MODE === "true") {
+		console.info("Claude message received:", {
+			type: message.type || "unknown",
+			fullMessage: JSON.stringify(message, null, 2),
+		})
+	}
 }
