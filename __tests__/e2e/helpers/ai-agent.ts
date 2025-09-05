@@ -69,7 +69,7 @@ export class AIAgent {
 	}): Promise<Grade> {
 		const prompt = `
 You are an expert reviewer assigned to a task.
-ONLY inspect these two directories:
+ONLY inspect these two paths:
 - GENERATED: ${generatedPath}
 - REFERENCE: ${referencePath}
 
