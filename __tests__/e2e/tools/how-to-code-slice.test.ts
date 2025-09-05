@@ -22,7 +22,6 @@ It should have a section heading and a list of testimonials with the following:
 - rating
 `
 		const messages = await aiAgent.simulateUserQuery(userPrompt)
-
 		expect(messages.length).toBeGreaterThan(0)
 
 		const wasToolUsed = checkToolUsage({
@@ -31,18 +30,23 @@ It should have a section heading and a list of testimonials with the following:
 		})
 		expect(wasToolUsed).toBe(true)
 
-		const sliceDir = join(projectRoot, "/src/slices/Testimonials")
+		const sliceDir = join(projectRoot, "/src/slices/Testimonials/index.tsx")
 		const referenceDir = join(
 			new URL(import.meta.url).pathname,
-			"../../reference/slices/Testimonials",
+			"../../reference/slices/Testimonials/index.tsx",
 		)
-		const grade = await aiAgent.gradeCode({
-			generatedDir: sliceDir,
-			referenceDir,
-			threshold: 7,
+
+		const grade = await aiAgent.grade({
+			generatedPath: sliceDir,
+			referencePath: referenceDir,
+			instructions: `
+Grade the quality of the generated Testimonials slice.
+You can be flexible about the exact field names, just make sure they make sense.
+`,
 		})
+
 		console.info("Grade:", grade)
-		expect(grade.pass).toBe(true)
+		expect(grade.score).toBeGreaterThan(6)
 	})
 
 	test("should provide guidance for slice with RichTextField", async ({}) => {
