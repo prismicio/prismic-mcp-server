@@ -94,17 +94,12 @@ export class AIAgent {
 		additionalInfo?: string
 	}): Promise<AIGrade> {
 		const prompt = `
-You are a reviewer for code using Prismic with Next.js/React.
+You are an expert reviewer for code using Prismic with Next.js/React.
 ONLY inspect these two directories:
 - GENERATED: ${generatedDir}
 - REFERENCE: ${referenceDir}
 
-Use Glob to enumerate files, Grep/Read to inspect content. Do NOT run Bash.
-Compare the GENERATED Slice to the REFERENCE implementation for the same slice type.
-
-Don't stress too much about the field naming.
-
-Score on a 10-point scale.
+Compare the GENERATED code to the REFERENCE code. Score on a 10-point scale.
 
 Output STRICT JSON (no backticks, no prose) with this shape:
 {
@@ -133,7 +128,6 @@ ${additionalInfo}
 				"NotebookRead",
 				"NotebookEdit",
 				"LS",
-				"mcp__prismic__how_to_code_slice",
 			],
 			additionalDirectories: [referenceDir],
 		})
