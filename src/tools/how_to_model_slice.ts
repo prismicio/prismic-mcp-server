@@ -74,6 +74,8 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 				}
 			}
 
+			const sliceId = toSnakeCase(sliceName)
+
 			const instructions = `
 # How to Model a Prismic Slice
 
@@ -86,8 +88,18 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 ## Naming Conventions
 
 ### Slice ID
-- MUST be kebab-case of the slice name, e.g., "slice-name"
+- MUST be snake_case of the slice name, e.g., "slice_name"
 - Used as the model's "id" field
+- For this slice: "${sliceName}" → "${sliceId}"
+
+### Variation ID
+- MUST be camelCase, alphanumeric only (no spaces, hyphens, or underscores)
+- Examples: "default", "imageRight", "alignLeft"
+
+### Variation Name
+- Human‑readable label shown in Slice Machine and the Prismic editor
+- Required; recommended Title Case and concise (≤ 30 characters)
+- Examples: "Default", "Image Right", "Align Left"
 
 ## Opinionated Modeling Guidance (Prismic best practices)
 
@@ -106,9 +118,9 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 
 \`\`\`typescript
 {
-  "id": string,           // kebab-case slice ID (e.g., "slice-name")
+  "id": string,           // snake_case slice ID (e.g., "${sliceId}")
   "type": "SharedSlice",
-  "name": string,         // PascalCase slice name (e.g., "SliceName")
+  "name": string,         // PascalCase slice name (e.g., "${sliceName}")
   "description": string,  // Human-readable description
   "variations": Variation[]
 }
@@ -117,7 +129,7 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 ### Slice Variation
 \`\`\`typescript
 {
-  "id": string,           // Variation identifier (e.g., "default")
+  "id": string,           // camelCase variation ID (e.g., "default", "imageRight")
   "name": string,         // Human-readable variation name (e.g., "Default")
   "docURL": "...",       
   "version": "initial",
@@ -390,3 +402,10 @@ ${
 		}
 	},
 )
+
+function toSnakeCase(value: string): string {
+	return value
+		.replace(/([a-z0-9])([A-Z])/g, "$1_$2")
+		.replace(/[\s-]+/g, "_")
+		.toLowerCase()
+}
