@@ -80,6 +80,35 @@ SUGGESTION: Check that the JSON syntax is valid - look for missing commas, quote
 			if (validationResult._tag === "Right") {
 				const slice = validationResult.right
 
+				// Validate folder name matches slice name and that slice name is PascalCase
+				const expectedSliceName = basename(sliceDirectoryAbsolutePath)
+				if (slice.name !== expectedSliceName) {
+					return {
+						content: [
+							{
+								type: "text",
+								text: `The slice model at ${modelAbsolutePath} is not valid. The slice name "${slice.name}" does not match the folder name "${expectedSliceName}".
+
+Expected: The folder name and the model's "name" must be the same PascalCase string (e.g., "TestimonialCard").`,
+							},
+						],
+					}
+				}
+
+				if (!isValidSliceName(slice.name)) {
+					return {
+						content: [
+							{
+								type: "text",
+								text: `The slice model at ${modelAbsolutePath} is not valid. The slice name "${slice.name}" is not in the correct format.
+
+Expected format: PascalCase (start with an uppercase letter, letters and numbers only, no spaces or special characters)
+Examples: "ImageGallery", "TestimonialCard".`,
+							},
+						],
+					}
+				}
+
 				// Validate slice ID format
 				if (!isValidSliceId(slice.id)) {
 					return {
@@ -173,4 +202,9 @@ function isValidVariationId(variationId: string): boolean {
 	// Must be camelCase, alphanumeric only (no spaces, hyphens, or underscores)
 	// Must start with a letter
 	return /^[a-z][a-zA-Z0-9]*$/.test(variationId)
+}
+
+function isValidSliceName(sliceName: string): boolean {
+	// Must be PascalCase: start with uppercase letter, letters and numbers only
+	return /^[A-Z][a-zA-Z0-9]*$/.test(sliceName)
 }
