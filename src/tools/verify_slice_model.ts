@@ -78,8 +78,43 @@ SUGGESTION: Check that the JSON syntax is valid - look for missing commas, quote
 			const validationResult = SharedSlice.decode(parsedModel)
 
 			if (validationResult._tag === "Right") {
+				const slice = validationResult.right
+
+				// Validate slice ID format
+				if (!isValidSliceId(slice.id)) {
+					return {
+						content: [
+							{
+								type: "text",
+								text: `The slice model at ${modelAbsolutePath} is not valid. The slice ID "${slice.id}" is not in the correct format.
+
+Expected format: snake_case (lowercase letters, numbers, and underscores only, starting with a letter or number)
+Examples: "hero_section", "testimonial_card", "image_gallery".`,
+							},
+						],
+					}
+				}
+
+				// Validate variation ID formats
+				const invalidVariationIds = slice.variations
+					.map((variation) => variation.id)
+					.filter((variationId) => !isValidVariationId(variationId))
+				if (invalidVariationIds.length > 0) {
+					return {
+						content: [
+							{
+								type: "text",
+								text: `The slice model at ${modelAbsolutePath} is not valid. The following variation IDs are not in the correct format: ${invalidVariationIds.join(", ")}
+
+Expected format: camelCase (alphanumeric only, starting with a letter, no spaces, hyphens, or underscores)
+Examples: "default", "imageRight", "alignLeft", "withBackground".`,
+							},
+						],
+					}
+				}
+
 				// If the slice is new, and has "items", return an error. Otherwise, return a success message with a suggestion to use a group instead.
-				const hasItems = validationResult.right.variations.some(
+				const hasItems = slice.variations.some(
 					(variation) => variation.items?.length ?? 0 > 0,
 				)
 				if (isNewSlice && hasItems) {
@@ -127,3 +162,15 @@ SUGGESTION: Fix the validation errors above. If you're unsure about slice modeli
 		}
 	},
 )
+
+function isValidSliceId(sliceId: string): boolean {
+	// Must be snake_case: lowercase letters, numbers, and underscores only
+	// Must start with a letter or number, not underscore
+	return /^[a-z0-9][a-z0-9_]*$/.test(sliceId)
+}
+
+function isValidVariationId(variationId: string): boolean {
+	// Must be camelCase, alphanumeric only (no spaces, hyphens, or underscores)
+	// Must start with a letter
+	return /^[a-z][a-zA-Z0-9]*$/.test(variationId)
+}
