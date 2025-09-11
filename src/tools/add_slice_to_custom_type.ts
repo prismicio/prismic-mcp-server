@@ -16,7 +16,7 @@ export const add_slice_to_custom_type = tool(
 	"add_slice_to_custom_type",
 	`PURPOSE: Adds a slice to a page or custom type.
 
-USAGE: Use to add a given slice to a certain custom type.
+USAGE: Use to add a given slice to a specified custom type.
 
 RETURNS: A message indicating whether the slice was added to the type or not, and detailed error messages if it is not.`,
 	z.object({
