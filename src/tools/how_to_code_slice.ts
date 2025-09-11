@@ -101,6 +101,7 @@ RETURNS: Prismic Framework-specific field documentation and code examples.`,
    - Framework: ${args.projectFramework}
    - Styling: Match existing slices if available, otherwise use project's styling system
    - Code: Analyze codebase for consistent patterns and conventions
+   - Exception: If you have been provided with any example code, base yourself on it instead of the project patterns
 
 3. **Implement fields dynamically**
    - All content must come from Prismic fields
@@ -109,9 +110,9 @@ RETURNS: Prismic Framework-specific field documentation and code examples.`,
 
 4. **If there is an attached image, base yourself on it**
    - Before coding the Slice, prepare a detailed description of what you see in the image
-	 - Pay close attention to the orientation, layout, and colors of it
-	 - For the orientation and layout, focus on the content and not the size of the image
-	 - Try to code and style to make it look as close as possible to the attached image
+   - Pay close attention to the orientation, layout, and colors of it
+   - For the orientation and layout, focus on the content and not the size of the image
+   - Try to code and style the slice to make it look as close as possible to the attached image
 
 ## Field Documentation
 ${fieldDocs}

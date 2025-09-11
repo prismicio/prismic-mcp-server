@@ -374,7 +374,7 @@ ${
 ## Final Instructions
 
 - Focus only on model.json
-- After implementation, you MUST call the verify_model tool to ensure correctness
+- After implementation, you MUST call the verify_slice_model tool to ensure correctness
 `
 
 			return {
