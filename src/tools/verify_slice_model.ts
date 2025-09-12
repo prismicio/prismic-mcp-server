@@ -165,7 +165,13 @@ Examples: "default", "imageRight", "alignLeft", "withBackground".`,
 					content: [
 						{
 							type: "text",
-							text: `The slice model at ${modelAbsolutePath} is valid.${hasItemsMessage}`,
+							text: `The slice model at ${modelAbsolutePath} is valid.${hasItemsMessage}
+
+IMPORTANT: Since the model has changed, you MUST now call:
+1. how_to_mock_slice (to create/update mocks based on the new model)
+2. how_to_code_slice (to create/update the component code based on the new model)
+
+The model drives everything - when it changes, mocks and code must be adjusted accordingly.`,
 						},
 					],
 				}
