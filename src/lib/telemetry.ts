@@ -10,16 +10,54 @@ import { API_TOKENS } from "../constants/API_TOKENS"
 import { getRepositoryName } from "./repository"
 import { getUserShortId } from "./user"
 
-type TelemetryTrackArgs = {
-	sliceMachineConfigAbsolutePath: string
-} & {
-	event: "MCP Tool - How to code a slice"
-	sliceMachineConfigAbsolutePath: string
-	properties: {
-		framework: string
-		fieldsUsed: string[]
-	}
-}
+type TelemetryTrackArgs =
+	| {
+			event: "MCP Tool - How to code a slice"
+			sliceMachineConfigAbsolutePath: string
+			properties: {
+				framework: string
+				fieldsUsed: string[]
+			}
+	  }
+	| {
+			event: "MCP Tool - How to model a slice"
+			sliceMachineConfigAbsolutePath: string
+			properties: {
+				sliceName: string
+				isNewSlice: boolean
+				contentRequirements: string
+				requestType: string
+			}
+	  }
+	| {
+			event: "MCP Tool - Verify slice model"
+			sliceMachineConfigAbsolutePath: string
+			properties: {
+				sliceName: string
+				isNewSlice: boolean
+			}
+	  }
+	| {
+			event: "MCP Tool - How to mock a slice"
+			sliceMachineConfigAbsolutePath: string
+			properties: {
+				operation: "create" | "update"
+				sliceName: string
+				userIntent: string
+			}
+	  }
+	| {
+			event: "MCP Tool - Verify slice mock"
+			sliceMachineConfigAbsolutePath: string
+			properties: {
+				sliceName: string
+			}
+	  }
+	| {
+			event: "MCP Tool - Generate types"
+			sliceMachineConfigAbsolutePath: string
+			properties?: never
+	  }
 
 export class Telemetry {
 	private _segmentClient: Analytics | undefined = undefined

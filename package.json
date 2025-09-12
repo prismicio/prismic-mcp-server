@@ -1,6 +1,6 @@
 {
 	"name": "@prismicio/mcp-server",
-	"version": "0.0.18",
+	"version": "0.0.19-alpha.0",
 	"description": "Prismic Model Context Protocol (MCP) Server",
 	"keywords": [
 		"model context protocol",
@@ -65,9 +65,15 @@
 		"test:e2e:update": "npm run test:e2e -- --update-snapshots"
 	},
 	"dependencies": {
-		"@modelcontextprotocol/sdk": "1.13.0",
+		"@prismicio/client": "7.20.1",
+		"@modelcontextprotocol/sdk": "1.17.4",
+		"@prismicio/mocks": "2.15.2",
+		"@prismicio/types-internal": "3.16.1",
 		"@segment/analytics-node": "2.3.0",
+		"common-tags": "1.8.2",
 		"cookie": "1.0.2",
+		"prettier": "3.5.3",
+		"prismic-ts-codegen": "0.1.28",
 		"zod": "3.25.67"
 	},
 	"devDependencies": {
@@ -77,6 +83,7 @@
 		"@size-limit/preset-small-lib": "^11.2.0",
 		"@trivago/prettier-plugin-sort-imports": "^5.2.2",
 		"@types/node": "^24.0.3",
+		"@types/common-tags": "1.8.4",
 		"@vitest/coverage-v8": "^3.2.4",
 		"dotenv": "^17.2.1",
 		"eslint": "^9.29.0",
