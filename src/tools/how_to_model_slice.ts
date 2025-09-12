@@ -37,10 +37,11 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 			.describe(
 				"Description of what content the slice should contain (e.g., 'hero with title, description, and CTA button')",
 			),
-		requestType: z
-			.enum(["text", "image", "image-and-text"])
+		inputTypes: z
+			.array(z.enum(["text", "image", "code"]))
+			.nonempty()
 			.describe(
-				"The type of request - text-based description, image reference, or image reference with text clarification",
+				"The kinds of input present in the prompt. Combine as needed: 'text', 'image', 'code'",
 			),
 	}).shape,
 	(args) => {
@@ -50,7 +51,7 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 				sliceName,
 				isNewSlice,
 				contentRequirements,
-				requestType,
+				inputTypes,
 			} = args
 
 			try {
@@ -61,7 +62,7 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 						sliceName,
 						isNewSlice,
 						contentRequirements,
-						requestType,
+						inputTypes,
 					},
 				})
 			} catch (error) {
@@ -81,7 +82,7 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 
 ## Request Analysis
 - **Slice Name**: ${sliceName}
-- **Request Type**: ${requestType === "text" ? "Text-based description" : requestType === "image" ? "Image reference" : "Image reference with text clarification"}
+- **Input Types**: ${inputTypes.join(" + ")}
 - **Operation**: ${isNewSlice ? "Creating new slice" : "Updating existing slice"}
 - **Content Requirements**: ${contentRequirements}
 
@@ -365,21 +366,28 @@ Notes:
 ## Content Analysis Guidelines
 
 ${
-	requestType === "text"
-		? `- Focus: Parse the description for explicit content elements and hierarchy
-- Extract: titles, paragraphs, lists, buttons/links, media references
-- Don't infer layout beyond what's stated; if ambiguous, prefer simpler fields`
+	inputTypes.includes("image")
+		? `- From image: Identify visual elements and their repeatability
+			- Detect: headings, body text blocks, CTAs, icons/images, repeated cards/tiles
+			- Infer grouping and repeatability ONLY when visually obvious (e.g., several buttons, grid of cards)`
 		: ""
 }
+
 ${
-	requestType === "image"
-		? `- Focus: Identify visual elements and their repeatability
-- Detect: headings, body text blocks, CTAs, icons/images, repeated cards/tiles`
+	inputTypes.includes("code")
+		? `- From code: Treat provided code as the source of truth for data needs
+			- Read existing components and props to infer fields, naming, and shapes
+			- Map component props/state to model fields
+			- If code shows lists/arrays, prefer repeatable links or group fields over ad-hoc numbered fields`
 		: ""
 }
+
 ${
-	requestType === "image-and-text"
-		? `- Focus: Use the image as the initial layout and reference for the fields involved; then refine based on the text clarification`
+	inputTypes.includes("text")
+		? `- From text: Parse explicit content elements and hierarchy
+			- Extract: titles, paragraphs, lists, buttons/links, media references
+			- Avoid inferring layout beyond what's stated; if ambiguous, prefer simpler fields
+			- If text clarifies or contradicts image/code, TEXT TAKES PRECEDENCE as the user's explicit intent (e.g., image shows two buttons but text specifies only one → model a single button)`
 		: ""
 }
 
