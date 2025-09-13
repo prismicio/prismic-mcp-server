@@ -26,7 +26,7 @@ type TelemetryTrackArgs =
 				sliceName: string
 				isNewSlice: boolean
 				contentRequirements: string
-				requestType: string
+				inputTypes: string[]
 			}
 	  }
 	| {
