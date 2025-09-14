@@ -24,7 +24,7 @@ export class ProjectSetup {
 	}
 
 	async cleanup(): Promise<void> {
-		if (this.tempDir) {
+		if (this.tempDir && !process.env.NO_CLEANUP) {
 			try {
 				rmSync(this.tempDir, { recursive: true, force: true })
 			} catch (error) {
@@ -41,7 +41,7 @@ export class ProjectSetup {
 	// Call this in global teardown to cleanup the template cache
 	static async cleanupTemplate(): Promise<void> {
 		const templateCache = process.env.TEMPLATE_CACHE_DIR
-		if (templateCache) {
+		if (templateCache && !process.env.NO_CLEANUP) {
 			try {
 				console.info("Cleaning up template cache...")
 				rmSync(templateCache, { recursive: true, force: true })

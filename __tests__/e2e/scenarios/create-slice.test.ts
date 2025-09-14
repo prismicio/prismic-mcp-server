@@ -10,14 +10,13 @@ test.describe("create slice scenario - Used by AI agent", () => {
 	}) => {
 		const messages = await aiAgent.simulateUserQuery({
 			prompt: `
-Create a "Testimonials" slice (model, generate types, code, mocks)
+Create a "Hero" slice (model, generate types, code, mocks)
 
-It should have a section heading and a list of testimonials with the following:
-- image
-- name
-- review
-- company
-- rating
+It should have:
+- a title
+- a description
+- a repeatable CTA link with 3 variants (Primary, Secondary, Text)
+- an anchor
 `,
 		})
 		expect(messages.length).toBeGreaterThan(0)
@@ -37,17 +36,17 @@ It should have a section heading and a list of testimonials with the following:
 		)
 		expect(toolsUsed).toHaveLength(6)
 
-		const sliceDir = join(projectRoot, "/src/slices/Testimonials")
+		const sliceDir = join(projectRoot, "/src/slices/Hero")
 		const referenceDir = join(
 			new URL(import.meta.url).pathname,
-			"../../reference/slices/TextTestimonials",
+			"../../reference/slices/SlicifyHero/Hero",
 		)
 
 		const grade = await aiAgent.grade({
 			generatedPath: sliceDir,
 			referencePath: referenceDir,
 			instructions: `
-Grade the quality of the generated Testimonials slice.
+Grade the quality of the generated Hero slice.
 
 Focus on:
 - model
@@ -57,7 +56,7 @@ Focus on:
   -- Field configurations should be functionally similar
   -- Order of fields is not important
 - code 
-  -- styling system can be different but visually it should render the same (same margin, color, etc)
+  -- don't grade at all the styling but functionality should be the same
   -- usage of Prismic components should be the same 
 - mocks
   -- structure is roughly the same
@@ -118,7 +117,7 @@ Focus on:
   -- Field configurations should be functionally similar
   -- Order of fields is not important
 - code 
-  -- styling system can be different but visually it should render the same (same margin, color, etc)
+  -- styling system can differ but it should render the same UI (same margin, color, etc)
   -- usage of Prismic components should be the same 
 - mocks
   -- structure is roughly the same
@@ -179,7 +178,7 @@ Focus on:
   -- Field configurations should be functionally similar
   -- Order of fields is not important
 - code 
-  -- styling system can be different but visually it should render the same (same margin, color, etc)
+  -- styling system can differ but it should render the same UI (same margin, color, etc)
   -- usage of Prismic components should be the same 
 - mocks
   -- structure is roughly the same
