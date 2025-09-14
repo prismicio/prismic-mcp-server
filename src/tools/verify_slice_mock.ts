@@ -11,7 +11,7 @@ import { telemetryClient } from "../server"
 
 export const verify_slice_mock = tool(
 	"verify_slice_mock",
-	`PURPOSE: Verifies that a slice's mocks.json file is structurally valid.
+	`PURPOSE: Verifies that a mocks.json file for a Prismic slice is valid according to the model.
 
 USAGE: Use immediately after generating or editing a slice mock to ensure it is valid slice content.
 
@@ -22,7 +22,7 @@ RETURNS: A message indicating whether mocks.json is valid or not, with detailed 
 			.describe("Absolute path to 'slicemachine.config.json' file"),
 		sliceDirectoryAbsolutePath: z
 			.string()
-			.describe("Absolute path to the slice directory (contains mocks.json)"),
+			.describe("Absolute path to the slice directory (contains 'mocks.json')"),
 	}).shape,
 	async (args) => {
 		const { sliceDirectoryAbsolutePath } = args

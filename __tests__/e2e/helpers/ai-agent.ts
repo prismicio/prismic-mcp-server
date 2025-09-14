@@ -11,7 +11,11 @@ export class AIAgent {
 		this.projectRoot = projectRoot
 	}
 
-	async simulateUserQuery(prompt: string): Promise<SDKMessage[]> {
+	async simulateUserQuery({
+		prompt,
+	}: {
+		prompt: string
+	}): Promise<SDKMessage[]> {
 		const messages: SDKMessage[] = []
 
 		console.info("AI Agent simulating user query...")

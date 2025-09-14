@@ -5,8 +5,8 @@ import { expect, test } from "../fixtures/test"
 import { getPrismicMcpTools } from "../helpers/ai-agent"
 import { callTool } from "../helpers/mcp-client"
 
-test.describe("how_to_code_slice tool", () => {
-	test("should be used by an AI Agent to create a simple slice", async ({
+test.describe("how_to_code_slice tool - Used by AI agent", () => {
+	test("should check slice code generation based on user text prompt", async ({
 		aiAgent,
 		projectRoot,
 	}) => {
@@ -15,13 +15,14 @@ test.describe("how_to_code_slice tool", () => {
 		copyFileSync(
 			join(
 				new URL(import.meta.url).pathname,
-				"../../reference/slices/Hero/index-placeholder.tsx",
+				"../../reference/slices/StarterHero/index-placeholder.tsx",
 			),
 			join(projectRoot, "/src/slices/Hero/index.tsx"),
 		)
 
-		const userPrompt = `Code the "Hero" slice`
-		const messages = await aiAgent.simulateUserQuery(userPrompt)
+		const messages = await aiAgent.simulateUserQuery({
+			prompt: `Code the "Hero" slice`,
+		})
 		expect(messages.length).toBeGreaterThan(0)
 
 		const toolsUsed = getPrismicMcpTools({
@@ -29,25 +30,31 @@ test.describe("how_to_code_slice tool", () => {
 		})
 		expect(toolsUsed).toEqual(["how_to_code_slice"])
 
-		const sliceDir = join(projectRoot, "/src/slices/Hero/index.tsx")
-		const referenceDir = join(
+		const sliceFile = join(projectRoot, "/src/slices/Hero/index.tsx")
+		const referenceFile = join(
 			new URL(import.meta.url).pathname,
-			"../../reference/slices/Hero/index.tsx",
+			"../../reference/slices/StarterHero/index.tsx",
 		)
 
 		const grade = await aiAgent.grade({
-			generatedPath: sliceDir,
-			referencePath: referenceDir,
+			generatedPath: sliceFile,
+			referencePath: referenceFile,
 			instructions: `
-Grade the quality of the generated Testimonials slice code.
-You can be flexible about the exact field names, just make sure they make sense.
+Grade the quality of the generated Hero slice code.
+
+Focus on:
+- code 
+  -- styling system can be different but visually it should render the same (same margin, color, etc)
+  -- usage of Prismic components should be the same
 `,
 		})
 
 		console.info("Grade:", grade)
 		expect(grade.score).toBeGreaterThan(7)
 	})
+})
 
+test.describe("how_to_code_slice tool - Calling Tool", () => {
 	test("should provide guidance for slice with RichTextField", async ({}) => {
 		const result = await callTool("how_to_code_slice", {
 			projectFramework: "next",
