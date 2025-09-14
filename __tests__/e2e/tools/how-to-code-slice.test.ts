@@ -1,7 +1,8 @@
+import { copyFileSync, rmSync } from "fs"
 import { join } from "path"
 
 import { expect, test } from "../fixtures/test"
-import { checkToolUsage, isLLMConfigured } from "../helpers/ai-agent"
+import { getPrismicMcpTools } from "../helpers/ai-agent"
 import { callTool } from "../helpers/mcp-client"
 
 test.describe("how_to_code_slice tool", () => {
@@ -9,44 +10,42 @@ test.describe("how_to_code_slice tool", () => {
 		aiAgent,
 		projectRoot,
 	}) => {
-		test.skip(!isLLMConfigured(), "Skip this test if the LLM is not configured")
-		test.setTimeout(300_000) // 5 minutes
+		// Replace the Hero slice code file with the placeholder code
+		rmSync(join(projectRoot, "/src/slices/Hero/index.tsx"))
+		copyFileSync(
+			join(
+				new URL(import.meta.url).pathname,
+				"../../reference/slices/Hero/index-placeholder.tsx",
+			),
+			join(projectRoot, "/src/slices/Hero/index.tsx"),
+		)
 
-		const userPrompt = `
-Can you help me make a "Testimonials" slice?
-It should have a section heading and a list of testimonials with the following:
-- image
-- name
-- review
-- company
-- rating
-`
+		const userPrompt = `Code the "Hero" slice`
 		const messages = await aiAgent.simulateUserQuery(userPrompt)
 		expect(messages.length).toBeGreaterThan(0)
 
-		const wasToolUsed = checkToolUsage({
+		const toolsUsed = getPrismicMcpTools({
 			messages,
-			toolName: "mcp__prismic__how_to_code_slice",
 		})
-		expect(wasToolUsed).toBe(true)
+		expect(toolsUsed).toEqual(["how_to_code_slice"])
 
-		const sliceDir = join(projectRoot, "/src/slices/Testimonials/index.tsx")
+		const sliceDir = join(projectRoot, "/src/slices/Hero/index.tsx")
 		const referenceDir = join(
 			new URL(import.meta.url).pathname,
-			"../../reference/slices/Testimonials/index.tsx",
+			"../../reference/slices/Hero/index.tsx",
 		)
 
 		const grade = await aiAgent.grade({
 			generatedPath: sliceDir,
 			referencePath: referenceDir,
 			instructions: `
-Grade the quality of the generated Testimonials slice.
+Grade the quality of the generated Testimonials slice code.
 You can be flexible about the exact field names, just make sure they make sense.
 `,
 		})
 
 		console.info("Grade:", grade)
-		expect(grade.score).toBeGreaterThan(6)
+		expect(grade.score).toBeGreaterThan(7)
 	})
 
 	test("should provide guidance for slice with RichTextField", async ({}) => {

@@ -23,7 +23,7 @@ The AI agent tests require an API key to function. These tests are designed to:
 
    ```bash
    # Edit the .env file and add your actual API key
-   ANTHROPIC_API_KEY=your_actual_api_key_here
+   AWS_BEARER_TOKEN_BEDROCK=your_actual_aws_bearer_token_here
    ```
 
 ### Running Tests

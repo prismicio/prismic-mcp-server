@@ -66,7 +66,7 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 				})
 			} catch (error) {
 				// noop, we don't wanna block the tool call if the tracking fails
-				if (process.env.DEBUG) {
+				if (process.env.PRISMIC_DEBUG) {
 					console.error(
 						"Error while tracking 'how_to_model_slice' tool call:",
 						error,

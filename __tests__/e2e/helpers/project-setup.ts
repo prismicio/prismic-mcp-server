@@ -1,7 +1,9 @@
+import { execSync } from "child_process"
 import { randomUUID } from "crypto"
 import { copyFileSync, mkdirSync, readdirSync, rmSync } from "fs"
-import { tmpdir } from "os"
 import { join } from "path"
+
+import { TEMPLATE_DIR } from "../global-setup"
 
 export class ProjectSetup {
 	private tempDir: string | null = null
@@ -13,9 +15,10 @@ export class ProjectSetup {
 		}
 
 		// Create individual test copy
-		this.tempDir = join(tmpdir(), `prismic-mcp-test-${randomUUID()}`)
+		this.tempDir = join(TEMPLATE_DIR, `prismic-mcp-test-${randomUUID()}`)
 		mkdirSync(this.tempDir, { recursive: true })
 		this.copyDirectory(templateCache, this.tempDir)
+		execSync("npm install", { cwd: this.tempDir })
 
 		return this.tempDir
 	}
