@@ -40,8 +40,8 @@ test.describe("generate_types tool - Used by AI agent", () => {
 			instructions: `
 Grade the quality of the generated prismic types.
 
-The two files should have the same export, types, etc.
-Don't care about formatting, comments, spaces, etc.
+The two files should have the same exports, types, etc.
+Don't base the grade on formatting, comments, spaces and ordering.
 `,
 		})
 
