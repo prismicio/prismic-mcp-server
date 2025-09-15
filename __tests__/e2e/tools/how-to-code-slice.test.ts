@@ -1,4 +1,4 @@
-import { copyFileSync, rmSync } from "fs"
+import { copyFileSync, cpSync, rmSync } from "fs"
 import { join } from "path"
 
 import { expect, test } from "../fixtures/test"
@@ -10,7 +10,21 @@ test.describe("how_to_code_slice tool - Used by AI agent", () => {
 		aiAgent,
 		projectRoot,
 	}) => {
-		// Replace the Hero slice code file with the placeholder code
+		cpSync(
+			join(
+				new URL(import.meta.url).pathname,
+				"../../reference/slices/SlicifyHero/Hero",
+			),
+			join(projectRoot, "/src/slices/Hero"),
+			{ recursive: true },
+		)
+		copyFileSync(
+			join(
+				new URL(import.meta.url).pathname,
+				"../../reference/slices/SlicifyHero/prismicio-types.d.ts",
+			),
+			join(projectRoot, "prismicio-types.d.ts"),
+		)
 		rmSync(join(projectRoot, "/src/slices/Hero/index.tsx"))
 		copyFileSync(
 			join(

@@ -23,7 +23,7 @@
 				]
 			},
 			"description": {
-				"__TYPE__": "StructuredTextContent",
+				"TYPE": "StructuredTextContent",
 				"value": [
 					{
 						"type": "paragraph",
@@ -36,36 +36,25 @@
 				]
 			},
 			"cta_link": {
-				"__TYPE__": "RepeatableContent",
+				"__TYPE__": "InvalidType",
 				"type": "Link",
-				"value": [
-					{
-						"key": "38e0e55c-d82b-46b7-8c10-5b8854f40bc4",
-						"__TYPE__": "LinkContent",
-						"value": {
-							"__TYPE__": "AnyLink",
-							"kind": "any",
-							"text": "Hello"
-						}
-					},
-					{
-						"key": "4d6b4ea4-0ce7-4c3a-a85c-507fbf8cdff4",
-						"__TYPE__": "LinkContent",
-						"value": {
-							"__TYPE__": "AnyLink",
-							"kind": "any",
-							"text": "Hello",
-							"variant": "Secondary"
-						}
+				"value": {
+					"key": "38e0e55c-d82b-46b7-8c10-5b8854f40bc4",
+					"__TYPE__": "LinkContent",
+					"value": {
+						"__TYPE__": "AnyLink",
+						"kind": "any",
+						"text": "Hello"
 					}
-				]
+				}
 			},
-			"anchor": {
-				"__TYPE__": "FieldContent",
-				"value": "empty",
-				"type": "Text"
-			}
+			"anchor": {}
 		},
-		"items": []
+		"items": [
+			{
+				"__TYPE__": "GroupItemContent",
+				"value": []
+			}
+		]
 	}
 ]

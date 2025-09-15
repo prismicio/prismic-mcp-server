@@ -1,4 +1,3 @@
-import { rmSync } from "fs"
 import { join } from "path"
 
 import { expect, test } from "../fixtures/test"
@@ -9,9 +8,6 @@ test.describe("how_to_model_slice tool - Used by AI agent", () => {
 		aiAgent,
 		projectRoot,
 	}) => {
-		// Remove the Hero slice model file
-		rmSync(join(projectRoot, "/src/slices/Hero/model.json"))
-
 		const messages = await aiAgent.simulateUserQuery({
 			prompt: `
 Create the model for the "Hero" slice (+ generate types)

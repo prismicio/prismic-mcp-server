@@ -9,9 +9,9 @@ type TestFixtures = {
 }
 
 export const test = base.extend<TestFixtures>({
-	projectRoot: async ({}, use) => {
+	projectRoot: async ({}, use, { title }) => {
 		const projectSetup = new ProjectSetup()
-		const projectRoot = await projectSetup.setupProject()
+		const projectRoot = await projectSetup.setupProject(title)
 		await use(projectRoot)
 		await projectSetup.cleanup()
 	},

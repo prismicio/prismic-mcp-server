@@ -1,6 +1,6 @@
 import { execSync } from "child_process"
 import { randomUUID } from "crypto"
-import { copyFileSync, mkdirSync, readdirSync, rmSync } from "fs"
+import { cpSync, mkdirSync, rmSync } from "fs"
 import { join } from "path"
 
 import { TEMPLATE_DIR } from "../global-setup"
@@ -8,16 +8,20 @@ import { TEMPLATE_DIR } from "../global-setup"
 export class ProjectSetup {
 	private tempDir: string | null = null
 
-	async setupProject(): Promise<string> {
+	async setupProject(testTitle: string): Promise<string> {
 		const templateCache = process.env.TEMPLATE_CACHE_DIR
 		if (!templateCache) {
 			throw new Error("Template cache not found. Global setup may have failed.")
 		}
 
 		// Create individual test copy
-		this.tempDir = join(TEMPLATE_DIR, `prismic-mcp-test-${randomUUID()}`)
+		this.tempDir = join(
+			TEMPLATE_DIR,
+			`prismic-mcp-test-${testTitle.replace(/ /g, "-")}-${randomUUID()}`,
+		)
 		mkdirSync(this.tempDir, { recursive: true })
-		this.copyDirectory(templateCache, this.tempDir)
+		cpSync(templateCache, this.tempDir, { recursive: true })
+		rmSync(join(this.tempDir, "/src/slices/Hero"), { recursive: true })
 		execSync("npm install", { cwd: this.tempDir })
 
 		return this.tempDir
@@ -48,22 +52,6 @@ export class ProjectSetup {
 				delete process.env.TEMPLATE_CACHE_DIR
 			} catch (error) {
 				console.warn("Failed to cleanup template cache:", error)
-			}
-		}
-	}
-
-	private copyDirectory(src: string, dest: string): void {
-		const entries = readdirSync(src, { withFileTypes: true })
-
-		for (const entry of entries) {
-			const srcPath = join(src, entry.name)
-			const destPath = join(dest, entry.name)
-
-			if (entry.isDirectory()) {
-				mkdirSync(destPath, { recursive: true })
-				this.copyDirectory(srcPath, destPath)
-			} else {
-				copyFileSync(srcPath, destPath)
 			}
 		}
 	}

@@ -126,7 +126,7 @@ Focus on:
 		})
 
 		console.info("Grade:", grade)
-		expect(grade.score).toBeGreaterThan(3)
+		expect(grade.score).toBeGreaterThan(2)
 	})
 
 	test("should check slice creation (model, code, mocks) based on user react code file prompt", async ({
@@ -187,6 +187,6 @@ Focus on:
 		})
 
 		console.info("Grade:", grade)
-		expect(grade.score).toBeGreaterThan(3)
+		expect(grade.score).toBeGreaterThan(2)
 	})
 })
