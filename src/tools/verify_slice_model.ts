@@ -12,9 +12,9 @@ export const verify_slice_model = tool(
 	"verify_slice_model",
 	`PURPOSE: Verifies that a model.json file for a Prismic slice is valid according to the schema.
 
-USAGE: Use to verify the validity of a slice model before coding a slice.
+USAGE: Use immediately after generating or editing a slice model to ensure it is valid slice model.
 
-RETURNS: A message indicating whether the slice model is valid or not, and detailed error messages if it is not.`,
+RETURNS: A message indicating whether model.json is valid or not, with detailed errors if invalid.`,
 	z.object({
 		sliceMachineConfigAbsolutePath: z
 			.string()

@@ -11,7 +11,11 @@ export class AIAgent {
 		this.projectRoot = projectRoot
 	}
 
-	async simulateUserQuery(prompt: string): Promise<SDKMessage[]> {
+	async simulateUserQuery({
+		prompt,
+	}: {
+		prompt: string
+	}): Promise<SDKMessage[]> {
 		const messages: SDKMessage[] = []
 
 		console.info("AI Agent simulating user query...")
@@ -76,6 +80,8 @@ ONLY inspect these two paths:
 Compare the GENERATED with the REFERENCE. Score on a 10-point scale.
 
 Instructions: ${instructions}
+
+Differences in naming doesn't matter and should not be considered, as long as they make sense.
 
 Output STRICT JSON (no backticks, no prose) with this shape:
 {

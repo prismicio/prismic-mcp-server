@@ -1,0 +1,71 @@
+[
+	{
+		"__TYPE__": "SharedSliceContent",
+		"variation": "default",
+		"primary": {
+			"title": {
+				"__TYPE__": "StructuredTextContent",
+				"value": [
+					{
+						"type": "heading1",
+						"content": {
+							"text": "Slices made simple for all businesses",
+							"spans": [
+								{
+									"type": "strong",
+									"start": 7,
+									"end": 18
+								}
+							]
+						},
+						"direction": "ltr"
+					}
+				]
+			},
+			"description": {
+				"__TYPE__": "StructuredTextContent",
+				"value": [
+					{
+						"type": "paragraph",
+						"content": {
+							"text": "From Figma components to Javascript components to reusable website sections. Bring your website builder to life with Slices.",
+							"spans": []
+						},
+						"direction": "ltr"
+					}
+				]
+			},
+			"cta_link": {
+				"__TYPE__": "RepeatableContent",
+				"type": "Link",
+				"value": [
+					{
+						"key": "38e0e55c-d82b-46b7-8c10-5b8854f40bc4",
+						"__TYPE__": "LinkContent",
+						"value": {
+							"__TYPE__": "AnyLink",
+							"kind": "any",
+							"text": "Hello"
+						}
+					},
+					{
+						"key": "4d6b4ea4-0ce7-4c3a-a85c-507fbf8cdff4",
+						"__TYPE__": "LinkContent",
+						"value": {
+							"__TYPE__": "AnyLink",
+							"kind": "any",
+							"text": "Hello",
+							"variant": "Secondary"
+						}
+					}
+				]
+			},
+			"anchor": {
+				"__TYPE__": "FieldContent",
+				"value": "empty",
+				"type": "Text"
+			}
+		},
+		"items": []
+	}
+]

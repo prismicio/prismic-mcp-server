@@ -1,0 +1,8 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "The slice mock at {base_path}/mocks.json is valid."
+    }
+  ]
+}
