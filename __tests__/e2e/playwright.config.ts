@@ -3,19 +3,20 @@ import { defineConfig } from "@playwright/test"
 const CI = !!process.env["CI"]
 
 export default defineConfig({
-	// Opt out of parallel tests on CI to prioritize stability and reproducibility.
+	// Opt out of parallel tests to prioritize stability and reproducibility.
 	// See: https://playwright.dev/docs/ci#workers
-	workers: CI ? 1 : undefined,
+	workers: 1,
 
-	/* Fail the build on CI if you accidentally left test.only in the source code. */
+	// Fail the build on CI if you accidentally left test.only in the source code.
 	forbidOnly: CI,
-	/* Retry on CI only */
+
+	// Retry on CI only
 	retries: CI ? 2 : 0,
 
-	/* Reporter to use. See https://playwright.dev/docs/test-reporters */
+	// Reporter to use. See https://playwright.dev/docs/test-reporters
 	reporter: CI ? [["github"], ["blob"]] : [["html", { open: "never" }]],
 
-	/* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+	// Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions.
 	use: {
 		// Collect trace when retrying the failed test.
 		trace: "on-first-retry",
@@ -42,6 +43,9 @@ export default defineConfig({
 
 	// Maximum time one test can run for.
 	timeout: 120_000,
+
+	// Snapshot path template to avoid having OS in name (difference CI vs local).
+	snapshotPathTemplate: "{testFileDir}/{testFileName}-snapshots/{arg}{ext}",
 
 	// Global setup and teardown
 	globalSetup: "./global-setup.ts",

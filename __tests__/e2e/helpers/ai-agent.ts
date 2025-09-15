@@ -11,7 +11,11 @@ export class AIAgent {
 		this.projectRoot = projectRoot
 	}
 
-	async simulateUserQuery(prompt: string): Promise<SDKMessage[]> {
+	async simulateUserQuery({
+		prompt,
+	}: {
+		prompt: string
+	}): Promise<SDKMessage[]> {
 		const messages: SDKMessage[] = []
 
 		console.info("AI Agent simulating user query...")
@@ -77,6 +81,8 @@ Compare the GENERATED with the REFERENCE. Score on a 10-point scale.
 
 Instructions: ${instructions}
 
+Differences in naming doesn't matter and should not be considered, as long as they make sense.
+
 Output STRICT JSON (no backticks, no prose) with this shape:
 {
   "score": <number>,
@@ -141,25 +147,31 @@ type Grade = {
 	summary: string
 }
 
-export function checkToolUsage({
+export function getPrismicMcpTools({
 	messages,
-	toolName,
 }: {
 	messages: SDKMessage[]
-	toolName: string
-}): boolean {
-	const toolCallMessage = messages.find(
-		(message) =>
-			message.type === "assistant" &&
-			message.message.content[0].type === "tool_use" &&
-			message.message.content[0].name === toolName,
-	)
+}): string[] {
+	const prismicMcpToolSet = new Set<string>()
 
-	return toolCallMessage !== undefined
+	for (const message of messages) {
+		if (
+			message.type === "assistant" &&
+			message.message.content[0]?.type === "tool_use"
+		) {
+			const toolName = message.message.content[0].name
+			if (toolName.startsWith("mcp__prismic__")) {
+				const cleanToolName = toolName.replace("mcp__prismic__", "")
+				prismicMcpToolSet.add(cleanToolName)
+			}
+		}
+	}
+
+	return Array.from(prismicMcpToolSet)
 }
 
 export function isLLMConfigured(): boolean {
-	return !!process.env.ANTHROPIC_API_KEY
+	return !!process.env.AWS_BEARER_TOKEN_BEDROCK
 }
 
 const debugConsoleLog = (message: SDKMessage) => {

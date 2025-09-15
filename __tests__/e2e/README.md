@@ -23,7 +23,7 @@ The AI agent tests require an API key to function. These tests are designed to:
 
    ```bash
    # Edit the .env file and add your actual API key
-   ANTHROPIC_API_KEY=your_actual_api_key_here
+   AWS_BEARER_TOKEN_BEDROCK=your_actual_aws_bearer_token_here
    ```
 
 ### Running Tests
@@ -32,10 +32,22 @@ The AI agent tests require an API key to function. These tests are designed to:
 npm run test:e2e
 ```
 
+To run a specific test file:
+
+```bash
+npm run test:e2e -- __tests__/e2e/tools/generate_types.test.ts
+```
+
 To update the snapshots:
 
 ```bash
 npm run test:e2e:update
+```
+
+To update the snapshots of a specific test file:
+
+```bash
+npm run test:e2e:update -- all __tests__/e2e/tools/generate_types.test.ts
 ```
 
 ## Debugging
@@ -48,3 +60,10 @@ DEBUG_MODE=true
 ```
 
 This will log the full conversation between the simulated user and AI agent, including all tool calls and responses.
+
+If you want additional information for tools:
+
+```bash
+# In your .env file
+PRISMIC_DEBUG=true
+```

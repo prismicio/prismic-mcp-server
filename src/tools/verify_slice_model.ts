@@ -12,9 +12,9 @@ export const verify_slice_model = tool(
 	"verify_slice_model",
 	`PURPOSE: Verifies that a model.json file for a Prismic slice is valid according to the schema.
 
-USAGE: Use to verify the validity of a slice model before coding a slice.
+USAGE: Use immediately after generating or editing a slice model to ensure it is valid slice model.
 
-RETURNS: A message indicating whether the slice model is valid or not, and detailed error messages if it is not.`,
+RETURNS: A message indicating whether model.json is valid or not, with detailed errors if invalid.`,
 	z.object({
 		sliceMachineConfigAbsolutePath: z
 			.string()
@@ -43,7 +43,7 @@ RETURNS: A message indicating whether the slice model is valid or not, and detai
 				})
 			} catch (error) {
 				// noop, we don't wanna block the tool call if the tracking fails
-				if (process.env.DEBUG) {
+				if (process.env.PRISMIC_DEBUG) {
 					console.error(
 						"Error while tracking 'verify_slice_model' tool call",
 						error,
@@ -165,7 +165,13 @@ Examples: "default", "imageRight", "alignLeft", "withBackground".`,
 					content: [
 						{
 							type: "text",
-							text: `The slice model at ${modelAbsolutePath} is valid.${hasItemsMessage}`,
+							text: `The slice model at ${modelAbsolutePath} is valid.${hasItemsMessage}
+
+IMPORTANT: Since the model has changed, you MUST now call:
+1. how_to_mock_slice (to create/update mocks based on the new model)
+2. how_to_code_slice (to create/update the component code based on the new model)
+
+The model drives everything - when it changes, mocks and code must be adjusted accordingly.`,
 						},
 					],
 				}

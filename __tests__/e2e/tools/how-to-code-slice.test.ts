@@ -1,54 +1,75 @@
+import { copyFileSync, cpSync, rmSync } from "fs"
 import { join } from "path"
 
 import { expect, test } from "../fixtures/test"
-import { checkToolUsage, isLLMConfigured } from "../helpers/ai-agent"
+import { getPrismicMcpTools } from "../helpers/ai-agent"
 import { callTool } from "../helpers/mcp-client"
 
-test.describe("how_to_code_slice tool", () => {
-	test("should be used by an AI Agent to create a simple slice", async ({
+test.describe("how_to_code_slice tool - Used by AI agent", () => {
+	test("should check slice code generation based on user text prompt", async ({
 		aiAgent,
 		projectRoot,
 	}) => {
-		test.skip(!isLLMConfigured(), "Skip this test if the LLM is not configured")
-		test.setTimeout(300_000) // 5 minutes
+		cpSync(
+			join(
+				new URL(import.meta.url).pathname,
+				"../../reference/slices/SlicifyHero/Hero",
+			),
+			join(projectRoot, "/src/slices/Hero"),
+			{ recursive: true },
+		)
+		copyFileSync(
+			join(
+				new URL(import.meta.url).pathname,
+				"../../reference/slices/SlicifyHero/prismicio-types.d.ts",
+			),
+			join(projectRoot, "prismicio-types.d.ts"),
+		)
+		rmSync(join(projectRoot, "/src/slices/Hero/index.tsx"))
+		copyFileSync(
+			join(
+				new URL(import.meta.url).pathname,
+				"../../reference/slices/SlicifyHero/index-placeholder.tsx",
+			),
+			join(projectRoot, "/src/slices/Hero/index.tsx"),
+		)
 
-		const userPrompt = `
-Can you help me make a "Testimonials" slice?
-It should have a section heading and a list of testimonials with the following:
-- image
-- name
-- review
-- company
-- rating
-`
-		const messages = await aiAgent.simulateUserQuery(userPrompt)
+		const messages = await aiAgent.simulateUserQuery({
+			prompt: `Code the "Hero" slice`,
+		})
 		expect(messages.length).toBeGreaterThan(0)
 
-		const wasToolUsed = checkToolUsage({
+		const toolsUsed = getPrismicMcpTools({
 			messages,
-			toolName: "mcp__prismic__how_to_code_slice",
 		})
-		expect(wasToolUsed).toBe(true)
+		expect(toolsUsed).toEqual(expect.arrayContaining(["how_to_code_slice"]))
 
-		const sliceDir = join(projectRoot, "/src/slices/Testimonials/index.tsx")
-		const referenceDir = join(
+		const sliceFile = join(projectRoot, "/src/slices/Hero/index.tsx")
+		const referenceFile = join(
 			new URL(import.meta.url).pathname,
-			"../../reference/slices/Testimonials/index.tsx",
+			"../../reference/slices/SlicifyHero/Hero/index.tsx",
 		)
 
 		const grade = await aiAgent.grade({
-			generatedPath: sliceDir,
-			referencePath: referenceDir,
+			generatedPath: sliceFile,
+			referencePath: referenceFile,
 			instructions: `
-Grade the quality of the generated Testimonials slice.
-You can be flexible about the exact field names, just make sure they make sense.
+Grade the quality of the generated Hero slice code.
+
+Focus on:
+- code 
+  -- don't grade at all the styling
+  -- don't grade at all the code structure
+  -- ONLY grade the usage of Prismic components that should be the same
 `,
 		})
 
 		console.info("Grade:", grade)
-		expect(grade.score).toBeGreaterThan(6)
+		expect(grade.score).toBeGreaterThan(7)
 	})
+})
 
+test.describe("how_to_code_slice tool - Calling Tool", () => {
 	test("should provide guidance for slice with RichTextField", async ({}) => {
 		const result = await callTool("how_to_code_slice", {
 			projectFramework: "next",

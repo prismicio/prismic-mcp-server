@@ -45,7 +45,7 @@ npm run preview
 				"PRISMIC_ENV": "staging",
 
 				# Activate debug mode to see more logs (Output tab of your IDE console)
-				"DEBUG": true
+				"PRISMIC_DEBUG": true
 			}
 		}
 	}
