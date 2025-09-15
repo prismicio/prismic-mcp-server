@@ -4,18 +4,14 @@ on: [push, workflow_call]
 
 jobs:
   prepare:
-    name: Prepare (${{ matrix.os}}, Node ${{ matrix.node }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        node: [18, 20, 22]
+    name: Prepare
+    runs-on: ubuntu-latest
 
     steps:
       - name: Set up Node
         uses: actions/setup-node@v5
         with:
-          node-version: ${{ matrix.node }}
+          node-version: 22
 
       - name: Checkout
         uses: actions/checkout@master
@@ -25,7 +21,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: ${{ matrix.os }}-node-v${{ matrix.node }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/package-lock.json')) }}
+          key: ubuntu-latest-node-v22-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/package-lock.json')) }}
 
       - name: Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
@@ -33,19 +29,14 @@ jobs:
 
   suite:
     needs: prepare
-    name: Suite (${{ matrix.os}}, Node ${{ matrix.node }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-        node: [18, 20, 22]
+    name: Suite
+    runs-on: ubuntu-latest
 
     steps:
       - name: Set up Node
         uses: actions/setup-node@v5
         with:
-          node-version: ${{ matrix.node }}
+          node-version: 22
 
       - name: Checkout
         uses: actions/checkout@master
@@ -54,7 +45,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: ${{ matrix.os }}-node-v${{ matrix.node }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/package-lock.json')) }}
+          key: ubuntu-latest-node-v22-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/package-lock.json')) }}
 
       - name: Lint
         run: npm run lint
@@ -66,26 +57,20 @@ jobs:
         run: npm run build
 
       - name: Coverage
-        if: matrix.os == 'ubuntu-latest' && matrix.node == 22
         uses: codecov/codecov-action@v5
 
   types:
     needs: prepare
-    name: Types (${{ matrix.os}}, Node ${{ matrix.node }}, TS ${{ matrix.typescript }})
-    runs-on: ${{ matrix.os }}
+    name: Types
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-        node: [22]
-        # Add relevant versions from: https://majors.nullvoxpopuli.com/q?minors=on&packages=typescript
-        typescript: ["5.7"]
 
     steps:
       - name: Set up Node
         uses: actions/setup-node@v5
         with:
-          node-version: ${{ matrix.node }}
+          node-version: 22
 
       - name: Checkout
         uses: actions/checkout@master
@@ -94,10 +79,10 @@ jobs:
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: ${{ matrix.os }}-node-v${{ matrix.node }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/package-lock.json')) }}
+          key: ubuntu-latest-node-v22-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/package-lock.json')) }}
 
       - name: Overwrite TypeScript
-        run: npm install --no-save typescript@${{ matrix.typescript }} && npx tsc --version
+        run: npm install --no-save typescript@5.7 && npx tsc --version
 
       - name: Types
         run: npm run types
@@ -105,19 +90,16 @@ jobs:
   size:
     needs: prepare
     if: github.event_name == 'pull_request'
-    name: Size (${{ matrix.os}}, Node ${{ matrix.node }})
-    runs-on: ${{ matrix.os }}
+    name: Size
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-        node: [22]
 
     steps:
       - name: Set up Node
         uses: actions/setup-node@v5
         with:
-          node-version: ${{ matrix.node }}
+          node-version: 22
 
       - name: Checkout
         uses: actions/checkout@master
@@ -126,9 +108,48 @@ jobs:
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: ${{ matrix.os }}-node-v${{ matrix.node }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/package-lock.json')) }}
+          key: ubuntu-latest-node-v22-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/package-lock.json')) }}
 
       - name: Size
         uses: andresz1/size-limit-action@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
+  e2e:
+    needs: suite
+    runs-on: [ubuntu-latest]
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Checkout
+        uses: actions/checkout@master
+
+      - name: Retrieve node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ubuntu-latest-node-v22-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/package-lock.json')) }}
+
+      - name: Running E2E tests
+        run: npm run test:e2e
+        env:
+          DEBUG: pw:test
+          DEBUG_MODE: true
+          PRISMIC_DEBUG: true
+          PRISMIC_ENV: staging
+          CLAUDE_CODE_USE_BEDROCK: 1
+          AWS_REGION: us-east-1
+          AWS_BEARER_TOKEN_BEDROCK: ${{ secrets.AWS_BEARER_TOKEN_BEDROCK }}
+
+      - name: Upload blob report to GitHub Actions Artifacts
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14

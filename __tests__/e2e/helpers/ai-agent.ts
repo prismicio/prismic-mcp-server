@@ -141,25 +141,31 @@ type Grade = {
 	summary: string
 }
 
-export function checkToolUsage({
+export function getPrismicMcpTools({
 	messages,
-	toolName,
 }: {
 	messages: SDKMessage[]
-	toolName: string
-}): boolean {
-	const toolCallMessage = messages.find(
-		(message) =>
-			message.type === "assistant" &&
-			message.message.content[0].type === "tool_use" &&
-			message.message.content[0].name === toolName,
-	)
+}): string[] {
+	const prismicMcpToolSet = new Set<string>()
 
-	return toolCallMessage !== undefined
+	for (const message of messages) {
+		if (
+			message.type === "assistant" &&
+			message.message.content[0]?.type === "tool_use"
+		) {
+			const toolName = message.message.content[0].name
+			if (toolName.startsWith("mcp__prismic__")) {
+				const cleanToolName = toolName.replace("mcp__prismic__", "")
+				prismicMcpToolSet.add(cleanToolName)
+			}
+		}
+	}
+
+	return Array.from(prismicMcpToolSet)
 }
 
 export function isLLMConfigured(): boolean {
-	return !!process.env.ANTHROPIC_API_KEY
+	return !!process.env.AWS_BEARER_TOKEN_BEDROCK
 }
 
 const debugConsoleLog = (message: SDKMessage) => {

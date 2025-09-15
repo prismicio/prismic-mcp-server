@@ -54,7 +54,7 @@ RETURNS: A success message indicating the path to the generated types file or an
 				})
 			} catch (error) {
 				// noop, we don't wanna block the tool call if the tracking fails
-				if (process.env.DEBUG) {
+				if (process.env.PRISMIC_DEBUG) {
 					console.error(
 						"Error while tracking 'generate_types' tool call",
 						error,

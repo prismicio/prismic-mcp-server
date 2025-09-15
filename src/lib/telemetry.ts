@@ -77,13 +77,13 @@ export class Telemetry {
 				// noop, we don't wanna block the mcp server if a tracking event is unsuccessful.
 				// Some users or networks intentionally block Segment,
 				// so we can't block the mcp server if a tracking event is unsuccessful.
-				if (process.env.DEBUG) {
+				if (process.env.PRISMIC_DEBUG) {
 					console.error("Error while tracking event:", error)
 				}
 			})
 		} catch (error) {
 			// noop, we don't wanna block the mcp server if the telemetry is not initialized
-			if (process.env.DEBUG) {
+			if (process.env.PRISMIC_DEBUG) {
 				console.error("Error while initializing telemetry:", error)
 			}
 		}
@@ -99,7 +99,7 @@ export class Telemetry {
 			await this.identify()
 		} catch (error) {
 			// noop, we don't wanna block tracking if the identify fails
-			if (process.env.DEBUG) {
+			if (process.env.PRISMIC_DEBUG) {
 				console.error("Error while identifying user:", error)
 			}
 		}
@@ -109,7 +109,7 @@ export class Telemetry {
 			repository = getRepositoryName(sliceMachineConfigAbsolutePath)
 		} catch (error) {
 			// noop, we don't wanna block tracking if the repository name is not found
-			if (process.env.DEBUG) {
+			if (process.env.PRISMIC_DEBUG) {
 				console.error("Error while getting repository name:", error)
 			}
 		}
@@ -119,7 +119,7 @@ export class Telemetry {
 			mcpVersion = __PACKAGE_VERSION__
 		} catch (error) {
 			// noop, we don't wanna block tracking if the mcp version is not found
-			if (process.env.DEBUG) {
+			if (process.env.PRISMIC_DEBUG) {
 				console.error("Error while getting MCP version:", error)
 			}
 		}
@@ -129,7 +129,7 @@ export class Telemetry {
 			nodeVersion = process.versions.node
 		} catch (error) {
 			// noop, we don't wanna block tracking if the node version is not found
-			if (process.env.DEBUG) {
+			if (process.env.PRISMIC_DEBUG) {
 				console.error("Error while getting node version:", error)
 			}
 		}
@@ -162,7 +162,7 @@ export class Telemetry {
 			this._userID = userShortId
 		} catch (error) {
 			// noop, we will use the anonymous ID instead
-			if (process.env.DEBUG) {
+			if (process.env.PRISMIC_DEBUG) {
 				console.error("Error while getting user short ID:", error)
 			}
 		}

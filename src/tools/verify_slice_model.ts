@@ -43,7 +43,7 @@ RETURNS: A message indicating whether the slice model is valid or not, and detai
 				})
 			} catch (error) {
 				// noop, we don't wanna block the tool call if the tracking fails
-				if (process.env.DEBUG) {
+				if (process.env.PRISMIC_DEBUG) {
 					console.error(
 						"Error while tracking 'verify_slice_model' tool call",
 						error,
