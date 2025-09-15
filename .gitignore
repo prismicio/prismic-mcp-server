@@ -27,6 +27,11 @@ coverage
 .eslintcache
 .nyc_output
 
+# playwright
+playwright-report/
+test-results/
+playwright-tmp/
+
 # .env
 .env
 .env.test
