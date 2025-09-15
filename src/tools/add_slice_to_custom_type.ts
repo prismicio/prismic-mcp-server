@@ -14,9 +14,9 @@ import { telemetryClient } from "../server"
 
 export const add_slice_to_custom_type = tool(
 	"add_slice_to_custom_type",
-	`PURPOSE: Adds a slice to a page or custom type.
+	`PURPOSE: Adds a slice to a custom type.
 
-USAGE: Use to add a given slice to a specified custom type.
+USAGE: Use before doing a modification of a custom type to add a slice.
 
 RETURNS: A message indicating whether the slice was added to the type or not, and detailed error messages if it is not.`,
 	z.object({
@@ -170,7 +170,7 @@ RETURNS: A message indicating whether the slice was added to the type or not, an
 						text: `
 The slice model at ${sliceModelAbsolutePath} is now added to the custom type at ${customTypeModelAbsolutePath}.
 
-The next step is to update the Prismic types.
+You MUST now call the generate_types tool to update the Prismic types.
 `,
 					},
 				],
