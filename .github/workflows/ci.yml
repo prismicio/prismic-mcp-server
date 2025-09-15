@@ -162,8 +162,19 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ !cancelled() }}
     steps:
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@master
+
+      - name: Retrieve node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ubuntu-latest-node-v22-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/package-lock.json')) }}
 
       - name: Download blob reports from GitHub Actions Artifacts
         uses: actions/download-artifact@v4
