@@ -101,7 +101,7 @@ RETURNS: Prismic Framework-specific field documentation and code examples.`,
    - Framework: ${args.projectFramework}
    - Styling: Match existing slices if available, otherwise use project's styling system
    - Code: Analyze codebase for consistent patterns and conventions
-   - Exception: If you have been provided with any example code, base yourself on it's practices, but always check if it's supported by the current project configuration (e.g. Wrong: using Tailwind when the project uses CSS Modules).
+   - Exception: If you have been provided with any example code, base yourself on it and try to follow it's practices. When doing this, ALWAYS check if everything (e.g. functions, components, libraries, etc) you're using exists and is supported by the current project configuration (e.g. Wrong: using Tailwind classes when the project uses CSS Modules or calling a function that doesn't exist).
 
 3. **Implement fields dynamically**
    - All content must come from Prismic fields
