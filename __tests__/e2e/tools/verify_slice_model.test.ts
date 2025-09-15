@@ -39,7 +39,6 @@ test.describe("verify_slice_model tool - Calling Tool", () => {
 			join(projectRoot, "/src/slices/Hero"),
 			{ recursive: true },
 		)
-
 		rmSync(join(projectRoot, "/src/slices/Hero/model.json"))
 		copyFileSync(
 			join(
