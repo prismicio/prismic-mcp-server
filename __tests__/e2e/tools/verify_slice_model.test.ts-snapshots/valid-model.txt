@@ -2,7 +2,7 @@
   "content": [
     {
       "type": "text",
-      "text": "The slice model at /Volumes/Data/work/repositories/prismic-mcp-server/__tests__/e2e/playwright-tmp/prismic-mcp-test-should-check-a-valid-model.json-file-b2f23092-a2ba-4063-802f-f574a97022a3/src/slices/Hero/model.json is valid.\n\nIMPORTANT: Since the model has changed, you MUST now call:\n1. how_to_mock_slice (to create/update mocks based on the new model)\n2. how_to_code_slice (to create/update the component code based on the new model)\n\nThe model drives everything - when it changes, mocks and code must be adjusted accordingly."
+      "text": "The slice model at {base_path}/model.json is valid.\n\nIMPORTANT: Since the model has changed, you MUST now call:\n1. how_to_mock_slice (to create/update mocks based on the new model)\n2. how_to_code_slice (to create/update the component code based on the new model)\n\nThe model drives everything - when it changes, mocks and code must be adjusted accordingly."
     }
   ]
 }

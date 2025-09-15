@@ -15,15 +15,18 @@ test.describe("verify_slice_mock tool - Calling Tool", () => {
 			{ recursive: true },
 		)
 
+		const sliceDirectoryAbsolutePath = join(projectRoot, "src/slices/Hero")
 		const result = await callTool("verify_slice_mock", {
 			sliceMachineConfigAbsolutePath: join(
 				projectRoot,
 				"slicemachine.config.json",
 			),
-			sliceDirectoryAbsolutePath: join(projectRoot, "src/slices/Hero"),
+			sliceDirectoryAbsolutePath,
 		})
 
-		await expect(result).toMatchSnapshot("valid-mocks.txt")
+		await expect(
+			result.replace(sliceDirectoryAbsolutePath, "{base_path}"),
+		).toMatchSnapshot("valid-mocks.txt")
 	})
 
 	test("should check an invalid mocks.json file", async ({ projectRoot }) => {
@@ -44,14 +47,17 @@ test.describe("verify_slice_mock tool - Calling Tool", () => {
 			join(projectRoot, "/src/slices/Hero/mocks.json"),
 		)
 
+		const sliceDirectoryAbsolutePath = join(projectRoot, "src/slices/Hero")
 		const result = await callTool("verify_slice_mock", {
 			sliceMachineConfigAbsolutePath: join(
 				projectRoot,
 				"slicemachine.config.json",
 			),
-			sliceDirectoryAbsolutePath: join(projectRoot, "src/slices/Hero"),
+			sliceDirectoryAbsolutePath,
 		})
 
-		await expect(result).toMatchSnapshot("invalid-mocks.txt")
+		await expect(
+			result.replace(sliceDirectoryAbsolutePath, "{base_path}"),
+		).toMatchSnapshot("invalid-mocks.txt")
 	})
 })

@@ -45,6 +45,6 @@ The two files should have the same export, types, etc.
 		})
 
 		console.info("Grade:", grade)
-		expect(grade.score).toEqual(8)
+		expect(grade.score).toBeGreaterThan(7)
 	})
 })

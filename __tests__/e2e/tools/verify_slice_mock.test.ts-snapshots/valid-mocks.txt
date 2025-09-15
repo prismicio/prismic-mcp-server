@@ -2,7 +2,7 @@
   "content": [
     {
       "type": "text",
-      "text": "The slice mock at /Volumes/Data/work/repositories/prismic-mcp-server/__tests__/e2e/playwright-tmp/prismic-mcp-test-should-check-a-valid-mocks.json-file-7df6452d-bc29-40bb-a3a3-44917fa341be/src/slices/Hero/mocks.json is valid."
+      "text": "The slice mock at {base_path}/mocks.json is valid."
     }
   ]
 }

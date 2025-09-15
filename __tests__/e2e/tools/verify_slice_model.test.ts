@@ -15,16 +15,19 @@ test.describe("verify_slice_model tool - Calling Tool", () => {
 			{ recursive: true },
 		)
 
+		const sliceDirectoryAbsolutePath = join(projectRoot, "src/slices/Hero")
 		const result = await callTool("verify_slice_model", {
 			sliceMachineConfigAbsolutePath: join(
 				projectRoot,
 				"slicemachine.config.json",
 			),
-			sliceDirectoryAbsolutePath: join(projectRoot, "src/slices/Hero"),
+			sliceDirectoryAbsolutePath,
 			isNewSlice: false,
 		})
 
-		await expect(result).toMatchSnapshot("valid-model.txt")
+		await expect(
+			result.replace(sliceDirectoryAbsolutePath, "{base_path}"),
+		).toMatchSnapshot("valid-model.txt")
 	})
 
 	test("should check an invalid model.json file", async ({ projectRoot }) => {
@@ -46,15 +49,18 @@ test.describe("verify_slice_model tool - Calling Tool", () => {
 			join(projectRoot, "/src/slices/Hero/model.json"),
 		)
 
+		const sliceDirectoryAbsolutePath = join(projectRoot, "src/slices/Hero")
 		const result = await callTool("verify_slice_model", {
 			sliceMachineConfigAbsolutePath: join(
 				projectRoot,
 				"slicemachine.config.json",
 			),
-			sliceDirectoryAbsolutePath: join(projectRoot, "src/slices/Hero"),
+			sliceDirectoryAbsolutePath,
 			isNewSlice: false,
 		})
 
-		await expect(result).toMatchSnapshot("invalid-model.txt")
+		await expect(
+			result.replace(sliceDirectoryAbsolutePath, "{base_path}"),
+		).toMatchSnapshot("invalid-model.txt")
 	})
 })
