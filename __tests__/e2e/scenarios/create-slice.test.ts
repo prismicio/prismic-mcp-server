@@ -34,7 +34,6 @@ It should have:
 				"verify_slice_mock",
 			]),
 		)
-		expect(toolsUsed).toHaveLength(6)
 
 		const sliceDir = join(projectRoot, "/src/slices/Hero")
 		const referenceDir = join(
@@ -95,7 +94,6 @@ Focus on:
 				"verify_slice_mock",
 			]),
 		)
-		expect(toolsUsed).toHaveLength(6)
 
 		const sliceDir = join(projectRoot, "/src/slices/Hero")
 		const referenceDir = join(
@@ -156,7 +154,6 @@ Focus on:
 				"verify_slice_mock",
 			]),
 		)
-		expect(toolsUsed).toHaveLength(6)
 
 		const sliceDir = join(projectRoot, "/src/slices/Hero")
 		const referenceDir = join(

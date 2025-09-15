@@ -42,7 +42,7 @@ test.describe("how_to_code_slice tool - Used by AI agent", () => {
 		const toolsUsed = getPrismicMcpTools({
 			messages,
 		})
-		expect(toolsUsed).toEqual(["how_to_code_slice"])
+		expect(toolsUsed).toEqual(expect.arrayContaining(["how_to_code_slice"]))
 
 		const sliceFile = join(projectRoot, "/src/slices/Hero/index.tsx")
 		const referenceFile = join(

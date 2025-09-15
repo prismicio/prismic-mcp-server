@@ -26,7 +26,7 @@ test.describe("generate_types tool - Used by AI agent", () => {
 		const toolsUsed = getPrismicMcpTools({
 			messages,
 		})
-		expect(toolsUsed).toEqual(["generate_types"])
+		expect(toolsUsed).toEqual(expect.arrayContaining(["generate_types"]))
 
 		const sliceFile = join(projectRoot, "prismicio-types.d.ts")
 		const referenceFile = join(

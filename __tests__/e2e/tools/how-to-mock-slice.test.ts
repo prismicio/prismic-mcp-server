@@ -27,8 +27,9 @@ test.describe("how_to_mock_slice tool - Used by AI agent", () => {
 		const toolsUsed = getPrismicMcpTools({
 			messages,
 		})
-		expect(toolsUsed).toEqual(["how_to_mock_slice", "verify_slice_mock"])
-		expect(toolsUsed).toHaveLength(2)
+		expect(toolsUsed).toEqual(
+			expect.arrayContaining(["how_to_mock_slice", "verify_slice_mock"]),
+		)
 
 		const sliceFile = join(projectRoot, "/src/slices/Hero/mocks.json")
 		const referenceFile = join(

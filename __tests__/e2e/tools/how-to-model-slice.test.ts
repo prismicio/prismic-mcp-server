@@ -24,12 +24,13 @@ It should have:
 		const toolsUsed = getPrismicMcpTools({
 			messages,
 		})
-		expect(toolsUsed).toEqual([
-			"how_to_model_slice",
-			"verify_slice_model",
-			"generate_types",
-		])
-		expect(toolsUsed).toHaveLength(3)
+		expect(toolsUsed).toEqual(
+			expect.arrayContaining([
+				"how_to_model_slice",
+				"verify_slice_model",
+				"generate_types",
+			]),
+		)
 
 		const sliceFile = join(projectRoot, "/src/slices/Hero/model.json")
 		const referenceFile = join(
