@@ -73,7 +73,7 @@
 		"@segment/analytics-node": "2.3.0",
 		"common-tags": "1.8.2",
 		"cookie": "1.0.2",
-		"prettier": "3.5.3",
+		"prettier": "3.6.2",
 		"prismic-ts-codegen": "0.1.28",
 		"zod": "3.25.67"
 	},
