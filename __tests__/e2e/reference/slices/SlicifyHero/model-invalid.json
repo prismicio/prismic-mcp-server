@@ -1,0 +1,43 @@
+{
+	"id": "hero",
+	"type": "SharedSlice",
+	"name": "Hero",
+	"description": "Hero",
+	"variations": [
+		{
+			"id": "default",
+			"name": "Default",
+			"primary": {
+				"title": {},
+				"description": {
+					"type": "StructuredText",
+					"config": {
+						"label": "Description",
+						"placeholder": "",
+						"allowTargetBlank": true,
+						"single": "paragraph,strong,hyperlink"
+					}
+				},
+				"cta_link": {
+					"type": "Link",
+					"label": "Cta Link",
+					"placeholder": "",
+					"select": null,
+					"allowTargetBlank": true,
+					"allowText": true,
+					"repeat": true,
+					"variants": ["Primary", "Secondary", "Text"]
+				},
+				"anchor": {
+					"type": "Anchor",
+					"config": {
+						"label": "anchor",
+						"placeholder": "optional"
+					}
+				}
+			},
+			"imageUrl": "https://images.prismic.io/slice-machine/621a5ec4-0387-4bc5-9860-2dd46cbc07cd_default_ss.png?auto=compress,format",
+			"items": {}
+		}
+	]
+}
