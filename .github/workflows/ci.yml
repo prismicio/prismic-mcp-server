@@ -177,7 +177,7 @@ jobs:
           key: ubuntu-latest-node-v22-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/package-lock.json')) }}
 
       - name: Download blob reports from GitHub Actions Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           path: e2e-all-blob-reports
           pattern: e2e-blob-report-*
