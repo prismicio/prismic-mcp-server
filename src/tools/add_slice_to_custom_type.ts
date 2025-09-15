@@ -5,6 +5,7 @@ import { z } from "zod"
 import { formatErrorForMcpTool } from "../lib/error"
 import { tool } from "../lib/mcp"
 import {
+	CustomType,
 	type DynamicSlices,
 	type SharedSlice,
 	type StaticCustomType,
@@ -16,7 +17,9 @@ export const add_slice_to_custom_type = tool(
 	"add_slice_to_custom_type",
 	`PURPOSE: Adds a slice to a custom type.
 
-USAGE: Use before doing a modification of a custom type to add a slice.
+USAGE: Required path for modifying Prismic slice registrations.
+Adds/registers/attaches a slice to a custom type and regenerates types.
+Do not edit custom type JSON files manually; this tool performs validation and follow-up steps.
 
 RETURNS: A message indicating whether the slice was added to the type or not, and detailed error messages if it is not.`,
 	z.object({
@@ -149,6 +152,20 @@ RETURNS: A message indicating whether the slice was added to the type or not, an
 
 			sliceField.config.choices[parsedSliceModel.id] = {
 				type: parsedSliceModel.type,
+			}
+
+			const validationResult = CustomType.decode(customTypeParsedModel)
+
+			if (validationResult._tag === "Left") {
+				if (process.env.PRISMIC_DEBUG) {
+					console.error(
+						"Error with generated custom type model",
+						validationResult.left,
+					)
+				}
+				throw new Error(
+					`Error updating custom type model at ${customTypeModelAbsolutePath}`,
+				)
 			}
 
 			try {
