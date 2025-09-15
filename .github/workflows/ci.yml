@@ -121,8 +121,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shardIndex: [1, 2, 3, 4]
-        shardTotal: [4]
+        shardIndex: [1, 2, 3, 4, 5, 6, 7]
+        shardTotal: [7]
     steps:
       - name: Set up Node
         uses: actions/setup-node@v5
@@ -139,7 +139,7 @@ jobs:
           key: ubuntu-latest-node-v22-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/package-lock.json')) }}
 
       - name: Running E2E tests
-        run: npm run test:e2e --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run: npm run test:e2e -- --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
         env:
           DEBUG: pw:test
           DEBUG_MODE: true
@@ -173,7 +173,7 @@ jobs:
           merge-multiple: true
 
       - name: Merge into HTML Report
-        run: npm run test:e2e:merge-reports --reporter html ./e2e-all-blob-reports
+        run: npm run test:e2e:merge-reports -- --reporter html ./e2e-all-blob-reports
 
       - name: Upload HTML report
         uses: actions/upload-artifact@v4
