@@ -3,6 +3,7 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 
 export async function callTool(
 	toolName:
+		| "add_slice_to_custom_type"
 		| "how_to_code_slice"
 		| "how_to_model_slice"
 		| "verify_slice_model"
