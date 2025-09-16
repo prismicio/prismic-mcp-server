@@ -92,25 +92,40 @@ RETURNS: A message indicating whether the slice was added to the type or not, an
 				)
 			}
 
-			// Find the slice fields
-			const sliceFields: [string, string][] = []
+			// Add the slice to the first slice field in the model
 			let sliceAlreadyAdded = false
 
-			Object.entries(customTypeParsedModel.json).forEach(
+			const hasSliceZone = Object.entries(customTypeParsedModel.json).some(
 				([sectionName, fields]) => {
-					Object.entries(fields).forEach(([fieldId, field]) => {
+					return Object.entries(fields).some(([fieldId, field]) => {
 						if (field?.type === "Slices") {
-							sliceFields.push([sectionName, fieldId])
-
 							if (
-								!sliceAlreadyAdded &&
 								Object.keys(field.config?.choices || {}).includes(
 									parsedSliceModel.id,
 								)
 							) {
 								sliceAlreadyAdded = true
+							} else {
+								const sliceField = customTypeParsedModel.json[sectionName][
+									fieldId
+								] as DynamicSlices
+
+								if (!sliceField.config) {
+									sliceField.config = {}
+								}
+								if (!sliceField.config.choices) {
+									sliceField.config.choices = {}
+								}
+
+								sliceField.config.choices[parsedSliceModel.id] = {
+									type: parsedSliceModel.type,
+								}
 							}
+
+							return true
 						}
+
+						return false
 					})
 				},
 			)
@@ -126,32 +141,20 @@ RETURNS: A message indicating whether the slice was added to the type or not, an
 				}
 			}
 
-			if (sliceFields.length === 0) {
-				return {
-					content: [
-						{
-							type: "text",
-							text: `The "${parsedSliceModel.id}" slice was not added to the "${customTypeParsedModel.id}" custom type because there are no slice fields in the model.`,
+			// If the custom type does not have a slice zone, add it to the first section
+			if (!hasSliceZone) {
+				const firstSection = Object.keys(customTypeParsedModel.json)[0]
+				;(customTypeParsedModel.json[firstSection].slices as DynamicSlices) = {
+					type: "Slices",
+					fieldset: "Slice Zone",
+					config: {
+						choices: {
+							[parsedSliceModel.id]: {
+								type: parsedSliceModel.type,
+							},
 						},
-					],
+					},
 				}
-			}
-
-			// Add the slice to the first slice field in the model
-			const [sectionName, fieldId] = sliceFields[0]
-
-			const sliceField: DynamicSlices = customTypeParsedModel.json[sectionName][
-				fieldId
-			] as DynamicSlices
-			if (!sliceField.config) {
-				sliceField.config = {}
-			}
-			if (!sliceField.config.choices) {
-				sliceField.config.choices = {}
-			}
-
-			sliceField.config.choices[parsedSliceModel.id] = {
-				type: parsedSliceModel.type,
 			}
 
 			const validationResult = CustomType.decode(customTypeParsedModel)
@@ -186,7 +189,11 @@ RETURNS: A message indicating whether the slice was added to the type or not, an
 						type: "text",
 						text: `
 The slice model at ${sliceModelAbsolutePath} is now added to the custom type at ${customTypeModelAbsolutePath}.
-
+${
+	!hasSliceZone
+		? `\nNote: The custom type did not have a slice zone, so one was added to the type.\n`
+		: ""
+}
 You MUST now call the generate_types tool to update the Prismic types.
 `,
 					},
