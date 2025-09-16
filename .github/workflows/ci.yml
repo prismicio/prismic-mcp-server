@@ -148,6 +148,12 @@ jobs:
           CLAUDE_CODE_USE_BEDROCK: 1
           AWS_REGION: us-east-1
           AWS_BEARER_TOKEN_BEDROCK: ${{ secrets.AWS_BEARER_TOKEN_BEDROCK }}
+          CLAUDE_CODE_ENABLE_TELEMETRY: 1
+          OTEL_LOGS_EXPORTER: otlp
+          OTEL_EXPORTER_OTLP_LOGS_PROTOCOL: http/json
+          OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: https://api.smith.langchain.com/otel/v1/claude_code
+          OTEL_EXPORTER_OTLP_HEADERS: x-api-key=${{ secrets.LANGSMITH_API_KEY }},Langsmith-Project=${{ vars.LANGSMITH_PROJECT }}
+          OTEL_LOG_USER_PROMPTS: 1
 
       - name: Upload blob report to GitHub Actions Artifacts
         uses: actions/upload-artifact@v4
