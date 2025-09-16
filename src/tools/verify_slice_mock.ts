@@ -3,7 +3,7 @@ import * as path from "node:path"
 
 import { z } from "zod"
 
-import { formatErrorForMcpTool } from "../lib/error"
+import { formatDecodeError, formatErrorForMcpTool } from "../lib/error"
 import { tool } from "../lib/mcp"
 import { SharedSliceContent } from "@prismicio/types-internal/lib/content"
 
@@ -68,10 +68,10 @@ const mocksSchema = z.array(
 	z.unknown().transform((content, ctx) => {
 		const result = SharedSliceContent.decode(content)
 		if (result._tag === "Left") {
-			for (const err of result.left) {
+			for (const error of result.left) {
 				ctx.addIssue({
 					code: z.ZodIssueCode.custom,
-					message: err.message,
+					message: formatDecodeError(error),
 				})
 			}
 
