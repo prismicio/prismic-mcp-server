@@ -58,6 +58,14 @@ type TelemetryTrackArgs =
 			sliceMachineConfigAbsolutePath: string
 			properties?: never
 	  }
+	| {
+			event: "MCP Tool - Add slice to custom type"
+			sliceMachineConfigAbsolutePath: string
+			properties: {
+				sliceName: string
+				customTypeId: string
+			}
+	  }
 
 export class Telemetry {
 	private _segmentClient: Analytics | undefined = undefined
