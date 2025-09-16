@@ -2,13 +2,11 @@ import { readFileSync, writeFileSync } from "fs"
 import { basename, join as joinPath } from "path"
 import { z } from "zod"
 
-import { formatErrorForMcpTool } from "../lib/error"
+import { formatDecodeError, formatErrorForMcpTool } from "../lib/error"
 import { tool } from "../lib/mcp"
 import {
 	CustomType,
-	type DynamicSlices,
-	type SharedSlice,
-	type StaticCustomType,
+	SharedSlice,
 } from "@prismicio/types-internal/lib/customtypes"
 
 import { telemetryClient } from "../server"
@@ -50,7 +48,7 @@ RETURNS: A message indicating whether the slice was added to the type or not, an
 				})
 			} catch (error) {
 				// noop, we don't wanna block the tool call if the tracking fails
-				if (process.env.DEBUG) {
+				if (process.env.PRISMIC_DEBUG) {
 					console.error(
 						"Error while tracking 'add_slice_to_custom_type' tool call",
 						error,
@@ -64,10 +62,10 @@ RETURNS: A message indicating whether the slice was added to the type or not, an
 				"model.json",
 			)
 
-			let parsedSliceModel: SharedSlice
+			let sliceModelContent: unknown
 			try {
-				parsedSliceModel = JSON.parse(
-					readFileSync(sliceModelAbsolutePath, "utf-8"),
+				sliceModelContent = JSON.parse(
+					readFileSync(sliceModelAbsolutePath, "utf8"),
 				)
 			} catch (error) {
 				throw new Error(
@@ -75,29 +73,48 @@ RETURNS: A message indicating whether the slice was added to the type or not, an
 				)
 			}
 
+			const validatedSliceModel = SharedSlice.decode(sliceModelContent)
+			if (validatedSliceModel._tag === "Left") {
+				throw new Error(
+					`Invalid slice model at ${sliceModelAbsolutePath}. Please use the 'verify_slice_model' tool to validate the slice model before adding it to the custom type.`,
+				)
+			}
+			const parsedSliceModel = validatedSliceModel.right
+
 			// Read the custom type model
 			const customTypeModelAbsolutePath = joinPath(
 				customTypeDirectoryAbsolutePath,
 				"index.json",
 			)
 
-			let customTypeParsedModel: StaticCustomType
+			let customTypeModelContent: unknown
 			try {
-				customTypeParsedModel = JSON.parse(
-					readFileSync(customTypeModelAbsolutePath, "utf-8"),
+				customTypeModelContent = JSON.parse(
+					readFileSync(customTypeModelAbsolutePath, "utf8"),
 				)
 			} catch (error) {
 				throw new Error(
-					`Invalid JSON format for page/custom type model at ${customTypeModelAbsolutePath}: ${getErrorMessage(error)}`,
+					`Invalid JSON format for custom type model at ${customTypeModelAbsolutePath}: ${getErrorMessage(error)}`,
 				)
 			}
+
+			const validatedCustomTypeModel = CustomType.decode(customTypeModelContent)
+			if (validatedCustomTypeModel._tag === "Left") {
+				const errors = validatedCustomTypeModel.left
+					.map(formatDecodeError)
+					.join("\n")
+				throw new Error(
+					`Invalid custom type model at ${customTypeModelAbsolutePath}:\n${errors}`,
+				)
+			}
+			const parsedCustomTypeModel = validatedCustomTypeModel.right
 
 			// Add the slice to the first slice field in the model
 			let sliceAlreadyAdded = false
 
-			const hasSliceZone = Object.entries(customTypeParsedModel.json).some(
-				([sectionName, fields]) => {
-					return Object.entries(fields).some(([fieldId, field]) => {
+			const hasSliceZone = Object.values(parsedCustomTypeModel.json).some(
+				(fields) => {
+					return Object.values(fields).some((field) => {
 						if (field?.type === "Slices") {
 							if (
 								Object.keys(field.config?.choices || {}).includes(
@@ -106,18 +123,14 @@ RETURNS: A message indicating whether the slice was added to the type or not, an
 							) {
 								sliceAlreadyAdded = true
 							} else {
-								const sliceField = customTypeParsedModel.json[sectionName][
-									fieldId
-								] as DynamicSlices
-
-								if (!sliceField.config) {
-									sliceField.config = {}
+								if (!field.config) {
+									field.config = {}
 								}
-								if (!sliceField.config.choices) {
-									sliceField.config.choices = {}
+								if (!field.config.choices) {
+									field.config.choices = {}
 								}
 
-								sliceField.config.choices[parsedSliceModel.id] = {
+								field.config.choices[parsedSliceModel.id] = {
 									type: parsedSliceModel.type,
 								}
 							}
@@ -135,7 +148,7 @@ RETURNS: A message indicating whether the slice was added to the type or not, an
 					content: [
 						{
 							type: "text",
-							text: `The "${parsedSliceModel.id}" slice already exists in the "${customTypeParsedModel.id}" custom type`,
+							text: `The "${parsedSliceModel.id}" slice already exists in the "${parsedCustomTypeModel.id}" custom type`,
 						},
 					],
 				}
@@ -143,8 +156,8 @@ RETURNS: A message indicating whether the slice was added to the type or not, an
 
 			// If the custom type does not have a slice zone, add it to the first section
 			if (!hasSliceZone) {
-				const firstSection = Object.keys(customTypeParsedModel.json)[0]
-				;(customTypeParsedModel.json[firstSection].slices as DynamicSlices) = {
+				const firstSection = Object.keys(parsedCustomTypeModel.json)[0]
+				parsedCustomTypeModel.json[firstSection].slices = {
 					type: "Slices",
 					fieldset: "Slice Zone",
 					config: {
@@ -157,7 +170,7 @@ RETURNS: A message indicating whether the slice was added to the type or not, an
 				}
 			}
 
-			const validationResult = CustomType.decode(customTypeParsedModel)
+			const validationResult = CustomType.decode(parsedCustomTypeModel)
 
 			if (validationResult._tag === "Left") {
 				if (process.env.PRISMIC_DEBUG) {
@@ -174,7 +187,7 @@ RETURNS: A message indicating whether the slice was added to the type or not, an
 			try {
 				writeFileSync(
 					customTypeModelAbsolutePath,
-					`${JSON.stringify(customTypeParsedModel, null, 2)}\n`,
+					`${JSON.stringify(parsedCustomTypeModel, null, 2)}\n`,
 					"utf-8",
 				)
 			} catch (error) {
@@ -189,11 +202,7 @@ RETURNS: A message indicating whether the slice was added to the type or not, an
 						type: "text",
 						text: `
 The slice model at ${sliceModelAbsolutePath} is now added to the custom type at ${customTypeModelAbsolutePath}.
-${
-	!hasSliceZone
-		? `\nNote: The custom type did not have a slice zone, so one was added to the type.\n`
-		: ""
-}
+
 You MUST now call the generate_types tool to update the Prismic types.
 `,
 					},
