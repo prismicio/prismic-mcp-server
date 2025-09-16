@@ -92,31 +92,51 @@ RETURNS: Prismic Framework-specific field documentation and code examples.`,
 
 			const instructions = `# Prismic Slice Implementation Guide
 
-## Required Steps
-1. **Analyze model.json** at ${args.modelAbsolutePath}
-   - Create field analysis table: Field | Type | Config | Implementation
-   - Use exact model configuration, not assumptions
+You are tasked with implementing a **Prismic Slice**. Follow the steps carefully and do not skip validations. Always align with the project's framework and conventions.
 
-2. **Follow project patterns**
-   - Framework: ${args.projectFramework}
-   - Styling: Match existing slices if available, otherwise use project's styling system
-   - Code: Analyze codebase for consistent patterns and conventions
-   - Exception: If you have been provided with any example code, base yourself on it and try to follow it's practices. When doing this, ALWAYS check if everything (e.g. functions, components, libraries, etc) you're using exists and is supported by the current project configuration (e.g. Wrong: using Tailwind classes when the project uses CSS Modules or calling a function that doesn't exist).
-   - After coding the slice, ensure it's included in the exported "components" object inside the index.ts file present under the slices directory (e.g. src/slices/index.ts)
+WALK THROUGH EACH STEP AND STATE YOUR INTENT FOR EACH ONE, MENTIONING THE STEP NUMBER IN YOUR RESPONSE.
 
-3. **Implement fields dynamically**
-   - All content must come from Prismic fields
-   - Never hardcode visible content
-   - Use appropriate components for each field type based on the following field documentation
+---
 
-4. **If there is an attached image, base yourself on it**
-   - Before coding the Slice, prepare a detailed description of what you see in the image
-   - Pay close attention to the orientation, layout, and colors of it
-   - For the orientation and layout, focus on the content and not the size of the image
-   - Try to code and style the slice to make it look as close as possible to the attached image
+Step 1: Analyze \`model.json\`
+- Path: \`${args.modelAbsolutePath}\`
+- Parse fields exactly as defined. Do not infer or assume missing information.
+- Create a **field analysis table** with columns: \`Field | Type | Config | Implementation\`
+
+Step 2: Analyze Included Images (if any)
+- If you don't have any image, skip this step.
+- Before coding, generate a **detailed description** of the image:
+  - Layout
+  - Orientation
+  - Color palette
+  - Content structure
+- Implement the slice to visually match the image:
+  - Prioritize layout and content structure over pixel dimensions.
+  - Use the project's styling system to replicate the look and feel.
+
+Step 3: Implement the Slice Code
+- Framework: \`${args.projectFramework}\`
+- **Implement Fields Dynamically**
+  - All visible content must come from Prismic fields.
+  - Never hardcode copy, labels, or text.
+  - For each field, use the correct component and rendering logic according to the **Field Documentation** (below).
+- Styling:
+  - If other slices exist, match their styling system and conventions.
+  - If no patterns exist, follow the project's global styling system (CSS, Tailwind, SCSS, etc.).
+- Code Practices:
+  - Mirror existing slice structure, naming, imports, and export patterns.
+  - Validate all functions, libraries, and components against the project setup.  
+  - *Do not introduce unsupported tools (e.g. Tailwind classes in a CSS Modules project).*
+
+Step 4: Export the Slice in the Slices Library
+- Ensure the new slice is added to the exported \`components\` object inside the \`index.ts\` file present under the slices library directory. This files is located one level above the directory of the slice (e.g. for a slice in \`src/slices/MySlice\`, the \`index.ts\` file is located in \`src/slices/index.ts\`)
+
+---
 
 ## Field Documentation
 ${fieldDocs}
+
+---
 
 ## Next Steps
 Implement the desired code changes following the documentation above and project patterns.`
