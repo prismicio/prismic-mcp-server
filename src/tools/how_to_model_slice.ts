@@ -226,8 +226,8 @@ Notes:
 }
 \`\`\`
 Notes:
-- Use repeat: true for lists of buttons/links (better than Group for this use case).
-- Use variants for different button styles (e.g., ["Primary", "Secondary"]).
+- Use \`repeat\`: true for lists of adjacent buttons/links (better than Group for this use case). This removes the need for multiple separate Link fields.
+- Use variants for different button styles (e.g., ["Primary", "Secondary"]). If \`repeat\` is enabled and the links or buttons have different styles, specify the style names here.
 - Use allowText to enable custom display text.
 - **Content Relationships**: Set \`select: "document"\` and use \`customtypes\` for field selection. Only selected fields are included in API responses. Up to 2 levels of nesting supported. For nesting to work, target fields must also be content relationship Link fields. Groups don't count toward nesting levels, i.e. a group field can contain a content relationship field that points to another custom type, and that custom type can have a group field with a content relationship field as the second nesting level.
 
@@ -356,6 +356,7 @@ Notes:
 - Use for repeating groups of fields.
 - Use for lists of items that can be navigated (sliders, carousels).
 - For left/right or numbered pairs, prefer using Group for clarity and consistency.
+- Never use this field for groups of adjacent links and buttons. Use the Link field instead.
 
 ## Implementation Steps
 
