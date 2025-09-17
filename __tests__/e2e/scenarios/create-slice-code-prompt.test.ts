@@ -13,7 +13,7 @@ test("should check slice creation (model, code, mocks) based on user react code 
 	)
 
 	const messages = await aiAgent.simulateUserQuery({
-		prompt: `Create a "Hero" slice based on my code file (model, generate types, code, mocks) [!code_file]: ${referenceCodeFile}`,
+		prompt: `Create a "Hero" slice based on my code file [!code_file]: ${referenceCodeFile}`,
 	})
 	expect(messages.length).toBeGreaterThan(0)
 
