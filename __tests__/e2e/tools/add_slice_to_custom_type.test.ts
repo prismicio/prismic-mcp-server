@@ -230,4 +230,38 @@ test.describe("add_slice_to_custom_type tool - Calling Tool", () => {
 			result.replaceAll(customTypeDirectoryAbsolutePath, "{base_path}"),
 		).toMatchSnapshot("missing-custom-type-model.txt")
 	})
+
+	test("should handle invalid custom type model JSON", async ({
+		projectRoot,
+	}) => {
+		rmSync(join(projectRoot, "/customtypes/page/index.json"))
+		copyFileSync(
+			join(
+				new URL(import.meta.url).pathname,
+				"../../reference/customtypes/page-model-invalid.json",
+			),
+			join(projectRoot, "/customtypes/page/index.json"),
+		)
+
+		const sliceDirectoryAbsolutePath = join(
+			projectRoot,
+			"/src/slices/ImageCards",
+		)
+		const customTypeDirectoryAbsolutePath = join(
+			projectRoot,
+			"/customtypes/page",
+		)
+		const result = await callTool("add_slice_to_custom_type", {
+			sliceMachineConfigAbsolutePath: join(
+				projectRoot,
+				"/slicemachine.config.json",
+			),
+			sliceDirectoryAbsolutePath,
+			customTypeDirectoryAbsolutePath,
+		})
+
+		await expect(
+			result.replaceAll(customTypeDirectoryAbsolutePath, "{base_path}"),
+		).toMatchSnapshot("invalid-custom-type-model.txt")
+	})
 })
