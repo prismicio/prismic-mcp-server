@@ -45,7 +45,7 @@ test.describe("add_slice_to_custom_type tool - Used by AI agent", () => {
 	})
 })
 
-test.describe.only("add_slice_to_custom_type tool - Calling Tool", () => {
+test.describe("add_slice_to_custom_type tool - Calling Tool", () => {
 	test("should add a slice to a custom type", async ({ projectRoot }) => {
 		cpSync(
 			join(
