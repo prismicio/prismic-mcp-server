@@ -3,6 +3,7 @@ import { join } from "path"
 
 import { expect, test } from "../fixtures/test"
 import { getPrismicMcpTools } from "../helpers/ai-agent"
+import { callTool } from "../helpers/mcp-client"
 
 test.describe("add_slice_to_custom_type tool - Used by AI agent", () => {
 	test("should add a slice to a custom type and regenerate types", async ({
@@ -41,5 +42,40 @@ test.describe("add_slice_to_custom_type tool - Used by AI agent", () => {
 		)
 		expect(slicesTypeMatch).toBeTruthy()
 		expect(slicesTypeMatch![0]).toContain("JobListSlice")
+	})
+})
+
+test.describe("add_slice_to_custom_type tool - Calling Tool", () => {
+	test("should add a slice to a custom type and regenerate types", async ({
+		projectRoot,
+	}) => {
+		cpSync(
+			join(
+				new URL(import.meta.url).pathname,
+				"../../reference/slices/SlicifyJobList/JobList",
+			),
+			join(projectRoot, "/src/slices/JobList"),
+			{ recursive: true },
+		)
+
+		const sliceDirectoryAbsolutePath = join(projectRoot, "/src/slices/JobList")
+		const customTypeDirectoryAbsolutePath = join(
+			projectRoot,
+			"/customtypes/page",
+		)
+		const result = await callTool("add_slice_to_custom_type", {
+			sliceMachineConfigAbsolutePath: join(
+				projectRoot,
+				"/slicemachine.config.json",
+			),
+			sliceDirectoryAbsolutePath,
+			customTypeDirectoryAbsolutePath,
+		})
+
+		await expect(
+			result
+				.replace(sliceDirectoryAbsolutePath, "{base_path}")
+				.replace(customTypeDirectoryAbsolutePath, "{base_path}"),
+		).toMatchSnapshot("happy-path.txt")
 	})
 })
