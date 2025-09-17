@@ -10,6 +10,11 @@ export const how_to_model_slice = tool(
 	`PURPOSE: Provide detailed, opinionated guidance to create or update Prismic slice model.json files using modern best practices, including naming, file placement, allowed fields, shapes, and configuration.
 
 USAGE: Use FIRST for any Prismic slice modeling request. Do not use for component or mock implementation.
+Input Type Selection Rules:
+- If the user attaches an image, include "image".
+- If the user attaches code, include "code".
+- Include "text" ONLY if the prompt contains model-related information (e.g., explicitly describes desired fields/structure, adds nuance, or overrides what is seen in the code/image).
+- It is acceptable to include multiple input types when each adds model-relevant signal per the rules above.
 
 RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic model shapes, comprehensive field shape reference, opinionated modeling guidance, validation and testing steps.`,
 	z.object({
@@ -40,9 +45,7 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 		inputTypes: z
 			.array(z.enum(["text", "image", "code"]))
 			.nonempty()
-			.describe(
-				"The kinds of input present in the prompt. Combine as needed: 'text', 'image', 'code'",
-			),
+			.describe("The kinds of input present in the prompt."),
 	}).shape,
 	(args) => {
 		try {
