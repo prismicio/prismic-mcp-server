@@ -1,0 +1,8 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Error: Invalid JSON format for slice model at {base_path}/model.json: ENOENT: no such file or directory, open '{base_path}/model.json'"
+    }
+  ]
+}

@@ -145,4 +145,27 @@ test.describe("add_slice_to_custom_type tool - Calling Tool", () => {
 				.replaceAll(customTypeDirectoryAbsolutePath, "{base_path}"),
 		).toMatchSnapshot("slice-zone-added.txt")
 	})
+
+	test("should handle missing slice model file", async ({ projectRoot }) => {
+		const sliceDirectoryAbsolutePath = join(
+			projectRoot,
+			"/src/slices/Testimonials", // Doesn't exist
+		)
+		const customTypeDirectoryAbsolutePath = join(
+			projectRoot,
+			"/customtypes/settings",
+		)
+		const result = await callTool("add_slice_to_custom_type", {
+			sliceMachineConfigAbsolutePath: join(
+				projectRoot,
+				"/slicemachine.config.json",
+			),
+			sliceDirectoryAbsolutePath,
+			customTypeDirectoryAbsolutePath,
+		})
+
+		await expect(
+			result.replaceAll(sliceDirectoryAbsolutePath, "{base_path}"),
+		).toMatchSnapshot("missing-slice-model.txt")
+	})
 })
