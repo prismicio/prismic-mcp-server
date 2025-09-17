@@ -20,7 +20,7 @@ test.describe("add_slice_to_custom_type tool - Used by AI agent", () => {
 		)
 
 		const messages = await aiAgent.simulateUserQuery({
-			prompt: `Can you help me add the JobList slice to the Page custom type?`,
+			prompt: `Add the JobList slice to the Page custom type.`,
 		})
 		expect(messages.length).toBeGreaterThan(0)
 
