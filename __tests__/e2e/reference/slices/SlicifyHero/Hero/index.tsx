@@ -6,67 +6,65 @@ export type HeroProps = SliceComponentProps<Content.HeroSlice>
 
 export default function Hero({ slice }: HeroProps) {
 	return (
-		<section id={slice.primary.anchor || undefined}>
-			<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-				<PrismicRichText
-					field={slice.primary.title}
-					components={{
-						heading1: ({ children }) => (
-							<h1 className="mx-auto max-w-4xl font-display text-5xl font-medium tracking-tight text-dark-gray sm:text-7xl">
-								{children}
-							</h1>
-						),
-						strong: ({ children }) => {
-							return (
-								<>
-									<span className="relative whitespace-nowrap text-vibrant-blue">
-										<UnderlineDoodle className="absolute left-0 top-2/3 h-[0.58em] w-full fill-blue-300/70" />
-										<span className="relative">{children}</span>
-									</span>
-								</>
-							)
-						},
-					}}
-				/>
-
-				<PrismicRichText
-					field={slice.primary.description}
-					components={{
-						paragraph: ({ children }) => (
-							<p className="mx-auto mt-6 max-w-2xl text-lg tracking-tight text-dark-gray">
-								{children}
-							</p>
-						),
-					}}
-				/>
-
-				<div className="mt-10 flex justify-center gap-x-6">
-					{slice.primary.cta_link?.map((link) => {
-						return link.variant === "Secondary" ? (
-							<PrismicNextLink
-								key={link.key}
-								field={link}
-								color="slate"
-								className="group inline-flex items-center justify-center rounded-full py-2 px-4 text-sm font-semibold focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 bg-slate-900 text-white hover:bg-slate-700 hover:text-slate-100 active:bg-slate-800 active:text-slate-300 focus-visible:outline-slate-900"
-							>
-								<svg
-									aria-hidden="true"
-									className="h-3 w-3 flex-none fill-light-blue group-active:fill-current"
-								>
-									<path d="m9.997 6.91-7.583 3.447A1 1 0 0 1 1 9.447V2.553a1 1 0 0 1 1.414-.91L9.997 5.09c.782.355.782 1.465 0 1.82Z" />
-								</svg>
-								<span className="ml-3">{link.text}</span>
-							</PrismicNextLink>
-						) : (
-							<PrismicNextLink
-								key={link.key}
-								field={link}
-								color="slate"
-								className="group inline-flex items-center justify-center rounded-full py-2 px-4 text-sm font-semibold focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 bg-slate-900 text-white hover:bg-slate-700 hover:text-slate-100 active:bg-slate-800 active:text-slate-300 focus-visible:outline-slate-900"
-							/>
+		<section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+			<PrismicRichText
+				field={slice.primary.title}
+				components={{
+					heading1: ({ children }) => (
+						<h1 className="mx-auto max-w-4xl font-display text-5xl font-medium tracking-tight text-dark-gray sm:text-7xl">
+							{children}
+						</h1>
+					),
+					strong: ({ children }) => {
+						return (
+							<>
+								<span className="relative whitespace-nowrap text-vibrant-blue">
+									<UnderlineDoodle className="absolute left-0 top-2/3 h-[0.58em] w-full fill-blue-300/70" />
+									<span className="relative">{children}</span>
+								</span>
+							</>
 						)
-					})}
-				</div>
+					},
+				}}
+			/>
+
+			<PrismicRichText
+				field={slice.primary.description}
+				components={{
+					paragraph: ({ children }) => (
+						<p className="mx-auto mt-6 max-w-2xl text-lg tracking-tight text-dark-gray">
+							{children}
+						</p>
+					),
+				}}
+			/>
+
+			<div className="mt-10 flex justify-center gap-x-6">
+				{slice.primary.buttons?.map((link) => {
+					return link.variant === "Secondary" ? (
+						<PrismicNextLink
+							key={link.key}
+							field={link}
+							color="slate"
+							className="group inline-flex items-center justify-center rounded-full py-2 px-4 text-sm font-semibold focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 bg-slate-900 text-white hover:bg-slate-700 hover:text-slate-100 active:bg-slate-800 active:text-slate-300 focus-visible:outline-slate-900"
+						>
+							<svg
+								aria-hidden="true"
+								className="h-3 w-3 flex-none fill-light-blue group-active:fill-current"
+							>
+								<path d="m9.997 6.91-7.583 3.447A1 1 0 0 1 1 9.447V2.553a1 1 0 0 1 1.414-.91L9.997 5.09c.782.355.782 1.465 0 1.82Z" />
+							</svg>
+							<span className="ml-3">{link.text}</span>
+						</PrismicNextLink>
+					) : (
+						<PrismicNextLink
+							key={link.key}
+							field={link}
+							color="slate"
+							className="group inline-flex items-center justify-center rounded-full py-2 px-4 text-sm font-semibold focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 bg-slate-900 text-white hover:bg-slate-700 hover:text-slate-100 active:bg-slate-800 active:text-slate-300 focus-visible:outline-slate-900"
+						/>
+					)
+				})}
 			</div>
 		</section>
 	)

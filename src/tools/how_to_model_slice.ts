@@ -108,8 +108,10 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 ## Opinionated Modeling Guidance (Prismic best practices)
 
 - Prefer simple, predictable models that align with Prismic's latest DX.
+- Keep the model streamlined by using the minimum number of fields necessary, Prismic fields are highly flexible and can be configured to handle a wide range of content needs.
 - When modeling, review other existing slices for inspiration and consistency, but always tailor the model to the specific requirements of this slice.
 - Avoid legacy constructs; follow guidance in the relevant sections below.
+- Add fields to model only editor-controlled content. Treat decorative/stylistic or implementation-only elements as non-content unless explicitly requested.
 
 ## File Paths
 
@@ -168,6 +170,9 @@ Notes:
 - Do not set both "single" and "multi" at the same time.
 - Titles: prefer a single heading level without inline marks.
 - Descriptions: allow paragraphs with inline marks (strong, em, hyperlink) and line breaks when necessary.
+- MUST NOT split highlighted phrases into separate fields. Keep one StructuredText field and style with marks/custom renderers/CSS.
+  - Wrong: \`heading\` + \`highlighted_text\` fields
+  - Right: Single \`heading\` field with styled spans
 
 **Text**
 \`\`\`typescript
@@ -205,6 +210,7 @@ Notes:
 - Use constraint for aspect ratio control.
 - thumbnails for predefined image sizes.
 - Avoid using "background" in field names unless specifically meant as full background.
+- MUST NOT create Image fields for decorative elements (accent SVGs, underline images, background shapes, button icons). These are implementation details, not content.
 
 **Link**
 \`\`\`typescript
@@ -233,6 +239,9 @@ Notes:
 - Use \`repeat: true\` for lists of adjacent buttons/links (better than Group for this use case). This removes the need for multiple separate Link fields.
 - Use variants for different button styles (e.g., ["Primary", "Secondary"]).
 - Use allowText to enable custom display text. Always use when the button or link has a label.
+- MUST NOT add per-instance icon fields for decorative button icons. Use variants instead.
+  - Wrong: \`buttons\` + \`button_icon\` fields
+  - Right: \`buttons\` with \`variants: ["With icon", "Plain"]\`
 - **Content Relationships**: Set \`select: "document"\` and use \`customtypes\` for field selection. Only selected fields are included in API responses. Up to 2 levels of nesting supported. For nesting to work, target fields must also be content relationship Link fields. Groups don't count toward nesting levels, i.e. a group field can contain a content relationship field that points to another custom type, and that custom type can have a group field with a content relationship field as the second nesting level.
 
 **Boolean**
@@ -373,6 +382,7 @@ ${
 	inputTypes.includes("image")
 		? `- From image: Identify visual elements and their repeatability
 			- Detect: headings, body text blocks, CTAs, icons/images, repeated cards/tiles
+			- Apply the "editor-controlled content" principle: do not model decorative/stylistic visuals (flourishes, underline/accent images, background shapes) unless explicitly requested.
 			- Infer grouping and repeatability ONLY when visually obvious (e.g., several buttons, grid of cards)`
 		: ""
 }
@@ -382,6 +392,7 @@ ${
 		? `- From code: Treat provided code as the source of truth for data needs
 			- Read existing components and props to infer fields, naming, and shapes
 			- Map component props/state to model fields
+			- Apply the principle: only model editor-controlled content. Use this heuristic: if a visual is hard-coded and not controlled by props/state/data, treat it as implementation detail (no field). If it is content-driven via props/state/data, consider modeling it.
 			- If code shows lists/arrays, prefer repeatable links or group fields over ad-hoc numbered fields`
 		: ""
 }
