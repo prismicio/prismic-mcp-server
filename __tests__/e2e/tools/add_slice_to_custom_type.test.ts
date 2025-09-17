@@ -78,4 +78,29 @@ test.describe("add_slice_to_custom_type tool - Calling Tool", () => {
 				.replace(customTypeDirectoryAbsolutePath, "{base_path}"),
 		).toMatchSnapshot("happy-path.txt")
 	})
+
+	test("should handle slice already exists scenario", async ({
+		projectRoot,
+	}) => {
+		const sliceDirectoryAbsolutePath = join(
+			projectRoot,
+			"/src/slices/ImageCards",
+		)
+		const customTypeDirectoryAbsolutePath = join(
+			projectRoot,
+			"/customtypes/page",
+		)
+		const result = await callTool("add_slice_to_custom_type", {
+			sliceMachineConfigAbsolutePath: join(
+				projectRoot,
+				"/slicemachine.config.json",
+			),
+			sliceDirectoryAbsolutePath,
+			customTypeDirectoryAbsolutePath,
+		})
+
+		await expect(
+			result.replaceAll(sliceDirectoryAbsolutePath, "{base_path}"),
+		).toMatchSnapshot("slice-already-exists.txt")
+	})
 })
