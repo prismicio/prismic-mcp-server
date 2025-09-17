@@ -1,4 +1,4 @@
-import { cpSync, readFileSync } from "fs"
+import { copyFileSync, cpSync, readFileSync, rmSync } from "fs"
 import { join } from "path"
 
 import { expect, test } from "../fixtures/test"
@@ -111,7 +111,7 @@ test.describe("add_slice_to_custom_type tool - Calling Tool", () => {
 		)
 		const customTypeDirectoryAbsolutePath = join(
 			projectRoot,
-			"/customtypes/settings",
+			"/customtypes/settings", // Doesn't have a slice field
 		)
 
 		const settingsCustomTypePath = join(
@@ -153,7 +153,7 @@ test.describe("add_slice_to_custom_type tool - Calling Tool", () => {
 		)
 		const customTypeDirectoryAbsolutePath = join(
 			projectRoot,
-			"/customtypes/settings",
+			"/customtypes/page",
 		)
 		const result = await callTool("add_slice_to_custom_type", {
 			sliceMachineConfigAbsolutePath: join(
@@ -167,5 +167,42 @@ test.describe("add_slice_to_custom_type tool - Calling Tool", () => {
 		await expect(
 			result.replaceAll(sliceDirectoryAbsolutePath, "{base_path}"),
 		).toMatchSnapshot("missing-slice-model.txt")
+	})
+
+	test("should handle invalid slice model", async ({ projectRoot }) => {
+		cpSync(
+			join(
+				new URL(import.meta.url).pathname,
+				"../../reference/slices/SlicifyHero/Hero",
+			),
+			join(projectRoot, "/src/slices/Hero"),
+			{ recursive: true },
+		)
+		rmSync(join(projectRoot, "/src/slices/Hero/model.json"))
+		copyFileSync(
+			join(
+				new URL(import.meta.url).pathname,
+				"../../reference/slices/SlicifyHero/model-invalid.json",
+			),
+			join(projectRoot, "/src/slices/Hero/model.json"),
+		)
+
+		const sliceDirectoryAbsolutePath = join(projectRoot, "/src/slices/Hero")
+		const customTypeDirectoryAbsolutePath = join(
+			projectRoot,
+			"/customtypes/page",
+		)
+		const result = await callTool("add_slice_to_custom_type", {
+			sliceMachineConfigAbsolutePath: join(
+				projectRoot,
+				"/slicemachine.config.json",
+			),
+			sliceDirectoryAbsolutePath,
+			customTypeDirectoryAbsolutePath,
+		})
+
+		await expect(
+			result.replaceAll(sliceDirectoryAbsolutePath, "{base_path}"),
+		).toMatchSnapshot("invalid-slice-model.txt")
 	})
 })
