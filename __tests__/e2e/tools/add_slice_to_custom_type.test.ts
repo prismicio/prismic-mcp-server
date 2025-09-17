@@ -99,8 +99,50 @@ test.describe("add_slice_to_custom_type tool - Calling Tool", () => {
 			customTypeDirectoryAbsolutePath,
 		})
 
+		await expect(result).toMatchSnapshot("slice-already-exists.txt")
+	})
+
+	test("should add a slice field if the custom type does not have one", async ({
+		projectRoot,
+	}) => {
+		const sliceDirectoryAbsolutePath = join(
+			projectRoot,
+			"/src/slices/ImageCards",
+		)
+		const customTypeDirectoryAbsolutePath = join(
+			projectRoot,
+			"/customtypes/settings",
+		)
+
+		const settingsCustomTypePath = join(
+			customTypeDirectoryAbsolutePath,
+			"/index.json",
+		)
+		const settingsCustomTypeContent = readFileSync(
+			settingsCustomTypePath,
+			"utf-8",
+		)
+		expect(settingsCustomTypeContent).not.toContain("slices")
+
+		const result = await callTool("add_slice_to_custom_type", {
+			sliceMachineConfigAbsolutePath: join(
+				projectRoot,
+				"/slicemachine.config.json",
+			),
+			sliceDirectoryAbsolutePath,
+			customTypeDirectoryAbsolutePath,
+		})
+
+		const updatedSettingsCustomTypeContent = readFileSync(
+			settingsCustomTypePath,
+			"utf-8",
+		)
+		expect(updatedSettingsCustomTypeContent).toContain("slices")
+
 		await expect(
-			result.replaceAll(sliceDirectoryAbsolutePath, "{base_path}"),
-		).toMatchSnapshot("slice-already-exists.txt")
+			result
+				.replaceAll(sliceDirectoryAbsolutePath, "{base_path}")
+				.replaceAll(customTypeDirectoryAbsolutePath, "{base_path}"),
+		).toMatchSnapshot("slice-zone-added.txt")
 	})
 })
