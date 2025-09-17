@@ -10,7 +10,7 @@ test.describe("how_to_model_slice tool - Used by AI agent", () => {
 	}) => {
 		const messages = await aiAgent.simulateUserQuery({
 			prompt: `
-Create the model for the "Hero" slice (+ generate types)
+Create the model for the "Hero" slice
 
 It should have:
 - a title
