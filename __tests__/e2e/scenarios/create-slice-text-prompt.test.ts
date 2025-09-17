@@ -14,8 +14,7 @@ Create a "Hero" slice (model, generate types, code, mocks)
 It should have:
 - a title
 - a description
-- a repeatable CTA link with 3 variants (Primary, Secondary, Text)
-- an anchor
+- a list of CTA buttons with 2 variants (Primary, Secondary)
 `,
 	})
 	expect(messages.length).toBeGreaterThan(0)
@@ -50,7 +49,7 @@ Focus on:
 - model
   -- Same number of fields is important
   -- Field types should be the same (e.g., Text, StructuredText, Image, Link)
-  -- Field names should be similar
+  -- Field names should be semantically similar
   -- Field configurations should be functionally similar
   -- Order of fields is not important
 - code 
