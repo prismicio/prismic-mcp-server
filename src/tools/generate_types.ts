@@ -74,11 +74,18 @@ RETURNS: A success message indicating the path to the generated types file or an
 
 			try {
 				const ctLibraryPath = joinPath(projectRoot, "customtypes")
-				const ctPaths = await readdir(ctLibraryPath, { withFileTypes: true })
+				const ctPaths = await readdir(ctLibraryPath)
 
 				await Promise.all(
 					ctPaths.map(async (ctPath) => {
-						const modelPath = joinPath(ctLibraryPath, ctPath.name, "index.json")
+						const customTypeDirPath = joinPath(ctLibraryPath, ctPath)
+
+						if ((await readdir(customTypeDirPath)).length === 0) {
+							// if directory is empty, skip, not need to fails because of this
+							return
+						}
+
+						const modelPath = joinPath(customTypeDirPath, "index.json")
 
 						let modelContents: unknown
 						try {
@@ -144,11 +151,13 @@ SUGGESTION: Fix the errors mentioned above before generating the types. If you'r
 									return
 								}
 
-								const modelPath = joinPath(
-									libraryPath,
-									slicePath.name,
-									"model.json",
-								)
+								const sliceDirPath = joinPath(libraryPath, slicePath.name)
+								if ((await readdir(sliceDirPath)).length === 0) {
+									// if directory is empty, skip, not need to fails because of this
+									return
+								}
+
+								const modelPath = joinPath(sliceDirPath, "model.json")
 
 								let modelContents: unknown
 								try {
