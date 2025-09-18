@@ -1,3 +1,5 @@
+import { readFileSync } from "fs"
+import { dirname, join as joinPath, resolve as resolvePath } from "path"
 import { z } from "zod"
 
 import { formatErrorForMcpTool } from "../lib/error"
@@ -78,6 +80,50 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 				}
 			}
 
+			// Resolve Slice Library path from slicemachine.config.json
+			// sliceMachineConfigAbsolutePath points to slicemachine.config.json
+			// We will read it and determine the first library entry (default behavior for tooling),
+			// then resolve it to an absolute path to guide the user to create the slice in the right place.
+			let resolvedLibraryAbsolutePath: string | undefined
+			try {
+				const configJson = JSON.parse(
+					readFileSync(sliceMachineConfigAbsolutePath, "utf-8"),
+				) as { libraries?: string[] }
+				const libraries = Array.isArray(configJson.libraries)
+					? configJson.libraries
+					: []
+				if (libraries.length === 0) {
+					return {
+						content: [
+							{
+								type: "text" as const,
+								text: `slicemachine.config.json does not define any Slice Libraries in "libraries".
+
+Add at least one library (e.g., ["./src/slices"]) and try again.`,
+							},
+						],
+					}
+				}
+				const projectRoot = dirname(sliceMachineConfigAbsolutePath)
+				const firstLibrary = libraries[0]
+				// Libraries are configured relative to the project root; resolve accordingly.
+				resolvedLibraryAbsolutePath = resolvePath(projectRoot, firstLibrary)
+			} catch {
+				return {
+					content: [
+						{
+							type: "text" as const,
+							text: `Could not read or parse slicemachine.config.json at "${sliceMachineConfigAbsolutePath}". Ensure it exists and includes a non-empty "libraries" array.`,
+						},
+					],
+				}
+			}
+
+			const sliceDirectoryHint = joinPath(
+				resolvedLibraryAbsolutePath,
+				sliceName,
+			)
+
 			const sliceId = toSnakeCase(sliceName)
 
 			const instructions = `
@@ -115,8 +161,8 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 
 ## File Paths
 
-- Slice directory: ${sliceMachineConfigAbsolutePath}/${sliceName}
-- Model file: ${sliceMachineConfigAbsolutePath}/${sliceName}/model.json
+- Slice directory: ${sliceDirectoryHint}
+- Model file: ${sliceDirectoryHint}/model.json
 
 ## Basic Structure
 

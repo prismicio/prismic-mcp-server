@@ -1,5 +1,10 @@
 import { readFileSync } from "fs"
-import { basename, join as joinPath } from "path"
+import {
+	basename,
+	dirname,
+	join as joinPath,
+	resolve as resolvePath,
+} from "path"
 import { z } from "zod"
 
 import { formatDecodeError, formatErrorForMcpTool } from "../lib/error"
@@ -48,6 +53,53 @@ RETURNS: A message indicating whether model.json is valid or not, with detailed 
 						"Error while tracking 'verify_slice_model' tool call",
 						error,
 					)
+				}
+			}
+
+			// Ensure the slice directory resides under a configured library from slicemachine.config.json
+			try {
+				const configJson = JSON.parse(
+					readFileSync(args.sliceMachineConfigAbsolutePath, "utf-8"),
+				) as { libraries?: string[] }
+				const libraries = Array.isArray(configJson.libraries)
+					? configJson.libraries
+					: []
+				if (libraries.length === 0) {
+					return {
+						content: [
+							{
+								type: "text",
+								text: `slicemachine.config.json does not define any Slice Libraries in "libraries". Add at least one library (e.g., "./src/slices") and try again.`,
+							},
+						],
+					}
+				}
+				const projectRoot = dirname(args.sliceMachineConfigAbsolutePath)
+				const resolvedLibraryPaths = libraries.map((lib) =>
+					resolvePath(projectRoot, lib),
+				)
+				const sliceParentDirectory = dirname(sliceDirectoryAbsolutePath)
+				const insideAnyLibrary = resolvedLibraryPaths.some(
+					(libAbs) => sliceParentDirectory === libAbs,
+				)
+				if (!insideAnyLibrary) {
+					return {
+						content: [
+							{
+								type: "text",
+								text: `The slice directory "${sliceDirectoryAbsolutePath}" is not inside any configured Slice Library from slicemachine.config.json.\n\nConfigured libraries (resolved):\n${resolvedLibraryPaths.join("\n")}\n\nSUGGESTION: Move or create the slice under one of the configured libraries (e.g., "src/slices/MySlice").`,
+							},
+						],
+					}
+				}
+			} catch {
+				return {
+					content: [
+						{
+							type: "text",
+							text: `Could not read or parse slicemachine.config.json at "${args.sliceMachineConfigAbsolutePath}". Ensure it exists and includes a non-empty "libraries" array.`,
+						},
+					],
 				}
 			}
 
