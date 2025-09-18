@@ -81,7 +81,7 @@ RETURNS: A success message indicating the path to the generated types file or an
 						const customTypeDirPath = joinPath(ctLibraryPath, ctPath)
 
 						if ((await readdir(customTypeDirPath)).length === 0) {
-							// if directory is empty, skip, not need to fails because of this
+							// skip if the directory is empty, not need to fails because of this
 							return
 						}
 
@@ -153,7 +153,7 @@ SUGGESTION: Fix the errors mentioned above before generating the types. If you'r
 
 								const sliceDirPath = joinPath(libraryPath, slicePath.name)
 								if ((await readdir(sliceDirPath)).length === 0) {
-									// if directory is empty, skip, not need to fails because of this
+									// skip if the directory is empty, not need to fails because of this
 									return
 								}
 
