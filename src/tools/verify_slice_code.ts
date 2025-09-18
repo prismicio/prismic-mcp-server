@@ -7,10 +7,12 @@ import { z } from "zod"
 import { formatErrorForMcpTool } from "../lib/error"
 import { tool } from "../lib/mcp"
 import {
-	getHasLazyLoadSlicesOption,
+	getLazyLoadSlicesOption,
 	readAllSliceModelsForLibrary,
 } from "../lib/sliceMachine"
 import type { SharedSlice } from "@prismicio/types-internal/lib/customtypes"
+
+import { telemetryClient } from "../server"
 
 export const verify_slice_code = tool(
 	"verify_slice_code",
@@ -37,13 +39,19 @@ RETURNS: A message indicating whether the slice code is valid or not, with detai
 			projectFramework: framework,
 		} = args
 
+		const sliceName = basename(sliceDirectoryAbsolutePath)
+
 		const sliceMachineConfigAbsolutePath = joinPath(
 			projectRoot,
 			"slicemachine.config.json",
 		)
 
 		try {
-			// TODO: Tracking
+			telemetryClient.track({
+				event: "MCP Tool - Verify slice code",
+				sliceMachineConfigAbsolutePath,
+				properties: { sliceName },
+			})
 		} catch (error) {
 			// noop, we don't wanna block the tool call if the tracking fails
 			if (process.env.PRISMIC_DEBUG) {
@@ -55,10 +63,7 @@ RETURNS: A message indicating whether the slice code is valid or not, with detai
 		}
 
 		try {
-			const sliceName = basename(sliceDirectoryAbsolutePath)
-
 			const libraryPath = joinPath(sliceDirectoryAbsolutePath, "..")
-
 			const slices = await readAllSliceModelsForLibrary({
 				sliceMachineConfigAbsolutePath,
 				projectRoot,
@@ -70,7 +75,7 @@ RETURNS: A message indicating whether the slice code is valid or not, with detai
 				framework,
 				projectRoot,
 				libraryPath,
-				lazyLoad: getHasLazyLoadSlicesOption(sliceMachineConfigAbsolutePath),
+				lazyLoad: getLazyLoadSlicesOption({ sliceMachineConfigAbsolutePath }),
 			})
 
 			return {
@@ -106,40 +111,32 @@ async function writeSliceLibraryIndexFile(args: {
 		case "next":
 			{
 				if (lazyLoad) {
-					const dynamicImports = slices
-						.map((slice) => {
-							return `\t${slice.id}: dynamic(() => import('./${pascalCase(slice.name)}'))`
-						})
-						.join(",\n")
-
 					contents = `${NON_EDITABLE_FILE_BANNER}
 
 import dynamic from 'next/dynamic'
 
 export const components = {
-${dynamicImports}
+${slices
+	.map((slice) => {
+		return `\t${slice.id}: dynamic(() => import('./${pascalCase(slice.name)}'))`
+	})
+	.join(",\n")}
 }`
 				} else {
-					const imports = slices
-						.map((slice) => {
-							return `import ${pascalCase(slice.name)} from "./${slice.name}";`
-						})
-						.join("\n")
-
-					const exports = slices
-						.map((slice) => {
-							const componentName = pascalCase(slice.name)
-
-							return `\t${slice.id}: ${componentName},`
-						})
-						.join("\n")
-
 					contents = `${NON_EDITABLE_FILE_BANNER}
 
-${imports}
+${slices
+	.map((slice) => {
+		return `import ${pascalCase(slice.name)} from "./${slice.name}";`
+	})
+	.join("\n")}
 
 export const components = {
-${exports}
+${slices
+	.map((slice) => {
+		return `\t${slice.id}: ${pascalCase(slice.name)},`
+	})
+	.join("\n")}
 }`
 				}
 			}
@@ -162,50 +159,42 @@ export const components = defineSliceZoneComponents({
 ${asyncComponents}
 });`
 			} else {
-				const imports = slices
-					.map((slice) => {
-						return `import ${pascalCase(slice.name)} from "./${slice.name}/index.vue";`
-					})
-					.join("\n")
-
-				const exports = slices
-					.map((slice) => {
-						return `\t${slice.id}: ${pascalCase(slice.name)}`
-					})
-					.join(",\n")
-
 				contents = `${NON_EDITABLE_FILE_BANNER}
 
 import { defineSliceZoneComponents } from "@prismicio/vue";
 
-${imports}
+${slices
+	.map((slice) => {
+		return `import ${pascalCase(slice.name)} from "./${slice.name}/index.vue";`
+	})
+	.join("\n")}
 
 export const components = defineSliceZoneComponents({
-${exports}
+${slices
+	.map((slice) => {
+		return `\t${slice.id}: ${pascalCase(slice.name)}`
+	})
+	.join(",\n")}
 });`
 			}
 			break
 		}
 
 		case "sveltekit": {
-			const imports = slices
-				.map((slice) => {
-					return `import ${pascalCase(slice.name)} from "./${slice.name}/index.svelte";`
-				})
-				.join("\n")
-
-			const exports = slices
-				.map((slice) => {
-					return `\t${slice.id}: ${pascalCase(slice.name)},`
-				})
-				.join("\n")
-
 			contents = `${NON_EDITABLE_FILE_BANNER}
 
-${imports}
+${slices
+	.map((slice) => {
+		return `import ${pascalCase(slice.name)} from "./${slice.name}/index.svelte";`
+	})
+	.join("\n")}
 
 export const components = {
-${exports}
+${slices
+	.map((slice) => {
+		return `\t${slice.id}: ${pascalCase(slice.name)},`
+	})
+	.join("\n")}
 }`
 			break
 		}

@@ -114,7 +114,7 @@ export class Telemetry {
 
 		let repository
 		try {
-			repository = getRepositoryName(sliceMachineConfigAbsolutePath)
+			repository = getRepositoryName({ sliceMachineConfigAbsolutePath })
 		} catch (error) {
 			// noop, we don't wanna block tracking if the repository name is not found
 			if (process.env.PRISMIC_DEBUG) {

@@ -39,12 +39,16 @@ export function parseSliceMachineConfig(
  *
  * Default to `true` if not set.
  */
-export function getHasLazyLoadSlicesOption(
-	sliceMachineConfigAbsolutePath: string,
-): boolean {
-	const sliceMachineConfig = parseSliceMachineConfig(
+export function getLazyLoadSlicesOption(args: {
+	sliceMachineConfigAbsolutePath: string
+	sliceMachineConfig?: SliceMachineConfig
+}): boolean {
+	const {
 		sliceMachineConfigAbsolutePath,
-	)
+		sliceMachineConfig = parseSliceMachineConfig(
+			sliceMachineConfigAbsolutePath,
+		),
+	} = args
 
 	const adapterOptions = sliceMachineConfig.adapter
 	if (typeof adapterOptions === "object") {
@@ -54,13 +58,17 @@ export function getHasLazyLoadSlicesOption(
 	return true
 }
 
-export function getRepositoryName(
-	sliceMachineConfigAbsolutePath: string,
-): string {
+export function getRepositoryName(args: {
+	sliceMachineConfigAbsolutePath: string
+	sliceMachineConfig?: SliceMachineConfig
+}): string {
 	try {
-		const sliceMachineConfig = parseSliceMachineConfig(
+		const {
 			sliceMachineConfigAbsolutePath,
-		)
+			sliceMachineConfig = parseSliceMachineConfig(
+				sliceMachineConfigAbsolutePath,
+			),
+		} = args
 
 		return sliceMachineConfig.repositoryName
 	} catch (error) {
@@ -74,13 +82,19 @@ export async function readAllSliceModelsForLibrary(args: {
 	sliceMachineConfigAbsolutePath: string
 	libraryPath: string
 	projectRoot: string
+	sliceMachineConfig?: SliceMachineConfig
 }): Promise<SharedSlice[]> {
-	const { sliceMachineConfigAbsolutePath, projectRoot, libraryPath } = args
-
-	const smConfig = parseSliceMachineConfig(sliceMachineConfigAbsolutePath)
+	const {
+		sliceMachineConfigAbsolutePath,
+		projectRoot,
+		libraryPath,
+		sliceMachineConfig = parseSliceMachineConfig(
+			sliceMachineConfigAbsolutePath,
+		),
+	} = args
 
 	if (
-		smConfig.libraries.findIndex(
+		sliceMachineConfig.libraries.findIndex(
 			(path) => joinPath(projectRoot, path) === normalizePath(libraryPath),
 		) === -1
 	) {
