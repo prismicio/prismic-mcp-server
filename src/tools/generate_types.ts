@@ -74,39 +74,44 @@ RETURNS: A success message indicating the path to the generated types file or an
 
 			try {
 				const ctLibraryPath = joinPath(projectRoot, "customtypes")
-				const ctPaths = await readdir(ctLibraryPath)
 
-				await Promise.all(
-					ctPaths.map(async (ctPath) => {
-						const customTypeDirPath = joinPath(ctLibraryPath, ctPath)
+				if (existsSync(ctLibraryPath)) {
+					const ctPaths = await readdir(ctLibraryPath)
 
-						if ((await readdir(customTypeDirPath)).length === 0) {
-							// skip if the directory is empty, not need to fails because of this
-							return
-						}
+					await Promise.all(
+						ctPaths.map(async (ctPath) => {
+							const customTypeDirPath = joinPath(ctLibraryPath, ctPath)
 
-						const modelPath = joinPath(customTypeDirPath, "index.json")
+							if ((await readdir(customTypeDirPath)).length === 0) {
+								// skip if the directory is empty, not need to fails because of this
+								return
+							}
 
-						let modelContents: unknown
-						try {
-							modelContents = JSON.parse(await readFile(modelPath, "utf8"))
-						} catch (error) {
-							throw new Error(
-								`Invalid JSON format for custom type model at ${modelPath}: ${getErrorMessage(error)}`,
-							)
-						}
+							const modelPath = joinPath(customTypeDirPath, "index.json")
 
-						const parsedModel = CustomType.decode(modelContents)
-						if (parsedModel._tag === "Left") {
-							const errors = parsedModel.left.map(formatDecodeError).join("\n")
-							throw new Error(
-								`Invalid custom type model at ${modelPath}:\n${errors}`,
-							)
-						}
+							let modelContents: unknown
+							try {
+								modelContents = JSON.parse(await readFile(modelPath, "utf8"))
+							} catch (error) {
+								throw new Error(
+									`Invalid JSON format for custom type model at ${modelPath}: ${getErrorMessage(error)}`,
+								)
+							}
 
-						customTypeModels.push(parsedModel.right)
-					}),
-				)
+							const parsedModel = CustomType.decode(modelContents)
+							if (parsedModel._tag === "Left") {
+								const errors = parsedModel.left
+									.map(formatDecodeError)
+									.join("\n")
+								throw new Error(
+									`Invalid custom type model at ${modelPath}:\n${errors}`,
+								)
+							}
+
+							customTypeModels.push(parsedModel.right)
+						}),
+					)
+				}
 			} catch (error) {
 				return {
 					content: [
