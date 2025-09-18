@@ -10,6 +10,11 @@ export const how_to_model_slice = tool(
 	`PURPOSE: Provide detailed, opinionated guidance to create or update Prismic slice model.json files using modern best practices, including naming, file placement, allowed fields, shapes, and configuration.
 
 USAGE: Use FIRST for any Prismic slice modeling request. Do not use for component or mock implementation.
+Input Type Selection Rules:
+- If the user attaches an image, include "image".
+- If the user attaches code, include "code".
+- Include "text" ONLY if the prompt contains model-related information (e.g., explicitly describes desired fields/structure, adds nuance, or overrides what is seen in the code/image).
+- It is acceptable to include multiple input types when each adds model-relevant signal per the rules above.
 
 RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic model shapes, comprehensive field shape reference, opinionated modeling guidance, validation and testing steps.`,
 	z.object({
@@ -37,11 +42,10 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 			.describe(
 				"Description of what content the slice should contain (e.g., 'hero with title, description, and CTA button')",
 			),
-		requestType: z
-			.enum(["text", "image", "image-and-text"])
-			.describe(
-				"The type of request - text-based description, image reference, or image reference with text clarification",
-			),
+		inputTypes: z
+			.array(z.enum(["text", "image", "code"]))
+			.nonempty()
+			.describe("The kinds of input present in the prompt."),
 	}).shape,
 	(args) => {
 		try {
@@ -50,7 +54,7 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 				sliceName,
 				isNewSlice,
 				contentRequirements,
-				requestType,
+				inputTypes,
 			} = args
 
 			try {
@@ -61,7 +65,7 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 						sliceName,
 						isNewSlice,
 						contentRequirements,
-						requestType,
+						inputTypes,
 					},
 				})
 			} catch (error) {
@@ -81,7 +85,7 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 
 ## Request Analysis
 - **Slice Name**: ${sliceName}
-- **Request Type**: ${requestType === "text" ? "Text-based description" : requestType === "image" ? "Image reference" : "Image reference with text clarification"}
+- **Input Types**: ${inputTypes.join(" + ")}
 - **Operation**: ${isNewSlice ? "Creating new slice" : "Updating existing slice"}
 - **Content Requirements**: ${contentRequirements}
 
@@ -104,8 +108,10 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 ## Opinionated Modeling Guidance (Prismic best practices)
 
 - Prefer simple, predictable models that align with Prismic's latest DX.
+- Keep the model streamlined by using the minimum number of fields necessary, Prismic fields are highly flexible and can be configured to handle a wide range of content needs.
 - When modeling, review other existing slices for inspiration and consistency, but always tailor the model to the specific requirements of this slice.
 - Avoid legacy constructs; follow guidance in the relevant sections below.
+- Add fields to model only editor-controlled content. Treat decorative/stylistic or implementation-only elements as non-content unless explicitly requested.
 
 ## File Paths
 
@@ -164,6 +170,9 @@ Notes:
 - Do not set both "single" and "multi" at the same time.
 - Titles: prefer a single heading level without inline marks.
 - Descriptions: allow paragraphs with inline marks (strong, em, hyperlink) and line breaks when necessary.
+- MUST NOT split highlighted phrases into separate fields. Keep one StructuredText field and style with marks/custom renderers/CSS.
+  - Wrong: \`heading\` + \`highlighted_text\` fields
+  - Right: Single \`heading\` field with styled spans
 
 **Text**
 \`\`\`typescript
@@ -201,6 +210,7 @@ Notes:
 - Use constraint for aspect ratio control.
 - thumbnails for predefined image sizes.
 - Avoid using "background" in field names unless specifically meant as full background.
+- MUST NOT create Image fields for decorative elements (accent SVGs, underline images, background shapes, button icons). These are implementation details, not content.
 
 **Link**
 \`\`\`typescript
@@ -229,6 +239,9 @@ Notes:
 - Use \`repeat: true\` for lists of adjacent buttons/links (better than Group for this use case). This removes the need for multiple separate Link fields.
 - Use variants for different button styles (e.g., ["Primary", "Secondary"]).
 - Use allowText to enable custom display text. Always use when the button or link has a label.
+- MUST NOT add per-instance icon fields for decorative button icons. Use variants instead.
+  - Wrong: \`buttons\` + \`button_icon\` fields
+  - Right: \`buttons\` with \`variants: ["With icon", "Plain"]\`
 - **Content Relationships**: Set \`select: "document"\` and use \`customtypes\` for field selection. Only selected fields are included in API responses. Up to 2 levels of nesting supported. For nesting to work, target fields must also be content relationship Link fields. Groups don't count toward nesting levels, i.e. a group field can contain a content relationship field that points to another custom type, and that custom type can have a group field with a content relationship field as the second nesting level.
 
 **Boolean**
@@ -366,21 +379,30 @@ Notes:
 ## Content Analysis Guidelines
 
 ${
-	requestType === "text"
-		? `- Focus: Parse the description for explicit content elements and hierarchy
-- Extract: titles, paragraphs, lists, buttons/links, media references
-- Don't infer layout beyond what's stated; if ambiguous, prefer simpler fields`
+	inputTypes.includes("image")
+		? `- From image: Identify visual elements and their repeatability
+			- Detect: headings, body text blocks, CTAs, icons/images, repeated cards/tiles
+			- Apply the "editor-controlled content" principle: do not model decorative/stylistic visuals (flourishes, underline/accent images, background shapes) unless explicitly requested.
+			- Infer grouping and repeatability ONLY when visually obvious (e.g., several buttons, grid of cards)`
 		: ""
 }
+
 ${
-	requestType === "image"
-		? `- Focus: Identify visual elements and their repeatability
-- Detect: headings, body text blocks, CTAs, icons/images, repeated cards/tiles`
+	inputTypes.includes("code")
+		? `- From code: Treat provided code as the source of truth for data needs
+			- Read existing components and props to infer fields, naming, and shapes
+			- Map component props/state to model fields
+			- Apply the principle: only model editor-controlled content. Use this heuristic: if a visual is hard-coded and not controlled by props/state/data, treat it as implementation detail (no field). If it is content-driven via props/state/data, consider modeling it.
+			- If code shows lists/arrays, prefer repeatable links or group fields over ad-hoc numbered fields`
 		: ""
 }
+
 ${
-	requestType === "image-and-text"
-		? `- Focus: Use the image as the initial layout and reference for the fields involved; then refine based on the text clarification`
+	inputTypes.includes("text")
+		? `- From text: Parse explicit content elements and hierarchy
+			- Extract: titles, paragraphs, lists, buttons/links, media references
+			- Avoid inferring layout beyond what's stated; if ambiguous, prefer simpler fields
+			- If text clarifies or contradicts image/code, TEXT TAKES PRECEDENCE as the user's explicit intent (e.g., image shows two buttons but text specifies only one → model a single button)`
 		: ""
 }
 

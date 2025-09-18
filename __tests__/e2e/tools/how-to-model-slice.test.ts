@@ -15,8 +15,7 @@ Create the model for the "Hero" slice
 It should have:
 - a title
 - a description
-- a CTA link
-- an anchor
+- a list of CTA buttons with 2 variants (Primary, Secondary)
 `,
 		})
 		expect(messages.length).toBeGreaterThan(0)
@@ -48,7 +47,7 @@ Focus on:
 - model 
   -- Same number of fields is important
   -- Field types should be the same (e.g., Text, StructuredText, Image, Link)
-  -- Field names should be similar
+  -- Field names should be semantically similar
   -- Field configurations should be functionally similar
   -- Order of fields is not important
 `,

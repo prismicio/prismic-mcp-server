@@ -5,6 +5,8 @@ import { join } from "path"
 
 import { TEMPLATE_DIR } from "../global-setup"
 
+const CLEANUP = process.env.CLEANUP === "true"
+
 export class ProjectSetup {
 	private tempDir: string | null = null
 
@@ -28,7 +30,7 @@ export class ProjectSetup {
 	}
 
 	async cleanup(): Promise<void> {
-		if (this.tempDir && !process.env.NO_CLEANUP) {
+		if (this.tempDir && CLEANUP) {
 			try {
 				rmSync(this.tempDir, { recursive: true, force: true })
 			} catch (error) {
@@ -45,7 +47,7 @@ export class ProjectSetup {
 	// Call this in global teardown to cleanup the template cache
 	static async cleanupTemplate(): Promise<void> {
 		const templateCache = process.env.TEMPLATE_CACHE_DIR
-		if (templateCache && !process.env.NO_CLEANUP) {
+		if (templateCache && CLEANUP) {
 			try {
 				console.info("Cleaning up template cache...")
 				rmSync(templateCache, { recursive: true, force: true })
