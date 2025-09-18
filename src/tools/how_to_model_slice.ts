@@ -413,8 +413,9 @@ ${
 - After having a valid model.json, you MUST also call all the necessary tools to ensure everything related to the slice is updated to reflect the changes. Here is the recommended order of tools to call, please AVOID calling the tools in any other order than this one:
   1. generate_types
   2. how_to_code_slice
-  3. how_to_mock_slice
-  4. verify_slice_mock
+  3. verify_slice_code
+  4. how_to_mock_slice
+  5. verify_slice_mock
 
   If you understood this, please state which tool you are calling next.`
 
