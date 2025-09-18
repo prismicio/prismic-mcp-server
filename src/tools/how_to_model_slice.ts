@@ -387,8 +387,14 @@ ${
 ## Final Instructions
 
 - Focus only on model.json
-- After implementation, you MUST call the verify_model tool to ensure correctness
-`
+- After implementation, you MUST call the verify_slice_model tool to ensure correctness
+- After having a valid model.json, you MUST also call all the necessary tools to ensure everything related to the slice is updated to reflect the changes. Here is the recommended order of tools to call, please AVOID calling the tools in any other order than this one:
+  1. generate_types
+  2. how_to_code_slice
+  3. how_to_mock_slice
+  4. verify_slice_mock
+
+  If you understood this, please state which tool you are calling next.`
 
 			return {
 				content: [

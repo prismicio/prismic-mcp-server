@@ -13,7 +13,7 @@ test("should check slice creation (model, code, mocks) based on user image promp
 	)
 
 	const messages = await aiAgent.simulateUserQuery({
-		prompt: `Create a "Hero" slice based on my image (model, generate types, code, mocks) [!image]: ${referenceScreenshotFile}`,
+		prompt: `Create a "Hero" slice based on my image [!image]: ${referenceScreenshotFile}`,
 	})
 	expect(messages.length).toBeGreaterThan(0)
 

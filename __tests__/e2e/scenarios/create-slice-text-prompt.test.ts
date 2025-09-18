@@ -9,7 +9,7 @@ test("should check slice creation (model, code, mocks) based on user text prompt
 }) => {
 	const messages = await aiAgent.simulateUserQuery({
 		prompt: `
-Create a "Hero" slice (model, generate types, code, mocks)
+Create a "Hero" slice
 
 It should have:
 - a title
