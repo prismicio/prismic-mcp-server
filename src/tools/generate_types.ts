@@ -74,32 +74,44 @@ RETURNS: A success message indicating the path to the generated types file or an
 
 			try {
 				const ctLibraryPath = joinPath(projectRoot, "customtypes")
-				const ctPaths = await readdir(ctLibraryPath, { withFileTypes: true })
 
-				await Promise.all(
-					ctPaths.map(async (ctPath) => {
-						const modelPath = joinPath(ctLibraryPath, ctPath.name, "index.json")
+				if (existsSync(ctLibraryPath)) {
+					const ctPaths = await readdir(ctLibraryPath)
 
-						let modelContents: unknown
-						try {
-							modelContents = JSON.parse(await readFile(modelPath, "utf8"))
-						} catch (error) {
-							throw new Error(
-								`Invalid JSON format for custom type model at ${modelPath}: ${getErrorMessage(error)}`,
-							)
-						}
+					await Promise.all(
+						ctPaths.map(async (ctPath) => {
+							const customTypeDirPath = joinPath(ctLibraryPath, ctPath)
 
-						const parsedModel = CustomType.decode(modelContents)
-						if (parsedModel._tag === "Left") {
-							const errors = parsedModel.left.map(formatDecodeError).join("\n")
-							throw new Error(
-								`Invalid custom type model at ${modelPath}:\n${errors}`,
-							)
-						}
+							if ((await readdir(customTypeDirPath)).length === 0) {
+								// skip if the directory is empty, not need to fails because of this
+								return
+							}
 
-						customTypeModels.push(parsedModel.right)
-					}),
-				)
+							const modelPath = joinPath(customTypeDirPath, "index.json")
+
+							let modelContents: unknown
+							try {
+								modelContents = JSON.parse(await readFile(modelPath, "utf8"))
+							} catch (error) {
+								throw new Error(
+									`Invalid JSON format for custom type model at ${modelPath}: ${getErrorMessage(error)}`,
+								)
+							}
+
+							const parsedModel = CustomType.decode(modelContents)
+							if (parsedModel._tag === "Left") {
+								const errors = parsedModel.left
+									.map(formatDecodeError)
+									.join("\n")
+								throw new Error(
+									`Invalid custom type model at ${modelPath}:\n${errors}`,
+								)
+							}
+
+							customTypeModels.push(parsedModel.right)
+						}),
+					)
+				}
 			} catch (error) {
 				return {
 					content: [
@@ -144,11 +156,13 @@ SUGGESTION: Fix the errors mentioned above before generating the types. If you'r
 									return
 								}
 
-								const modelPath = joinPath(
-									libraryPath,
-									slicePath.name,
-									"model.json",
-								)
+								const sliceDirPath = joinPath(libraryPath, slicePath.name)
+								if ((await readdir(sliceDirPath)).length === 0) {
+									// skip if the directory is empty, not need to fails because of this
+									return
+								}
+
+								const modelPath = joinPath(sliceDirPath, "model.json")
 
 								let modelContents: unknown
 								try {
