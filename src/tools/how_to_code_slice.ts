@@ -168,11 +168,12 @@ async function fetchFieldDocumentation(fieldType: string): Promise<string> {
 
 		return markdown
 	} catch (error) {
+		const errorMessage = `Error fetching documentation for ${fieldType}: ${error instanceof Error ? error.message : String(error)}`
 		trackSentryError({
-			error,
+			error: new Error(errorMessage),
 			toolName: "how_to_code_slice",
 		})
 
-		return `Error fetching documentation for ${fieldType}: ${error instanceof Error ? error.message : String(error)}`
+		return errorMessage
 	}
 }
