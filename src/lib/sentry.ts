@@ -9,7 +9,7 @@ export function initSentry(): void {
 		Sentry.init({
 			dsn: "https://decd691efe8dbf600548de58a9003829@o146123.ingest.us.sentry.io/4510035021725696",
 			environment: process.env.PRISMIC_ENV || "production",
-			tracesSampleRate: 0,
+			tracesSampleRate: 0, // disable perf traces (errors still sent, avoids overhead/cost)
 		})
 	} catch (error) {
 		// noop, we don't wanna block the mcp server if tracking fails to initialize
