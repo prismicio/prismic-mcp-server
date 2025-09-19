@@ -16,14 +16,7 @@ import { verify_slice_model } from "./tools/verify_slice_model"
 export const telemetryClient = new Telemetry()
 telemetryClient.initTelemetry()
 
-try {
-	initSentry()
-} catch (error) {
-	// noop, we don't wanna block the mcp server if tracking fails to initialize
-	if (process.env.PRISMIC_DEBUG) {
-		console.error("Error while initializing sentry:", error)
-	}
-}
+initSentry()
 
 export const server = new McpServer({ name, version })
 server.tool(...how_to_code_slice)

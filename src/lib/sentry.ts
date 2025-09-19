@@ -1,11 +1,18 @@
 import * as Sentry from "@sentry/node"
 
 export function initSentry(): void {
-	Sentry.init({
-		dsn: "https://decd691efe8dbf600548de58a9003829@o146123.ingest.us.sentry.io/4510035021725696",
-		environment: process.env.PRISMIC_ENV || "production",
-		tracesSampleRate: 0,
-	})
+	try {
+		Sentry.init({
+			dsn: "https://decd691efe8dbf600548de58a9003829@o146123.ingest.us.sentry.io/4510035021725696",
+			environment: process.env.PRISMIC_ENV || "production",
+			tracesSampleRate: 0,
+		})
+	} catch (error) {
+		// noop, we don't wanna block the mcp server if tracking fails to initialize
+		if (process.env.PRISMIC_DEBUG) {
+			console.error("Error while initializing sentry:", error)
+		}
+	}
 }
 
 type trackSentryErrorArgs = {
