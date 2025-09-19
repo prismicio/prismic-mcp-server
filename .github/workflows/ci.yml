@@ -1,6 +1,17 @@
 name: ci
 
-on: [push, workflow_call]
+on:
+  push:
+  workflow_call:
+    inputs:
+      LANGSMITH_PROJECT:
+        required: false
+        type: string
+    secrets:
+      AWS_BEARER_TOKEN_BEDROCK:
+        required: false
+      LANGSMITH_API_KEY:
+        required: false
 
 jobs:
   prepare:
@@ -152,7 +163,7 @@ jobs:
           OTEL_LOGS_EXPORTER: otlp
           OTEL_EXPORTER_OTLP_LOGS_PROTOCOL: http/json
           OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: https://api.smith.langchain.com/otel/v1/claude_code
-          OTEL_EXPORTER_OTLP_HEADERS: x-api-key=${{ secrets.LANGSMITH_API_KEY }},Langsmith-Project=${{ vars.LANGSMITH_PROJECT }}
+          OTEL_EXPORTER_OTLP_HEADERS: x-api-key=${{ secrets.LANGSMITH_API_KEY }},Langsmith-Project=${{ inputs.LANGSMITH_PROJECT || vars.LANGSMITH_PROJECT }}
           OTEL_LOG_USER_PROMPTS: 1
           TELEMETRY_DISABLED: true
 
