@@ -1,6 +1,10 @@
 import * as Sentry from "@sentry/node"
 
 export function initSentry(): void {
+	if (process.env.TELEMETRY_DISABLED === "true") {
+		return
+	}
+
 	try {
 		Sentry.init({
 			dsn: "https://decd691efe8dbf600548de58a9003829@o146123.ingest.us.sentry.io/4510035021725696",
@@ -29,6 +33,10 @@ type trackSentryErrorArgs = {
 }
 
 export function trackSentryError(args: trackSentryErrorArgs): void {
+	if (process.env.TELEMETRY_DISABLED === "true") {
+		return
+	}
+
 	const { error, toolName, extra } = args
 
 	try {
