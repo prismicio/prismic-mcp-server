@@ -1,14 +1,10 @@
 import { readFileSync } from "fs"
-import {
-	basename,
-	dirname,
-	join as joinPath,
-	resolve as resolvePath,
-} from "path"
+import { basename, dirname, join as joinPath } from "path"
 import { z } from "zod"
 
 import { formatDecodeError, formatErrorForMcpTool } from "../lib/error"
 import { tool } from "../lib/mcp"
+import { getResolvedLibraries } from "../lib/sliceMachine"
 import { SharedSlice } from "@prismicio/types-internal/lib/customtypes"
 
 import { telemetryClient } from "../server"
@@ -58,25 +54,8 @@ RETURNS: A message indicating whether model.json is valid or not, with detailed 
 
 			// Ensure the slice directory resides under a configured library from slicemachine.config.json
 			try {
-				const configJson = JSON.parse(
-					readFileSync(args.sliceMachineConfigAbsolutePath, "utf-8"),
-				) as { libraries?: string[] }
-				const libraries = Array.isArray(configJson.libraries)
-					? configJson.libraries
-					: []
-				if (libraries.length === 0) {
-					return {
-						content: [
-							{
-								type: "text",
-								text: `slicemachine.config.json does not define any Slice Libraries in "libraries". Add at least one library (e.g., "./src/slices") and try again.`,
-							},
-						],
-					}
-				}
-				const projectRoot = dirname(args.sliceMachineConfigAbsolutePath)
-				const resolvedLibraryPaths = libraries.map((lib) =>
-					resolvePath(projectRoot, lib),
+				const resolvedLibraryPaths = getResolvedLibraries(
+					args.sliceMachineConfigAbsolutePath,
 				)
 				const sliceParentDirectory = dirname(sliceDirectoryAbsolutePath)
 				const insideAnyLibrary = resolvedLibraryPaths.some(

@@ -1,9 +1,9 @@
-import { readFileSync } from "fs"
-import { dirname, join as joinPath, resolve as resolvePath } from "path"
+import { join as joinPath } from "path"
 import { z } from "zod"
 
 import { formatErrorForMcpTool } from "../lib/error"
 import { tool } from "../lib/mcp"
+import { getResolvedLibraries } from "../lib/sliceMachine"
 
 import { telemetryClient } from "../server"
 
@@ -81,31 +81,10 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 			}
 
 			// Resolve Slice Library paths from slicemachine.config.json
-			// Read all libraries and resolve them to absolute paths to present options.
-			let resolvedLibraryAbsolutePaths: string[] = []
+			let resolvedLibraryAbsolutePaths: string[]
 			try {
-				const configJson = JSON.parse(
-					readFileSync(sliceMachineConfigAbsolutePath, "utf-8"),
-				) as { libraries?: string[] }
-				const libraries = Array.isArray(configJson.libraries)
-					? configJson.libraries
-					: []
-				if (libraries.length === 0) {
-					return {
-						content: [
-							{
-								type: "text" as const,
-								text: `slicemachine.config.json does not define any Slice Libraries in "libraries".
-
-Add at least one library (e.g., ["./src/slices"]) and try again.`,
-							},
-						],
-					}
-				}
-				const projectRoot = dirname(sliceMachineConfigAbsolutePath)
-				// Libraries are configured relative to the project root; resolve accordingly.
-				resolvedLibraryAbsolutePaths = libraries.map((lib) =>
-					resolvePath(projectRoot, lib),
+				resolvedLibraryAbsolutePaths = getResolvedLibraries(
+					sliceMachineConfigAbsolutePath,
 				)
 			} catch {
 				return {
