@@ -47,7 +47,7 @@ Focus on:
 - model
   -- Same number of fields is important
   -- Field types should be the same (e.g., Text, StructuredText, Image, Link)
-  -- Field names should be similar
+  -- Field names should be semantically similar
   -- Field configurations should be functionally similar
   -- Order of fields is not important
 - code 
@@ -60,5 +60,5 @@ Focus on:
 	})
 
 	console.info("Grade:", grade)
-	expect(grade.score).toBeGreaterThan(2)
+	expect(grade.score).toBeGreaterThan(6)
 })
