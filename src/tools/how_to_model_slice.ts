@@ -80,11 +80,9 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 				}
 			}
 
-			// Resolve Slice Library path from slicemachine.config.json
-			// sliceMachineConfigAbsolutePath points to slicemachine.config.json
-			// We will read it and determine the first library entry (default behavior for tooling),
-			// then resolve it to an absolute path to guide the user to create the slice in the right place.
-			let resolvedLibraryAbsolutePath: string | undefined
+			// Resolve Slice Library paths from slicemachine.config.json
+			// Read all libraries and resolve them to absolute paths to present options.
+			let resolvedLibraryAbsolutePaths: string[] = []
 			try {
 				const configJson = JSON.parse(
 					readFileSync(sliceMachineConfigAbsolutePath, "utf-8"),
@@ -105,9 +103,10 @@ Add at least one library (e.g., ["./src/slices"]) and try again.`,
 					}
 				}
 				const projectRoot = dirname(sliceMachineConfigAbsolutePath)
-				const firstLibrary = libraries[0]
 				// Libraries are configured relative to the project root; resolve accordingly.
-				resolvedLibraryAbsolutePath = resolvePath(projectRoot, firstLibrary)
+				resolvedLibraryAbsolutePaths = libraries.map((lib) =>
+					resolvePath(projectRoot, lib),
+				)
 			} catch {
 				return {
 					content: [
@@ -119,9 +118,8 @@ Add at least one library (e.g., ["./src/slices"]) and try again.`,
 				}
 			}
 
-			const sliceDirectoryPath = joinPath(
-				resolvedLibraryAbsolutePath,
-				sliceName,
+			const sliceDirectoryOptions = resolvedLibraryAbsolutePaths.map((libAbs) =>
+				joinPath(libAbs, sliceName),
 			)
 
 			const sliceId = toSnakeCase(sliceName)
@@ -161,8 +159,11 @@ Add at least one library (e.g., ["./src/slices"]) and try again.`,
 
 ## File Paths
 
-- Slice directory: ${sliceDirectoryPath}
-- Model file: ${sliceDirectoryPath}/model.json
+- Available slice libraries (from slicemachine.config.json):
+${resolvedLibraryAbsolutePaths.map((p) => `  - ${p}`).join("\n")}
+- Slice directory (choose one):
+${sliceDirectoryOptions.map((p) => `  - ${p}`).join("\n")}
+- Model file (under chosen directory): model.json
 
 ## Basic Structure
 
