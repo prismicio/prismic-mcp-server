@@ -4,6 +4,7 @@ import { z } from "zod"
 
 import { formatDecodeError, formatErrorForMcpTool } from "../lib/error"
 import { tool } from "../lib/mcp"
+import { trackSentryError } from "../lib/sentry"
 import { SharedSlice } from "@prismicio/types-internal/lib/customtypes"
 
 import { telemetryClient } from "../server"
@@ -83,6 +84,13 @@ SUGGESTION: Check that the JSON syntax is valid - look for missing commas, quote
 				// Validate folder name matches slice name and that slice name is PascalCase
 				const expectedSliceName = basename(sliceDirectoryAbsolutePath)
 				if (slice.name !== expectedSliceName) {
+					trackSentryError({
+						error: new Error(
+							`The slice model is not valid. The slice name "${slice.name}" does not match the folder name "${expectedSliceName}".`,
+						),
+						toolName: "verify_slice_model",
+					})
+
 					return {
 						content: [
 							{
@@ -96,6 +104,13 @@ Expected: The folder name and the model's "name" must be the same PascalCase str
 				}
 
 				if (!isValidSliceName(slice.name)) {
+					trackSentryError({
+						error: new Error(
+							`The slice model is not valid. The slice name "${slice.name}" is not in the correct format.`,
+						),
+						toolName: "verify_slice_model",
+					})
+
 					return {
 						content: [
 							{
@@ -111,6 +126,13 @@ Examples: "ImageGallery", "TestimonialCard".`,
 
 				// Validate slice ID format
 				if (!isValidSliceId(slice.id)) {
+					trackSentryError({
+						error: new Error(
+							`The slice model is not valid. The slice ID "${slice.id}" is not in the correct format.`,
+						),
+						toolName: "verify_slice_model",
+					})
+
 					return {
 						content: [
 							{
@@ -129,6 +151,13 @@ Examples: "hero_section", "testimonial_card", "image_gallery".`,
 					.map((variation) => variation.id)
 					.filter((variationId) => !isValidVariationId(variationId))
 				if (invalidVariationIds.length > 0) {
+					trackSentryError({
+						error: new Error(
+							`The slice model is not valid. The following variation IDs are not in the correct format: ${invalidVariationIds.join(", ")}`,
+						),
+						toolName: "verify_slice_model",
+					})
+
 					return {
 						content: [
 							{
@@ -147,6 +176,13 @@ Examples: "default", "imageRight", "alignLeft", "withBackground".`,
 					(variation) => variation.items?.length ?? 0 > 0,
 				)
 				if (isNewSlice && hasItems) {
+					trackSentryError({
+						error: new Error(
+							`The slice model is not valid. At least one variation uses the "items" property, which is deprecated. Use a group instead.`,
+						),
+						toolName: "verify_slice_model",
+					})
+
 					return {
 						content: [
 							{
@@ -178,6 +214,10 @@ The model drives everything - when it changes, mocks and code must be adjusted a
 			}
 
 			const errors = validationResult.left.map(formatDecodeError).join("\n")
+			trackSentryError({
+				error: new Error(`The slice model has validation errors: ${errors}`),
+				toolName: "verify_slice_model",
+			})
 
 			return {
 				content: [

@@ -2,6 +2,7 @@ import { z } from "zod"
 
 import { formatErrorForMcpTool } from "../lib/error"
 import { tool } from "../lib/mcp"
+import { trackSentryError } from "../lib/sentry"
 
 import { telemetryClient } from "../server"
 
@@ -167,6 +168,11 @@ async function fetchFieldDocumentation(fieldType: string): Promise<string> {
 
 		return markdown
 	} catch (error) {
+		trackSentryError({
+			error,
+			toolName: "how_to_code_slice",
+		})
+
 		return `Error fetching documentation for ${fieldType}: ${error instanceof Error ? error.message : String(error)}`
 	}
 }

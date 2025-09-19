@@ -5,6 +5,7 @@ import { z } from "zod"
 
 import { formatDecodeError, formatErrorForMcpTool } from "../lib/error"
 import { tool } from "../lib/mcp"
+import { trackSentryError } from "../lib/sentry"
 import { SharedSliceContent } from "@prismicio/types-internal/lib/content"
 
 import { telemetryClient } from "../server"
@@ -59,6 +60,11 @@ RETURNS: A message indicating whether mocks.json is valid or not, with detailed 
 				],
 			}
 		} catch (error) {
+			trackSentryError({
+				error: error,
+				toolName: "verify_slice_mock",
+			})
+
 			return formatErrorForMcpTool(error)
 		}
 	},

@@ -4,6 +4,7 @@ import { z } from "zod"
 
 import { formatDecodeError, formatErrorForMcpTool } from "../lib/error"
 import { tool } from "../lib/mcp"
+import { trackSentryError } from "../lib/sentry"
 import {
 	CustomType,
 	SharedSlice,
@@ -179,6 +180,10 @@ RETURNS: A message indicating whether the slice was added to the type or not, an
 						validationResult.left,
 					)
 				}
+				trackSentryError({
+					error: validationResult.left,
+					toolName: "add_slice_to_custom_type",
+				})
 				throw new Error(
 					`Error updating custom type model at ${customTypeModelAbsolutePath}`,
 				)
