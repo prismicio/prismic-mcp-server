@@ -7,7 +7,7 @@ import { randomUUID } from "crypto"
 
 import { API_TOKENS } from "../constants/API_TOKENS"
 
-import { getRepositoryName } from "./repository"
+import { getRepositoryName } from "./sliceMachine"
 import { getUserShortId } from "./user"
 
 type TelemetryTrackArgs =

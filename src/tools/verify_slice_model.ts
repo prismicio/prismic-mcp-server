@@ -1,10 +1,11 @@
 import { readFileSync } from "fs"
-import { basename, join as joinPath } from "path"
+import { basename, dirname, join as joinPath } from "path"
 import { z } from "zod"
 
 import { formatDecodeError, formatErrorForMcpTool } from "../lib/error"
 import { tool } from "../lib/mcp"
 import { trackSentryError } from "../lib/sentry"
+import { getResolvedLibraries } from "../lib/sliceMachine"
 import { SharedSlice } from "@prismicio/types-internal/lib/customtypes"
 
 import { telemetryClient } from "../server"
@@ -49,6 +50,36 @@ RETURNS: A message indicating whether model.json is valid or not, with detailed 
 						"Error while tracking 'verify_slice_model' tool call",
 						error,
 					)
+				}
+			}
+
+			// Ensure the slice directory resides under a configured library from slicemachine.config.json
+			try {
+				const resolvedLibraryPaths = getResolvedLibraries(
+					args.sliceMachineConfigAbsolutePath,
+				)
+				const sliceParentDirectory = dirname(sliceDirectoryAbsolutePath)
+				const insideAnyLibrary = resolvedLibraryPaths.some(
+					(libAbs) => sliceParentDirectory === libAbs,
+				)
+				if (!insideAnyLibrary) {
+					return {
+						content: [
+							{
+								type: "text",
+								text: `The slice directory "${sliceDirectoryAbsolutePath}" is not inside any configured Slice Library from slicemachine.config.json.\n\nConfigured libraries (resolved):\n${resolvedLibraryPaths.join("\n")}\n\nSUGGESTION: Move or create the slice under one of the configured libraries (e.g., "src/slices/MySlice").`,
+							},
+						],
+					}
+				}
+			} catch {
+				return {
+					content: [
+						{
+							type: "text",
+							text: `Could not read or parse slicemachine.config.json at "${args.sliceMachineConfigAbsolutePath}". Ensure it exists and includes a non-empty "libraries" array.`,
+						},
+					],
 				}
 			}
 
