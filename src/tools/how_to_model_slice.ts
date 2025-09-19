@@ -119,7 +119,7 @@ Add at least one library (e.g., ["./src/slices"]) and try again.`,
 				}
 			}
 
-			const sliceDirectoryHint = joinPath(
+			const sliceDirectoryPath = joinPath(
 				resolvedLibraryAbsolutePath,
 				sliceName,
 			)
@@ -161,8 +161,8 @@ Add at least one library (e.g., ["./src/slices"]) and try again.`,
 
 ## File Paths
 
-- Slice directory: ${sliceDirectoryHint}
-- Model file: ${sliceDirectoryHint}/model.json
+- Slice directory: ${sliceDirectoryPath}
+- Model file: ${sliceDirectoryPath}/model.json
 
 ## Basic Structure
 
