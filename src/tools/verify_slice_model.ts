@@ -76,6 +76,11 @@ SUGGESTION: Check that the JSON syntax is valid - look for missing commas, quote
 				}
 			}
 
+			const sentryExtra = {
+				modelPath: modelAbsolutePath,
+				modelRaw: fileContent,
+			}
+
 			const validationResult = SharedSlice.decode(parsedModel)
 
 			if (validationResult._tag === "Right") {
@@ -89,6 +94,7 @@ SUGGESTION: Check that the JSON syntax is valid - look for missing commas, quote
 							`The slice model is not valid. The slice name "${slice.name}" does not match the folder name "${expectedSliceName}".`,
 						),
 						toolName: "verify_slice_model",
+						extra: sentryExtra,
 					})
 
 					return {
@@ -109,6 +115,7 @@ Expected: The folder name and the model's "name" must be the same PascalCase str
 							`The slice model is not valid. The slice name "${slice.name}" is not in the correct format.`,
 						),
 						toolName: "verify_slice_model",
+						extra: sentryExtra,
 					})
 
 					return {
@@ -131,6 +138,7 @@ Examples: "ImageGallery", "TestimonialCard".`,
 							`The slice model is not valid. The slice ID "${slice.id}" is not in the correct format.`,
 						),
 						toolName: "verify_slice_model",
+						extra: sentryExtra,
 					})
 
 					return {
@@ -156,6 +164,7 @@ Examples: "hero_section", "testimonial_card", "image_gallery".`,
 							`The slice model is not valid. The following variation IDs are not in the correct format: ${invalidVariationIds.join(", ")}`,
 						),
 						toolName: "verify_slice_model",
+						extra: sentryExtra,
 					})
 
 					return {
@@ -181,6 +190,7 @@ Examples: "default", "imageRight", "alignLeft", "withBackground".`,
 							`The slice model is not valid. At least one variation uses the "items" property, which is deprecated. Use a group instead.`,
 						),
 						toolName: "verify_slice_model",
+						extra: sentryExtra,
 					})
 
 					return {
@@ -217,6 +227,7 @@ The model drives everything - when it changes, mocks and code must be adjusted a
 			trackSentryError({
 				error: new Error(`The slice model has validation errors: ${errors}`),
 				toolName: "verify_slice_model",
+				extra: sentryExtra,
 			})
 
 			return {

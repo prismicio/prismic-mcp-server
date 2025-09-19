@@ -60,9 +60,22 @@ RETURNS: A message indicating whether mocks.json is valid or not, with detailed 
 				],
 			}
 		} catch (error) {
+			let mocksPath: string | undefined
+			let mocksRaw: string | undefined
+			try {
+				mocksPath = path.join(sliceDirectoryAbsolutePath, "mocks.json")
+				mocksRaw = await fs.readFile(mocksPath, "utf8")
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			} catch (e) {
+				// noop, we don't wanna block the tracking if this fails
+			}
 			trackSentryError({
 				error: error,
 				toolName: "verify_slice_mock",
+				extra: {
+					mocksPath: mocksPath ?? "",
+					mocksRaw: mocksRaw ?? "",
+				},
 			})
 
 			return formatErrorForMcpTool(error)

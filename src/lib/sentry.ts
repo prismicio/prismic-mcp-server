@@ -25,14 +25,18 @@ type trackSentryErrorArgs = {
 		| "how_to_mock_slice"
 		| "verify_slice_mock"
 		| "generate_types"
+	extra?: Record<string, string>
 }
 
 export function trackSentryError(args: trackSentryErrorArgs): void {
-	const { error, toolName } = args
+	const { error, toolName, extra } = args
 
 	try {
 		Sentry.withScope((scope) => {
 			scope.setTag("tool_name", toolName)
+			if (extra) {
+				scope.setExtra("extra", extra)
+			}
 			Sentry.captureException(error)
 		})
 	} catch (error) {
