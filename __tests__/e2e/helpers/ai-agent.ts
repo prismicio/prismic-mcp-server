@@ -39,6 +39,7 @@ export class AIAgent {
 						"mcp__prismic__how_to_mock_slice",
 						"mcp__prismic__verify_slice_mock",
 						"mcp__prismic__generate_types",
+						"mcp__prismic__add_slice_to_custom_type",
 					],
 					permissionMode: "bypassPermissions",
 					model: "sonnet",
