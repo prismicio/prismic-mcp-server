@@ -133,7 +133,7 @@ export async function readAllSliceModelsForLibrary(args: {
 			const parsedModel = SharedSlice.decode(modelContents)
 			if (parsedModel._tag === "Left") {
 				throw new Error(
-					`Invalid slice model at ${modelPath}. Please use the 'verify_slice_model' tool to validate the model before generating the types.`,
+					`Invalid slice model at ${modelPath}. Please use the 'save_slice_model' tool to validate the model before generating the types.`,
 				)
 			}
 

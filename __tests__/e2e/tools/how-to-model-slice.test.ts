@@ -26,7 +26,7 @@ It should have:
 		expect(toolsUsed).toEqual(
 			expect.arrayContaining([
 				"how_to_model_slice",
-				"verify_slice_model",
+				"save_slice_model",
 				"generate_types",
 			]),
 		)

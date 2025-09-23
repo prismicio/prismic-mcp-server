@@ -5,7 +5,7 @@ export async function callTool(
 	toolName:
 		| "how_to_code_slice"
 		| "how_to_model_slice"
-		| "verify_slice_model"
+		| "save_slice_model"
 		| "how_to_mock_slice"
 		| "verify_slice_mock"
 		| "generate_types",

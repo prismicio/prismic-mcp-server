@@ -76,7 +76,7 @@ RETURNS: A message indicating whether the slice was added to the type or not, an
 			const validatedSliceModel = SharedSlice.decode(sliceModelContent)
 			if (validatedSliceModel._tag === "Left") {
 				throw new Error(
-					`Invalid slice model at ${sliceModelAbsolutePath}. Please use the 'verify_slice_model' tool to validate the slice model before adding it to the custom type.`,
+					`Invalid slice model at ${sliceModelAbsolutePath}. Please use the 'save_slice_model' tool to validate the slice model before adding it to the custom type.`,
 				)
 			}
 			const parsedSliceModel = validatedSliceModel.right

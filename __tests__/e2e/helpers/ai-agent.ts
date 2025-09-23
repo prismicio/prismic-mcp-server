@@ -35,7 +35,7 @@ export class AIAgent {
 						"MultiEdit",
 						"mcp__prismic__how_to_code_slice",
 						"mcp__prismic__how_to_model_slice",
-						"mcp__prismic__verify_slice_model",
+						"mcp__prismic__save_slice_model",
 						"mcp__prismic__how_to_mock_slice",
 						"mcp__prismic__verify_slice_mock",
 						"mcp__prismic__generate_types",

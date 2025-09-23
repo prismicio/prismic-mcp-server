@@ -25,7 +25,7 @@ It should have:
 	expect(toolsUsed).toEqual(
 		expect.arrayContaining([
 			"how_to_model_slice",
-			"verify_slice_model",
+			"save_slice_model",
 			"generate_types",
 			"how_to_code_slice",
 			"how_to_mock_slice",

@@ -4,7 +4,7 @@ import { join } from "path"
 import { expect, test } from "../fixtures/test"
 import { callTool } from "../helpers/mcp-client"
 
-test.describe("verify_slice_model tool - Calling Tool", () => {
+test.describe("save_slice_model tool - Calling Tool", () => {
 	test("should check a valid model.json file", async ({ projectRoot }) => {
 		cpSync(
 			join(
@@ -16,7 +16,7 @@ test.describe("verify_slice_model tool - Calling Tool", () => {
 		)
 
 		const sliceDirectoryAbsolutePath = join(projectRoot, "src/slices/Hero")
-		const result = await callTool("verify_slice_model", {
+		const result = await callTool("save_slice_model", {
 			sliceMachineConfigAbsolutePath: join(
 				projectRoot,
 				"slicemachine.config.json",
@@ -49,7 +49,7 @@ test.describe("verify_slice_model tool - Calling Tool", () => {
 		)
 
 		const sliceDirectoryAbsolutePath = join(projectRoot, "src/slices/Hero")
-		const result = await callTool("verify_slice_model", {
+		const result = await callTool("save_slice_model", {
 			sliceMachineConfigAbsolutePath: join(
 				projectRoot,
 				"slicemachine.config.json",

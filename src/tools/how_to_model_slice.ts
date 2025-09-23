@@ -1,3 +1,6 @@
+import { existsSync } from "node:fs"
+import { join as joinPath } from "node:path"
+
 import { z } from "zod"
 
 import { formatErrorForMcpTool } from "../lib/error"
@@ -7,9 +10,9 @@ import { telemetryClient } from "../server"
 
 export const how_to_model_slice = tool(
 	"how_to_model_slice",
-	`PURPOSE: Provide detailed, opinionated guidance to create or update Prismic slice model.json files using modern best practices, including naming, file placement, allowed fields, shapes, and configuration.
+	`PURPOSE: Provide detailed, opinionated guidance to create Prismic slice model files using modern best practices, including naming, file placement, allowed fields, shapes, and configuration.
 
-USAGE: Use FIRST for any Prismic slice modeling request. Do not use for component or mock implementation.
+USAGE: Use FIRST for any Prismic slice creation or modeling request. Do not use for component or mock implementation.
 Input Type Selection Rules:
 - If the user attaches an image, include "image".
 - If the user attaches code, include "code".
@@ -80,8 +83,11 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 
 			const sliceId = toSnakeCase(sliceName)
 
+			const sliceDirectory = joinPath(sliceMachineConfigAbsolutePath, sliceName)
+			const modelExists = existsSync(joinPath(sliceDirectory, "model.json"))
+
 			const instructions = `
-# How to Model a Prismic Slice
+# How to Create a Prismic Slice
 
 ## Request Analysis
 - **Slice Name**: ${sliceName}
@@ -113,11 +119,13 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 - Avoid legacy constructs; follow guidance in the relevant sections below.
 - Add fields to model only editor-controlled content. Treat decorative/stylistic or implementation-only elements as non-content unless explicitly requested.
 
-## File Paths
-
-- Slice directory: ${sliceMachineConfigAbsolutePath}/${sliceName}
-- Model file: ${sliceMachineConfigAbsolutePath}/${sliceName}/model.json
-
+${
+	!isNewSlice && modelExists
+		? `## File Paths
+- Slice directory: ${sliceDirectory}
+- Model file: ${sliceDirectory}/model.json\n`
+		: ""
+}
 ## Basic Structure
 
 ### Slice Model
@@ -373,8 +381,12 @@ Notes:
 
 ## Implementation Steps
 
-1) Create the slice directory (if it doesn't exist)
-2) Create or update the model.json with the structure above inside the slice directory
+${
+	!isNewSlice && modelExists
+		? `1) Analyze the existing model.json and update it according to the user's requirements:`
+		: "1) Generate a slice JSON model with the structure above"
+}
+2) Call the save_slice_model tool to create the slice with the generated model
 
 ## Content Analysis Guidelines
 
@@ -408,16 +420,15 @@ ${
 
 ## Final Instructions
 
-- Focus only on model.json
-- After implementation, you MUST call the verify_slice_model tool to ensure correctness
-- After having a valid model.json, you MUST also call all the necessary tools to ensure everything related to the slice is updated to reflect the changes. Here is the recommended order of tools to call, please AVOID calling the tools in any other order than this one:
-  1. generate_types
+- Focus only on the slice model JSON
+- After implementation, you MUST call the save_slice_model tool to create the slice, NEVER create a model.json file file by yourself.
+- After having a valid model structure, you MUST also call all the necessary tools to ensure everything related to the slice is updated to reflect the changes. Here is the recommended order of tools to call, please AVOID calling the tools in any other order than this one:
+  1. save_slice_model
   2. how_to_code_slice
-  3. verify_slice_code
   4. how_to_mock_slice
   5. verify_slice_mock
 
-  If you understood this, please state which tool you are calling next.`
+  If you understood this, please SAY what tools you are calling next and the order in which you are calling them.`
 
 			return {
 				content: [
