@@ -111,8 +111,7 @@ RETURNS: Prismic Framework-specific field documentation and code examples.`,
 ${fieldDocs}
 
 ## Next Steps
-1. Implement the desired code changes following the documentation above and project patterns.
-2. Call the verify_slice_code tool to ensure the code is valid.`
+Implement the desired code changes following the documentation above and project patterns.`
 
 			return {
 				content: [
