@@ -79,4 +79,17 @@ test.describe("how_to_code_slice tool - Calling Tool", () => {
 			expect(error).toBeInstanceOf(Error)
 		}
 	})
+
+	test("should handle image field", async () => {
+		const result = await callTool("how_to_code_slice", {
+			projectFramework: "next",
+			stylingSystemToUse: "tailwind",
+			modelAbsolutePath: "/src/slices/Hero/model.json",
+			sliceMachineConfigAbsolutePath: "/slicemachine.config.json",
+			fieldsUsed: ["prismic.ImageField"],
+		})
+		expect(result).toContain(
+			"Only apply imgix transformation when explicitly requested by the user.",
+		)
+	})
 })
