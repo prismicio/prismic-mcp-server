@@ -23,7 +23,9 @@ test.describe("save_slice_model tool - Calling Tool", () => {
 				"slicemachine.config.json",
 			),
 			sliceDirectoryAbsolutePath,
+			sliceName: "Hero",
 			isNewSlice: true,
+			libraryID: "./src/slices",
 			model,
 		})
 
@@ -37,7 +39,7 @@ test.describe("save_slice_model tool - Calling Tool", () => {
 			readFileSync(
 				join(
 					new URL(import.meta.url).pathname,
-					"../../reference/slices/SlicifyHero/Hero/model-invalid.json",
+					"../../reference/slices/SlicifyHero/model-invalid.json",
 				),
 				{ encoding: "utf8" },
 			),
@@ -50,7 +52,9 @@ test.describe("save_slice_model tool - Calling Tool", () => {
 				"slicemachine.config.json",
 			),
 			sliceDirectoryAbsolutePath,
+			sliceName: "Hero",
 			isNewSlice: true,
+			libraryID: "./src/slices",
 			model,
 		})
 

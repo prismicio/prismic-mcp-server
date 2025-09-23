@@ -157,13 +157,15 @@ Examples: "default", "imageRight", "alignLeft", "withBackground".`,
 			}
 
 			try {
-				// Initialize Slice Machine manager
 				const projectRoot = dirname(sliceMachineConfigAbsolutePath)
 				const manager = createSliceMachineManager({ cwd: projectRoot })
 				await manager.plugins.initPlugins()
 
-				// Create or update the slice
-				await manager.slices.createSlice({ model: slice, libraryID })
+				if (isNewSlice) {
+					await manager.slices.createSlice({ model: slice, libraryID })
+				} else {
+					await manager.slices.updateSlice({ model: slice, libraryID })
+				}
 
 				if (hasItems) {
 					return {
