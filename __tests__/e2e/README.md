@@ -35,7 +35,7 @@ npm run test:e2e
 To run a specific test file:
 
 ```bash
-npm run test:e2e -- __tests__/e2e/tools/generate_types.test.ts
+npm run test:e2e -- __tests__/e2e/tools/how-to-model-slice.test.ts
 ```
 
 To update the snapshots:
@@ -47,7 +47,7 @@ npm run test:e2e:update
 To update the snapshots of a specific test file:
 
 ```bash
-npm run test:e2e:update -- all __tests__/e2e/tools/generate_types.test.ts
+npm run test:e2e:update -- all __tests__/e2e/tools/how-to-model-slice.test.ts
 ```
 
 ## Debugging

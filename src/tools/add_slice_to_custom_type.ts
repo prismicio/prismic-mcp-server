@@ -201,10 +201,7 @@ RETURNS: A message indicating whether the slice was added to the type or not, an
 					{
 						type: "text",
 						text: `
-The slice model at ${sliceModelAbsolutePath} is now added to the custom type at ${customTypeModelAbsolutePath}.
-
-You MUST now call the generate_types tool to update the Prismic types.
-`,
+The slice model at ${sliceModelAbsolutePath} is now added to the custom type at ${customTypeModelAbsolutePath}.`,
 					},
 				],
 			}
