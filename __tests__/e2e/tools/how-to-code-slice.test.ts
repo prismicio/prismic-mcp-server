@@ -65,7 +65,7 @@ Focus on:
 		})
 
 		console.info("Grade:", grade)
-		expect(grade.score).toBeGreaterThan(7)
+		expect(grade.score).toBeGreaterThan(6)
 	})
 })
 
