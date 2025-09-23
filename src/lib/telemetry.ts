@@ -7,7 +7,7 @@ import { randomUUID } from "crypto"
 
 import { API_TOKENS } from "../constants/API_TOKENS"
 
-import { getRepositoryName } from "./sliceMachine"
+import { getRepositoryName } from "./repository"
 import { getUserShortId } from "./user"
 
 type TelemetryTrackArgs =
@@ -67,13 +67,6 @@ type TelemetryTrackArgs =
 			}
 	  }
 	| {
-			event: "MCP Tool - Verify slice code"
-			sliceMachineConfigAbsolutePath: string
-			properties: {
-				sliceName: string
-			}
-	  }
-	| {
 			event: "MCP Tool - Save slice model"
 			sliceMachineConfigAbsolutePath: string
 			properties: {
@@ -129,7 +122,7 @@ export class Telemetry {
 
 		let repository
 		try {
-			repository = getRepositoryName({ sliceMachineConfigAbsolutePath })
+			repository = getRepositoryName(sliceMachineConfigAbsolutePath)
 		} catch (error) {
 			// noop, we don't wanna block tracking if the repository name is not found
 			if (process.env.PRISMIC_DEBUG) {
