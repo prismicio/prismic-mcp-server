@@ -7,7 +7,7 @@ import { randomUUID } from "crypto"
 
 import { API_TOKENS } from "../constants/API_TOKENS"
 
-import { getRepositoryName } from "./repository"
+import { getRepositoryName } from "./sliceMachine"
 import { getUserShortId } from "./user"
 
 type TelemetryTrackArgs =
@@ -79,8 +79,19 @@ export class Telemetry {
 	private _segmentClient: Analytics | undefined = undefined
 	private _userID: string | undefined = undefined
 	private _anonymousId: string | undefined = undefined
+	private _telemetryDisabled: boolean = false
+
+	constructor() {
+		if (process.env.TELEMETRY_DISABLED === "true") {
+			this._telemetryDisabled = true
+		}
+	}
 
 	initTelemetry(): void {
+		if (this._telemetryDisabled) {
+			return
+		}
+
 		try {
 			this._segmentClient = new Analytics({
 				writeKey: API_TOKENS.SegmentKey,
@@ -108,6 +119,10 @@ export class Telemetry {
 	}
 
 	async track(args: TelemetryTrackArgs): Promise<void> {
+		if (this._telemetryDisabled) {
+			return
+		}
+
 		assertTelemetryInitialized(this._segmentClient)
 		const { event, sliceMachineConfigAbsolutePath, properties } = args
 
@@ -170,6 +185,10 @@ export class Telemetry {
 	}
 
 	async identify(): Promise<void> {
+		if (this._telemetryDisabled) {
+			return
+		}
+
 		assertTelemetryInitialized(this._segmentClient)
 
 		let userShortId

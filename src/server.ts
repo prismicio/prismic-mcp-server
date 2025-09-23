@@ -1,5 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 
+import { initSentry } from "./lib/sentry"
 import { Telemetry } from "./lib/telemetry"
 
 import { name, version } from "../package.json"
@@ -13,6 +14,8 @@ import { verify_slice_mock } from "./tools/verify_slice_mock"
 
 export const telemetryClient = new Telemetry()
 telemetryClient.initTelemetry()
+
+initSentry()
 
 export const server = new McpServer({ name, version })
 server.tool(...how_to_code_slice)

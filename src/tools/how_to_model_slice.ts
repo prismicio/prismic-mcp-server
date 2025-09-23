@@ -5,6 +5,7 @@ import { z } from "zod"
 
 import { formatErrorForMcpTool } from "../lib/error"
 import { tool } from "../lib/mcp"
+import { getResolvedLibraries } from "../lib/sliceMachine"
 
 import { telemetryClient } from "../server"
 
@@ -81,6 +82,27 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 				}
 			}
 
+			// Resolve Slice Library paths from slicemachine.config.json
+			let resolvedLibraryAbsolutePaths: string[]
+			try {
+				resolvedLibraryAbsolutePaths = getResolvedLibraries(
+					sliceMachineConfigAbsolutePath,
+				)
+			} catch {
+				return {
+					content: [
+						{
+							type: "text" as const,
+							text: `Could not read or parse slicemachine.config.json at "${sliceMachineConfigAbsolutePath}". Ensure it exists and includes a non-empty "libraries" array.`,
+						},
+					],
+				}
+			}
+
+			const sliceDirectoryOptions = resolvedLibraryAbsolutePaths.map((libAbs) =>
+				joinPath(libAbs, sliceName),
+			)
+
 			const sliceId = toSnakeCase(sliceName)
 
 			const sliceDirectory = joinPath(sliceMachineConfigAbsolutePath, sliceName)
@@ -122,7 +144,10 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 ${
 	!isNewSlice && modelExists
 		? `## File Paths
-- Slice directory: ${sliceDirectory}
+- Available slice libraries (from slicemachine.config.json):
+${resolvedLibraryAbsolutePaths.map((p) => `  - ${p}`).join("\n")}
+- Slice directory:
+${sliceDirectoryOptions.map((p) => `  - ${p}`).join("\n")}
 - Model file: ${sliceDirectory}/model.json\n`
 		: ""
 }

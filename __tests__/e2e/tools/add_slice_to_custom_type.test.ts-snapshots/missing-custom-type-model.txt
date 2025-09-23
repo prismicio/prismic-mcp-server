@@ -1,0 +1,8 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Error: Invalid JSON format for custom type model at {base_path}/index.json: ENOENT: no such file or directory, open '{base_path}/index.json'"
+    }
+  ]
+}

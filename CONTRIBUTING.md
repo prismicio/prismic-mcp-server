@@ -46,6 +46,9 @@ npm run preview
 
 				# Activate debug mode to see more logs (Output tab of your IDE console)
 				"PRISMIC_DEBUG": true
+
+				# Disable telemetry for development
+				"TELEMETRY_DISABLED": true
 			}
 		}
 	}
@@ -137,6 +140,9 @@ gh pr create
 Use the [**Publish**](https://github.com/prismicio/prismic-mcp-server/actions/workflows/publish.yml) GitHub Action to publish a new stable or prelease version.
 
 [^1]: This package is maintained by the DevX team. Prismic employees can ask for help or a review in the [#team-devx](https://prismic-team.slack.com/archives/C014VAACCQL) Slack channel.
+
 [^2]: Prismic employees are highly encouraged to discuss changes with the DevX team in the [#team-devx](https://prismic-team.slack.com/archives/C014VAACCQL) Slack channel before starting.
+
 [^3]: Code should be reviewed by the DevX team before merging. Prismic employees can request a review in the [#team-devx](https://prismic-team.slack.com/archives/CPG31MDL1) Slack channel.
+
 [^4]: Prismic employees can ask the DevX team for [npm](https://www.npmjs.com) publish access.

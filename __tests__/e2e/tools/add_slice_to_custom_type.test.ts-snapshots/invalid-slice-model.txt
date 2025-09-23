@@ -1,0 +1,8 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Error: Invalid slice model at {base_path}/model.json. Please use the 'verify_slice_model' tool to validate the slice model before adding it to the custom type."
+    }
+  ]
+}
