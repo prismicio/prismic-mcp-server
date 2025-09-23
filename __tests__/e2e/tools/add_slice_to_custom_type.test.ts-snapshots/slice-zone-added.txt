@@ -2,7 +2,7 @@
   "content": [
     {
       "type": "text",
-      "text": "\nThe slice model at {base_path}/model.json is now added to the custom type at {base_path}/index.json.\n\nYou MUST now call the generate_types tool to update the Prismic types.\n"
+      "text": "\nThe slice model at {base_path}/model.json is now added to the custom type at {base_path}/index.json."
     }
   ]
 }
