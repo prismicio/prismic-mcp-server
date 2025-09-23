@@ -129,42 +129,88 @@ Implement the desired code changes following the documentation above and project
 )
 
 const PRISMIC_DOCS_BASE = "https://prismic.io/docs/fields"
-const FIELD_PATH_MAPPING = {
-	"prismic.BooleanField": "boolean",
-	"prismic.ColorField": "color",
-	"prismic.ContentRelationshipField": "content-relationship",
-	ContentRelationshipFieldWithData: "content-relationship",
-	"prismic.DateField": "date",
-	"prismic.EmbedField": "embed",
-	"prismic.GeoPointField": "geopoint",
-	"prismic.ImageField": "image",
-	"prismic.IntegrationField": "integration",
-	"prismic.LinkField": "link",
-	"prismic.LinkToMediaField": "link-to-media",
-	"prismic.NumberField": "number",
-	"prismic.GroupField": "repeatable-group",
-	"prismic.RichTextField": "rich-text",
-	"prismic.SelectField": "select",
-	"prismic.TableField": "table",
-	"prismic.TitleField": "rich-text", // Title uses rich text docs
-	"prismic.KeyTextField": "text",
-	"prismic.TimestampField": "timestamp",
-} as const
+const FIELD_MAPPING: Record<string, { path: string; additionalInfo?: string }> =
+	{
+		"prismic.BooleanField": {
+			path: "boolean",
+		},
+		"prismic.ColorField": {
+			path: "color",
+		},
+		"prismic.ContentRelationshipField": {
+			path: "content-relationship",
+		},
+		ContentRelationshipFieldWithData: {
+			path: "content-relationship",
+		},
+		"prismic.DateField": {
+			path: "date",
+		},
+		"prismic.EmbedField": {
+			path: "embed",
+		},
+		"prismic.GeoPointField": {
+			path: "geopoint",
+		},
+		"prismic.ImageField": {
+			path: "image",
+			additionalInfo:
+				"Only apply imgix transformation when explicitly requested by the user.",
+		},
+		"prismic.IntegrationField": {
+			path: "integration",
+		},
+		"prismic.LinkField": {
+			path: "link",
+		},
+		"prismic.LinkToMediaField": {
+			path: "link-to-media",
+		},
+		"prismic.NumberField": {
+			path: "number",
+		},
+		"prismic.GroupField": {
+			path: "repeatable-group",
+		},
+		"prismic.RichTextField": {
+			path: "rich-text",
+		},
+		"prismic.SelectField": {
+			path: "select",
+		},
+		"prismic.TableField": {
+			path: "table",
+		},
+		"prismic.TitleField": {
+			// Title uses rich text docs
+			path: "rich-text",
+		},
+		"prismic.KeyTextField": {
+			path: "text",
+		},
+		"prismic.TimestampField": {
+			path: "timestamp",
+		},
+	} as const
 
 async function fetchFieldDocumentation(fieldType: string): Promise<string> {
-	const path = FIELD_PATH_MAPPING[fieldType as keyof typeof FIELD_PATH_MAPPING]
-	if (!path) {
+	const field = FIELD_MAPPING[fieldType as keyof typeof FIELD_MAPPING]
+	if (!field) {
 		return `No documentation available for field type: ${fieldType}`
 	}
 
-	const url = `${PRISMIC_DOCS_BASE}/${path}.md`
+	const url = `${PRISMIC_DOCS_BASE}/${field.path}.md`
 
 	try {
 		const response = await fetch(url)
 		if (!response.ok) {
 			return `Failed to fetch documentation for ${fieldType}: ${response.status} ${response.statusText}`
 		}
-		const markdown = await response.text()
+		let markdown = await response.text()
+
+		if (field.additionalInfo) {
+			markdown += `\n**Additional Information:** \n${field.additionalInfo}`
+		}
 
 		return markdown
 	} catch (error) {
