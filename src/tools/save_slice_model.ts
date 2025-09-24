@@ -11,9 +11,9 @@ import { telemetryClient } from "../server"
 
 export const save_slice_model = tool(
 	"save_slice_model",
-	`PURPOSE: Creates or updates a Prismic slice using the Slice Machine manager with validation. This tool combines the verification and creation steps into a single operation.
+	`PURPOSE: Creates or updates a Prismic slice in your project after the model has been validated.
 
-USAGE: Use after modeling a slice to create the actual slice with both model.
+USAGE: Use immediately after generating or editing a slice model to ensure it's valid and create/update the slice.
 
 RETURNS: Success confirmation or detailed validation errors if the model is invalid.`,
 	z.object({
