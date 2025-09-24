@@ -28,7 +28,6 @@ type trackSentryErrorArgs = {
 		| "verify_slice_model"
 		| "how_to_mock_slice"
 		| "verify_slice_mock"
-		| "generate_types"
 	extra?: Record<string, string>
 }
 
