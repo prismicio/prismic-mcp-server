@@ -1,0 +1,8 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Error: Invalid mocks.json with respect to model.json:\n- FieldContent at path primary::title is not a Text field for mock at index 0"
+    }
+  ]
+}

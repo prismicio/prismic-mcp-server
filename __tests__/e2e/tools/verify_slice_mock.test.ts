@@ -1,4 +1,4 @@
-import { copyFileSync, cpSync, rmSync } from "fs"
+import { copyFileSync, cpSync, readFileSync, rmSync, writeFileSync } from "fs"
 import { join } from "path"
 
 import { expect, test } from "../fixtures/test"
@@ -59,5 +59,41 @@ test.describe("verify_slice_mock tool - Calling Tool", () => {
 		await expect(
 			result.replace(sliceDirectoryAbsolutePath, "{base_path}"),
 		).toMatchSnapshot("invalid-mocks.txt")
+	})
+
+	test("should error when content & model don't match in mocks", async ({
+		projectRoot,
+	}) => {
+		cpSync(
+			join(
+				new URL(import.meta.url).pathname,
+				"../../reference/slices/SlicifyHero/Hero",
+			),
+			join(projectRoot, "/src/slices/Hero"),
+			{ recursive: true },
+		)
+
+		// Mutate mocks: replace primary.title with a Text content
+		const mocksPath = join(projectRoot, "/src/slices/Hero/mocks.json")
+		const mocks = JSON.parse(readFileSync(mocksPath, "utf8"))
+		mocks[0].primary.title = {
+			__TYPE__: "FieldContent",
+			type: "Text",
+			value: "Invalid plain text for title",
+		}
+		writeFileSync(mocksPath, JSON.stringify(mocks, null, 2))
+
+		const sliceDirectoryAbsolutePath = join(projectRoot, "src/slices/Hero")
+		const result = await callTool("verify_slice_mock", {
+			sliceMachineConfigAbsolutePath: join(
+				projectRoot,
+				"slicemachine.config.json",
+			),
+			sliceDirectoryAbsolutePath,
+		})
+
+		await expect(
+			result.replace(sliceDirectoryAbsolutePath, "{base_path}"),
+		).toMatchSnapshot("invalid-mock-content-vs-model.txt")
 	})
 })
