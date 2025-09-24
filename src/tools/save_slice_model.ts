@@ -169,17 +169,15 @@ Examples: "default", "imageRight", "alignLeft", "withBackground".`,
 					await manager.slices.updateSlice({ model, libraryID })
 				}
 
+				const updateExistingSliceMessage = !isNewSlice
+					? "\n\nIMPORTANT: Since the model has changed! The model drives everything - when it changes, mocks and code must be adjusted accordingly."
+					: ""
+
 				return {
 					content: [
 						{
 							type: "text",
-							text: `Slice "${sliceName}" has been successfully ${isNewSlice ? "created" : "updated"}!
-
-IMPORTANT: Since the model has changed, you MUST now call:
-1. how_to_mock_slice (to create/update mocks based on the new model)
-2. how_to_code_slice (to create/update the component code based on the new model)
-
-The model drives everything - when it changes, mocks and code must be adjusted accordingly.`,
+							text: `Slice "${sliceName}" has been successfully ${isNewSlice ? "created" : "updated"}!${updateExistingSliceMessage}`,
 						},
 					],
 				}

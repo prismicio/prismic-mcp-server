@@ -101,7 +101,7 @@ RETURNS: Prismic Framework-specific field documentation and code examples.`,
 2. **Follow project patterns**
    - Framework: ${args.projectFramework}
    - Styling: Match existing slices if available, otherwise use project's styling system
-   - Code: Analyze codebase for consistent patterns and conventions
+   - Code: Analyze codebase for consistent patterns and conventions. If you see a bare slice component, replace the existing code with the one you will generate.
 
 3. **Implement fields dynamically**
    - All content must come from Prismic fields

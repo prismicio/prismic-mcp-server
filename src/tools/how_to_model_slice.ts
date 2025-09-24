@@ -444,7 +444,9 @@ ${
 - After having a valid model structure, you MUST also call all the necessary tools to ensure everything related to the slice is updated to reflect the changes. Here is the recommended order of tools to call, please AVOID calling the tools in any other order than this one:
   1. save_slice_model
   2. how_to_code_slice
+	2.1. Code the slice with the instructions you received
   3. how_to_mock_slice
+	3.1. Create a slice mock.json with the instructions you received
   4. verify_slice_mock
 
   If you understood this, please SAY what tools you are calling next and the order in which you are calling them.`
