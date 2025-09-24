@@ -17,21 +17,35 @@ test.describe("save_slice_model tool - Calling Tool", () => {
 		)
 
 		const sliceDirectoryAbsolutePath = join(projectRoot, "src/slices/Hero")
-		const result = await callTool("save_slice_model", {
+
+		const toolProps = {
 			sliceMachineConfigAbsolutePath: join(
 				projectRoot,
 				"slicemachine.config.json",
 			),
 			sliceDirectoryAbsolutePath,
 			sliceName: "Hero",
-			isNewSlice: true,
 			libraryID: "./src/slices",
 			model,
+		}
+
+		const createResult = await callTool("save_slice_model", {
+			...toolProps,
+			isNewSlice: true,
 		})
 
 		expect(
-			result.replace(sliceDirectoryAbsolutePath, "{base_path}"),
-		).toMatchSnapshot("valid-model.txt")
+			createResult.replace(sliceDirectoryAbsolutePath, "{base_path}"),
+		).toMatchSnapshot("valid-model-create.txt")
+
+		const updateResult = await callTool("save_slice_model", {
+			...toolProps,
+			isNewSlice: false,
+		})
+
+		expect(
+			updateResult.replace(sliceDirectoryAbsolutePath, "{base_path}"),
+		).toMatchSnapshot("valid-model-update.txt")
 	})
 
 	test("should check an invalid model input", async ({ projectRoot }) => {
