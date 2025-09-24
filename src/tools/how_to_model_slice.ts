@@ -1,4 +1,3 @@
-import { existsSync } from "node:fs"
 import { join as joinPath } from "node:path"
 
 import { z } from "zod"
@@ -105,9 +104,6 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 
 			const sliceId = toSnakeCase(sliceName)
 
-			const sliceDirectory = joinPath(sliceMachineConfigAbsolutePath, sliceName)
-			const modelExists = existsSync(joinPath(sliceDirectory, "model.json"))
-
 			const instructions = `
 # How to Create a Prismic Slice
 
@@ -141,16 +137,14 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 - Avoid legacy constructs; follow guidance in the relevant sections below.
 - Add fields to model only editor-controlled content. Treat decorative/stylistic or implementation-only elements as non-content unless explicitly requested.
 
-${
-	!isNewSlice && modelExists
-		? `## File Paths
+## File Paths
+
 - Available slice libraries (from slicemachine.config.json):
 ${resolvedLibraryAbsolutePaths.map((p) => `  - ${p}`).join("\n")}
-- Slice directory:
+- Slice directory (choose one):
 ${sliceDirectoryOptions.map((p) => `  - ${p}`).join("\n")}
-- Model file: ${sliceDirectory}/model.json\n`
-		: ""
-}
+- Model file (under chosen directory): model.json
+
 ## Basic Structure
 
 ### Slice Model
@@ -406,11 +400,11 @@ Notes:
 
 ## Implementation Steps
 
-${
-	!isNewSlice && modelExists
-		? `1) Analyze the existing model.json and update it according to the user's requirements:`
-		: "1) Generate a slice JSON model with the structure above"
-}
+1) ${
+				isNewSlice
+					? "Generate a slice JSON model with the structure above"
+					: "Analyze the existing model.json and update it according to the user's requirements"
+			}
 2) Call the save_slice_model tool to create the slice with the generated model
 
 ## Content Analysis Guidelines
