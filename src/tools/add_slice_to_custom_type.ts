@@ -1,5 +1,6 @@
-import { readFileSync, writeFileSync } from "fs"
-import { basename, join as joinPath } from "path"
+import { createSliceMachineManager } from "@slicemachine/manager"
+import { readFileSync } from "fs"
+import { basename, dirname, join as joinPath } from "path"
 import { z } from "zod"
 
 import { formatDecodeError, formatErrorForMcpTool } from "../lib/error"
@@ -34,7 +35,7 @@ RETURNS: A message indicating whether the slice was added to the type or not, an
 				"Absolute path to the custom type directory (contains 'index.json')",
 			),
 	}).shape,
-	(args) => {
+	async (args) => {
 		const { sliceDirectoryAbsolutePath, customTypeDirectoryAbsolutePath } = args
 
 		try {
@@ -190,11 +191,13 @@ RETURNS: A message indicating whether the slice was added to the type or not, an
 			}
 
 			try {
-				writeFileSync(
-					customTypeModelAbsolutePath,
-					`${JSON.stringify(parsedCustomTypeModel, null, 2)}\n`,
-					"utf-8",
-				)
+				const projectRoot = dirname(args.sliceMachineConfigAbsolutePath)
+				const manager = createSliceMachineManager({ cwd: projectRoot })
+				await manager.plugins.initPlugins()
+
+				await manager.customTypes.updateCustomType({
+					model: parsedCustomTypeModel,
+				})
 			} catch (error) {
 				throw new Error(
 					`Failed to write to file ${customTypeModelAbsolutePath}: ${getErrorMessage(error)}`,
