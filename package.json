@@ -57,8 +57,6 @@
 		"lint": "eslint",
 		"types": "vitest --typecheck.only --run",
 		"types:watch": "vitest --typecheck.only",
-		"unit": "vitest run --coverage",
-		"unit:watch": "vitest watch",
 		"size": "size-limit",
 		"test": "npm run lint && npm run types && npm run unit && npm run build && npm run size",
 		"test:e2e": "playwright test --config __tests__/e2e/playwright.config.ts",
