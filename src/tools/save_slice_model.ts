@@ -33,7 +33,9 @@ RETURNS: Success confirmation or detailed validation errors if the model is inva
 			),
 		libraryID: z
 			.string()
-			.describe("The library ID where the slice should be created"),
+			.describe(
+				"The library ID of the slice or where the slice should be created",
+			),
 		model: z
 			.unknown()
 			.describe("The JSON model of the slice to be created/updated"),
@@ -49,7 +51,7 @@ RETURNS: Success confirmation or detailed validation errors if the model is inva
 				sliceMachineConfigAbsolutePath,
 				sliceName,
 				libraryID,
-				model,
+				model: rawModel,
 				isNewSlice,
 			} = args
 
@@ -72,7 +74,7 @@ RETURNS: Success confirmation or detailed validation errors if the model is inva
 				}
 			}
 
-			const validationResult = SharedSlice.decode(model)
+			const validationResult = SharedSlice.decode(rawModel)
 
 			if (validationResult._tag === "Left") {
 				const errors = validationResult.left.map(formatDecodeError).join("\n")
@@ -92,14 +94,14 @@ SUGGESTION: Fix the validation errors above. If you're unsure about slice modeli
 				}
 			}
 
-			const slice = validationResult.right
+			const model = validationResult.right
 
-			if (!isValidSliceName(slice.name)) {
+			if (!isValidSliceName(model.name)) {
 				return {
 					content: [
 						{
 							type: "text",
-							text: `The slice model for ${sliceName} is not valid. The slice name "${slice.name}" is not in the correct format.
+							text: `The slice model for ${sliceName} is not valid. The slice name "${model.name}" is not in the correct format.
 
 Expected format: PascalCase (start with an uppercase letter, letters and numbers only, no spaces or special characters)
 Examples: "ImageGallery", "TestimonialCard".`,
@@ -109,12 +111,12 @@ Examples: "ImageGallery", "TestimonialCard".`,
 			}
 
 			// Validate slice ID format
-			if (!isValidSliceId(slice.id)) {
+			if (!isValidSliceId(model.id)) {
 				return {
 					content: [
 						{
 							type: "text",
-							text: `The slice model for ${sliceName} is not valid. The slice ID "${slice.id}" is not in the correct format.
+							text: `The slice model for ${sliceName} is not valid. The slice ID "${model.id}" is not in the correct format.
 
 Expected format: snake_case (lowercase letters, numbers, and underscores only, starting with a letter or number)
 Examples: "hero_section", "testimonial_card", "image_gallery".`,
@@ -124,7 +126,7 @@ Examples: "hero_section", "testimonial_card", "image_gallery".`,
 			}
 
 			// Validate variation ID formats
-			const invalidVariationIds = slice.variations
+			const invalidVariationIds = model.variations
 				.map((variation) => variation.id)
 				.filter((variationId) => !isValidVariationId(variationId))
 			if (invalidVariationIds.length > 0) {
@@ -142,7 +144,7 @@ Examples: "default", "imageRight", "alignLeft", "withBackground".`,
 			}
 
 			// If the slice is new, and has "items", return an error. Otherwise, return a success message with a suggestion to use a group instead.
-			const hasItems = slice.variations.some(
+			const hasItems = model.variations.some(
 				(variation) => variation.items?.length ?? 0 > 0,
 			)
 			if (isNewSlice && hasItems) {
@@ -162,27 +164,16 @@ Examples: "default", "imageRight", "alignLeft", "withBackground".`,
 				await manager.plugins.initPlugins()
 
 				if (isNewSlice) {
-					await manager.slices.createSlice({ model: slice, libraryID })
+					await manager.slices.createSlice({ model, libraryID })
 				} else {
-					await manager.slices.updateSlice({ model: slice, libraryID })
-				}
-
-				if (hasItems) {
-					return {
-						content: [
-							{
-								type: "text",
-								text: `The slice model for ${sliceName} is valid. At least one variation uses the "items" property, which is a deprecated property. Ask the user if it'd be ok to replace them with a group, as it is recommended.`,
-							},
-						],
-					}
+					await manager.slices.updateSlice({ model, libraryID })
 				}
 
 				return {
 					content: [
 						{
 							type: "text",
-							text: `Slice "${sliceName}" has been successfully created/updated!
+							text: `Slice "${sliceName}" has been successfully ${isNewSlice ? "created" : "updated"}!
 
 IMPORTANT: Since the model has changed, you MUST now call:
 1. how_to_mock_slice (to create/update mocks based on the new model)
