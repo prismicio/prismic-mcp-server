@@ -108,6 +108,9 @@ npm run format
 # Test your changes before requesting a review.
 # All changes should be tested. No failing tests are allowed.
 npm run test
+# Run only unit tests (optionally in watch mode):
+npm run unit
+npm run unit:watch
 # Run only type tests
 npm run types
 ```

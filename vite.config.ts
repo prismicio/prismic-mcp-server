@@ -13,6 +13,14 @@ export default defineConfig({
 		},
 	},
 	plugins: [sdk()],
+	test: {
+		coverage: {
+			provider: "v8",
+			reporter: ["lcovonly", "text"],
+		},
+		setupFiles: ["./__tests__/unit/__setup__.ts"],
+		include: ["./__tests__/unit/**/*.test.ts"],
+	},
 	define: {
 		__PACKAGE_VERSION__: JSON.stringify(pkg.version),
 	},
