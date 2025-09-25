@@ -6,7 +6,15 @@ import { z } from "zod"
 import { formatDecodeError, formatErrorForMcpTool } from "../lib/error"
 import { tool } from "../lib/mcp"
 import { trackSentryError } from "../lib/sentry"
-import { SharedSliceContent } from "@prismicio/types-internal/lib/content"
+import {
+	ContentPath,
+	SharedSliceContent,
+	traverseSharedSliceContent,
+} from "@prismicio/types-internal/lib/content"
+import {
+	type FieldType,
+	SharedSlice,
+} from "@prismicio/types-internal/lib/customtypes"
 
 import { telemetryClient } from "../server"
 
@@ -49,7 +57,25 @@ RETURNS: A message indicating whether mocks.json is valid or not, with detailed 
 		try {
 			const mocksPath = path.join(sliceDirectoryAbsolutePath, "mocks.json")
 			const mocksJSON = JSON.parse(await fs.readFile(mocksPath, "utf8"))
-			mocksSchema.parse(mocksJSON)
+			const parsedMocks = mocksSchema.safeParse(mocksJSON)
+
+			if (!parsedMocks.success) {
+				throw new Error(`Invalid mocks.json: ${parsedMocks.error.message}`)
+			}
+
+			const modelPath = path.join(sliceDirectoryAbsolutePath, "model.json")
+			const modelJSON = JSON.parse(await fs.readFile(modelPath, "utf8"))
+			const parsedModel = SharedSlice.decode(modelJSON)
+			if (parsedModel._tag === "Left") {
+				throw new Error(
+					`Invalid model.json: ${parsedModel.left.map(formatDecodeError).join("\n")}`,
+				)
+			}
+
+			validateMocksAgainstModel({
+				mocks: parsedMocks.data,
+				model: parsedModel.right,
+			})
 
 			return {
 				content: [
@@ -65,8 +91,7 @@ RETURNS: A message indicating whether mocks.json is valid or not, with detailed 
 			try {
 				mocksPath = path.join(sliceDirectoryAbsolutePath, "mocks.json")
 				mocksRaw = await fs.readFile(mocksPath, "utf8")
-				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			} catch (e) {
+			} catch {
 				// noop, we don't wanna block the tracking if this fails
 			}
 			trackSentryError({
@@ -100,3 +125,110 @@ const mocksSchema = z.array(
 		return result.right
 	}),
 )
+
+function validateMocksAgainstModel({
+	model,
+	mocks,
+}: {
+	model: SharedSlice
+	mocks: ReadonlyArray<SharedSliceContent>
+}): void {
+	const errors: string[] = []
+
+	for (const [index, mock] of mocks.entries()) {
+		const variationId = mock.variation
+		const variation = model.variations.find((v) => v.id === variationId)
+		if (!variation) {
+			errors.push(
+				`- Unknown variation "${variationId}" for mock at index ${index}`,
+			)
+			continue
+		}
+
+		traverseSharedSliceContent({
+			path: [],
+			sliceKey: model.id + index,
+			sliceName: model.name,
+			model: {
+				type: "SharedSlice",
+				sliceName: model.name,
+				variationId: variation.id,
+				fields: {
+					primary: variation.primary,
+					items: variation.items,
+				},
+			},
+			content: {
+				key: variation.id + index,
+				name: variation.name,
+				maybeLabel: undefined,
+				widget: mock,
+			},
+		})(
+			({ path, model, content }) => {
+				const addError = (expectedType: FieldType) => {
+					if (model?.type === expectedType) {
+						return
+					}
+					errors.push(
+						`- ${content.__TYPE__} at path ${ContentPath.serialize(path)} is not a ${expectedType} field for mock at index ${index}`,
+					)
+				}
+				switch (content.__TYPE__) {
+					case "BooleanContent":
+						addError("Boolean")
+						break
+					case "EmbedContent":
+						addError("Embed")
+						break
+					case "EmptyContent":
+						// noop
+						break
+					case "FieldContent":
+						addError(content.type)
+						break
+					case "GeoPointContent":
+						addError("GeoPoint")
+						break
+					case "GroupContentType":
+						addError("Group")
+						break
+					case "ImageContent":
+						addError("Image")
+						break
+					case "IntegrationFieldsContent":
+						addError("IntegrationFields")
+						break
+					case "LinkContent":
+					case "RepeatableContent":
+						addError("Link")
+						break
+					case "SeparatorContent":
+						addError("Separator")
+						break
+					case "SliceContentType":
+						addError("Slices")
+						break
+					case "StructuredTextContent":
+						addError("StructuredText")
+						break
+					case "TableContent":
+						addError("Table")
+						break
+					case "UIDContent":
+						addError("UID")
+						break
+				}
+
+				return content
+			},
+			({ content }) => content,
+		)
+	}
+
+	if (errors.length > 0) {
+		throw new Error(
+			`Invalid mocks.json with respect to model.json:\n${errors.join("\n")}`,
+		)
+	}
+}
