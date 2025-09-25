@@ -5,6 +5,7 @@ import { z } from "zod"
 
 import { formatDecodeError, formatErrorForMcpTool } from "../lib/error"
 import { tool } from "../lib/mcp"
+import { trackSentryError } from "../lib/sentry"
 import { SharedSlice } from "@prismicio/types-internal/lib/customtypes"
 
 import { telemetryClient } from "../server"
@@ -42,7 +43,7 @@ RETURNS: Success confirmation or detailed validation errors if the model is inva
 				"Whether this is a new slice creation (true) or updating existing slice (false)",
 			),
 		model: z
-			.unknown()
+			.record(z.string(), z.unknown())
 			.describe("The JSON model of the slice to be created/updated"),
 	}).shape,
 	async (args) => {
@@ -51,7 +52,7 @@ RETURNS: Success confirmation or detailed validation errors if the model is inva
 				sliceMachineConfigAbsolutePath,
 				sliceName,
 				libraryID,
-				model: rawModel,
+				model: modelRaw,
 				isNewSlice,
 			} = args
 
@@ -74,10 +75,21 @@ RETURNS: Success confirmation or detailed validation errors if the model is inva
 				}
 			}
 
-			const validationResult = SharedSlice.decode(rawModel)
+			const sentryExtra = {
+				sliceName,
+				modelRaw: modelRaw,
+			}
+
+			const validationResult = SharedSlice.decode(modelRaw)
 
 			if (validationResult._tag === "Left") {
 				const errors = validationResult.left.map(formatDecodeError).join("\n")
+
+				trackSentryError({
+					error: new Error(`The slice model has validation errors: ${errors}`),
+					toolName: "save_slice_model",
+					extra: sentryExtra,
+				})
 
 				return {
 					content: [
@@ -94,14 +106,22 @@ SUGGESTION: Fix the validation errors above. If you're unsure about slice modeli
 				}
 			}
 
-			const model = validationResult.right
+			const slice = validationResult.right
 
-			if (!isValidSliceName(model.name)) {
+			if (!isValidSliceName(slice.name)) {
+				trackSentryError({
+					error: new Error(
+						`The slice model is not valid. The slice name "${slice.name}" is not in the correct format.`,
+					),
+					toolName: "save_slice_model",
+					extra: sentryExtra,
+				})
+
 				return {
 					content: [
 						{
 							type: "text",
-							text: `The slice model for ${sliceName} is not valid. The slice name "${model.name}" is not in the correct format.
+							text: `The slice model for ${sliceName} is not valid. The slice name "${slice.name}" is not in the correct format.
 
 Expected format: PascalCase (start with an uppercase letter, letters and numbers only, no spaces or special characters)
 Examples: "ImageGallery", "TestimonialCard".`,
@@ -111,12 +131,20 @@ Examples: "ImageGallery", "TestimonialCard".`,
 			}
 
 			// Validate slice ID format
-			if (!isValidSliceId(model.id)) {
+			if (!isValidSliceId(slice.id)) {
+				trackSentryError({
+					error: new Error(
+						`The slice model is not valid. The slice ID "${slice.id}" is not in the correct format.`,
+					),
+					toolName: "save_slice_model",
+					extra: sentryExtra,
+				})
+
 				return {
 					content: [
 						{
 							type: "text",
-							text: `The slice model for ${sliceName} is not valid. The slice ID "${model.id}" is not in the correct format.
+							text: `The slice model for ${sliceName} is not valid. The slice ID "${slice.id}" is not in the correct format.
 
 Expected format: snake_case (lowercase letters, numbers, and underscores only, starting with a letter or number)
 Examples: "hero_section", "testimonial_card", "image_gallery".`,
@@ -126,10 +154,18 @@ Examples: "hero_section", "testimonial_card", "image_gallery".`,
 			}
 
 			// Validate variation ID formats
-			const invalidVariationIds = model.variations
+			const invalidVariationIds = slice.variations
 				.map((variation) => variation.id)
 				.filter((variationId) => !isValidVariationId(variationId))
 			if (invalidVariationIds.length > 0) {
+				trackSentryError({
+					error: new Error(
+						`The slice model is not valid. The following variation IDs are not in the correct format: ${invalidVariationIds.join(", ")}`,
+					),
+					toolName: "save_slice_model",
+					extra: sentryExtra,
+				})
+
 				return {
 					content: [
 						{
@@ -144,10 +180,18 @@ Examples: "default", "imageRight", "alignLeft", "withBackground".`,
 			}
 
 			// If the slice is new, and has "items", return an error. Otherwise, return a success message with a suggestion to use a group instead.
-			const hasItems = model.variations.some(
+			const hasItems = slice.variations.some(
 				(variation) => variation.items?.length ?? 0 > 0,
 			)
 			if (isNewSlice && hasItems) {
+				trackSentryError({
+					error: new Error(
+						`The slice model is not valid. At least one variation uses the "items" property, which is deprecated. Use a group instead.`,
+					),
+					toolName: "save_slice_model",
+					extra: sentryExtra,
+				})
+
 				return {
 					content: [
 						{
@@ -164,29 +208,29 @@ Examples: "default", "imageRight", "alignLeft", "withBackground".`,
 				await manager.plugins.initPlugins()
 
 				if (isNewSlice) {
-					await manager.slices.createSlice({ model, libraryID })
+					await manager.slices.createSlice({ model: slice, libraryID })
 				} else {
-					await manager.slices.updateSlice({ model, libraryID })
+					await manager.slices.updateSlice({ model: slice, libraryID })
 				}
 
-				const updateExistingSliceMessage = !isNewSlice
-					? "\n\nIMPORTANT: Since the model has changed! The model drives everything - when it changes, mocks and code must be adjusted accordingly."
-					: ""
+				let successMessage = `Slice "${sliceName}" has been successfully ${isNewSlice ? "created" : "updated"}!`
 
-				return {
-					content: [
-						{
-							type: "text",
-							text: `Slice "${sliceName}" has been successfully ${isNewSlice ? "created" : "updated"}!${updateExistingSliceMessage}`,
-						},
-					],
+				if (hasItems) {
+					successMessage += ` At least one variation uses the "items" property, which is a deprecated property. Ask the user if it'd be ok to replace them with a group, as it is recommended.`
 				}
+
+				if (!isNewSlice) {
+					successMessage +=
+						"\n\nIMPORTANT: Since the model has changed! The model drives everything - when it changes, mocks and code must be adjusted accordingly."
+				}
+
+				return { content: [{ type: "text", text: successMessage }] }
 			} catch (managerError) {
 				return {
 					content: [
 						{
 							type: "text",
-							text: `Failed to create slice using Slice Machine manager:
+							text: `Failed to ${isNewSlice ? "create" : "update"} ${sliceName} slice.
 
 Error: ${managerError instanceof Error ? managerError.message : String(managerError)}
 
