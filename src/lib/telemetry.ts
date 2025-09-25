@@ -71,6 +71,7 @@ type TelemetryTrackArgs =
 			sliceMachineConfigAbsolutePath: string
 			properties: {
 				sliceName: string
+				isNewSlice: boolean
 				libraryID: string
 			}
 	  }

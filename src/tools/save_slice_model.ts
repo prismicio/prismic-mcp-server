@@ -60,10 +60,7 @@ RETURNS: Success confirmation or detailed validation errors if the model is inva
 				telemetryClient.track({
 					event: "MCP Tool - Save slice model",
 					sliceMachineConfigAbsolutePath,
-					properties: {
-						sliceName,
-						libraryID,
-					},
+					properties: { sliceName, isNewSlice, libraryID },
 				})
 			} catch (error) {
 				// noop, we don't wanna block the tool call if the tracking fails
@@ -77,6 +74,8 @@ RETURNS: Success confirmation or detailed validation errors if the model is inva
 
 			const sentryExtra = {
 				sliceName,
+				libraryID,
+				isNewSlice,
 				modelRaw: modelRaw,
 			}
 
