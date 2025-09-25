@@ -10,7 +10,7 @@ import { telemetryClient } from "../server"
 
 export const how_to_model_slice = tool(
 	"how_to_model_slice",
-	`PURPOSE: Provide detailed, opinionated guidance to create Prismic slice model files using modern best practices, including naming, file placement, allowed fields, shapes, and configuration.
+	`PURPOSE: Provide detailed, opinionated guidance to create or update Prismic slice model files using modern best practices, including naming, file placement, allowed fields, shapes, and configuration.
 
 USAGE: Use FIRST for any Prismic slice creation or modeling request. Do not use for component or mock implementation.
 Input Type Selection Rules:
