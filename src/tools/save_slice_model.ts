@@ -36,14 +36,14 @@ RETURNS: Success confirmation or detailed validation errors if the model is inva
 			.describe(
 				"The library ID of the slice or where the slice should be created",
 			),
-		model: z
-			.unknown()
-			.describe("The JSON model of the slice to be created/updated"),
 		isNewSlice: z
 			.boolean()
 			.describe(
 				"Whether this is a new slice creation (true) or updating existing slice (false)",
 			),
+		model: z
+			.unknown()
+			.describe("The JSON model of the slice to be created/updated"),
 	}).shape,
 	async (args) => {
 		try {
