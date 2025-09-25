@@ -1,3 +1,7 @@
+import {
+	type SliceMachineManager,
+	createSliceMachineManager,
+} from "@slicemachine/manager"
 import { readFileSync } from "fs"
 import { dirname, resolve as resolvePath } from "path"
 import { z } from "zod"
@@ -41,4 +45,16 @@ export function getRepositoryName(
 	const config = parseSliceMachineConfig(sliceMachineConfigAbsolutePath)
 
 	return config.repositoryName
+}
+
+export async function initializeSliceMachineManager(args: {
+	sliceMachineConfigAbsolutePath: string
+}): Promise<SliceMachineManager> {
+	const { sliceMachineConfigAbsolutePath } = args
+
+	const projectRoot = dirname(sliceMachineConfigAbsolutePath)
+	const manager = createSliceMachineManager({ cwd: projectRoot })
+	await manager.plugins.initPlugins()
+
+	return manager
 }

@@ -1,11 +1,11 @@
-import { createSliceMachineManager } from "@slicemachine/manager"
 import { readFileSync } from "fs"
-import { basename, dirname, join as joinPath } from "path"
+import { basename, join as joinPath } from "path"
 import { z } from "zod"
 
 import { formatDecodeError, formatErrorForMcpTool } from "../lib/error"
 import { tool } from "../lib/mcp"
 import { trackSentryError } from "../lib/sentry"
+import { initializeSliceMachineManager } from "../lib/sliceMachine"
 import {
 	CustomType,
 	SharedSlice,
@@ -36,13 +36,17 @@ RETURNS: A message indicating whether the slice was added to the type or not, an
 			),
 	}).shape,
 	async (args) => {
-		const { sliceDirectoryAbsolutePath, customTypeDirectoryAbsolutePath } = args
+		const {
+			sliceDirectoryAbsolutePath,
+			customTypeDirectoryAbsolutePath,
+			sliceMachineConfigAbsolutePath,
+		} = args
 
 		try {
 			try {
 				telemetryClient.track({
 					event: "MCP Tool - Add slice to custom type",
-					sliceMachineConfigAbsolutePath: args.sliceMachineConfigAbsolutePath,
+					sliceMachineConfigAbsolutePath,
 					properties: {
 						sliceName: basename(sliceDirectoryAbsolutePath),
 						customTypeId: basename(customTypeDirectoryAbsolutePath),
@@ -191,10 +195,9 @@ RETURNS: A message indicating whether the slice was added to the type or not, an
 			}
 
 			try {
-				const projectRoot = dirname(args.sliceMachineConfigAbsolutePath)
-				const manager = createSliceMachineManager({ cwd: projectRoot })
-				await manager.plugins.initPlugins()
-
+				const manager = await initializeSliceMachineManager({
+					sliceMachineConfigAbsolutePath,
+				})
 				await manager.customTypes.updateCustomType({
 					model: parsedCustomTypeModel,
 				})

@@ -1,11 +1,9 @@
-import { dirname } from "node:path"
-
-import { createSliceMachineManager } from "@slicemachine/manager"
 import { z } from "zod"
 
 import { formatDecodeError, formatErrorForMcpTool } from "../lib/error"
 import { tool } from "../lib/mcp"
 import { trackSentryError } from "../lib/sentry"
+import { initializeSliceMachineManager } from "../lib/sliceMachine"
 import { SharedSlice } from "@prismicio/types-internal/lib/customtypes"
 
 import { telemetryClient } from "../server"
@@ -202,9 +200,9 @@ Examples: "default", "imageRight", "alignLeft", "withBackground".`,
 			}
 
 			try {
-				const projectRoot = dirname(sliceMachineConfigAbsolutePath)
-				const manager = createSliceMachineManager({ cwd: projectRoot })
-				await manager.plugins.initPlugins()
+				const manager = await initializeSliceMachineManager({
+					sliceMachineConfigAbsolutePath,
+				})
 
 				if (isNewSlice) {
 					await manager.slices.createSlice({ model: slice, libraryID })
