@@ -441,7 +441,7 @@ ${
 
 - Focus only on the slice model JSON
 - After implementation, you MUST call the save_slice_model tool to create the slice, NEVER create a model.json file file by yourself.
-- After having a valid model structure, you MUST also call all the necessary tools to ensure everything related to the slice is updated to reflect the changes. Here is the recommended order of tools to call, please AVOID calling the tools in any other order than this one:
+- After having a valid model structure, you MUST also call all the necessary tools to ensure everything related to the slice is updated to reflect the changes. Here is the required order of tools to call, using a different order will produce errors:
   1. save_slice_model
   2. how_to_code_slice
 	2.1. Code the slice with the instructions you received
