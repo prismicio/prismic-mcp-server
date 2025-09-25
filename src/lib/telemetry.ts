@@ -72,7 +72,7 @@ type TelemetryTrackArgs =
 			properties: {
 				sliceName: string
 				isNewSlice: boolean
-				libraryID: string
+				modelAbsolutePath: string
 			}
 	  }
 

@@ -399,12 +399,11 @@ Notes:
 
 ## Implementation Steps
 
-1) ${
-				isNewSlice
-					? "Generate a slice JSON model with the structure above"
-					: "Analyze the existing model.json and update it according to the user's requirements"
-			}
-2) Call the save_slice_model tool to create the slice with the generated model
+${
+	isNewSlice
+		? "Structure a slice JSON model with the instructions you received."
+		: "Analyze the existing model.json and update it according to the instructions you received."
+}
 
 ## Content Analysis Guidelines
 
@@ -438,15 +437,15 @@ ${
 
 ## Final Instructions
 
-- Focus only on the slice model JSON
-- After implementation, you MUST call the save_slice_model tool to create the slice, NEVER create a model.json file file by yourself.
-- After having a valid model structure, you MUST also call all the necessary tools to ensure everything related to the slice is updated to reflect the changes. Here is the required order of tools to call, using a different order will produce errors:
-  1. save_slice_model
-  2. how_to_code_slice
-	2.1. Code the slice with the instructions you received
-  3. how_to_mock_slice
-	3.1. Create a slice mock.json with the instructions you received
-  4. verify_slice_mock
+IMPORTANT: You should NEVER attempt to create a model.json file by yourself.
+
+1) After structuring the model, you MUST call the save_slice_model tool, in order to create the slice. It expects a \`model\` parameter, which is the JSON model you structured.
+2) After calling save_slice_model, your slice model and scaffolding should be created, so now you MUST also call all the other tools to complete the personalized slice creation process. Here is the recommended order of tools and actions to follow, following a different order will produce errors:
+  - Tool 1: how_to_code_slice - Learn how to code a slice component.
+	  - Action: Code the slice with the instructions you received from how_to_code_slice.
+  - Tool 2: how_to_mock_slice - Learn how to create a slice mock.
+	  - Action: Create a slice mock.json with the instructions you received from how_to_mock_slice.
+  - Tool 3: verify_slice_mock - Verify that the slice mock you created is valid.
 
   If you understood this, please SAY what tools you are calling next and the order in which you are calling them.`
 
