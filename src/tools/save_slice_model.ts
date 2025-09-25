@@ -10,7 +10,7 @@ import { telemetryClient } from "../server"
 
 export const save_slice_model = tool(
 	"save_slice_model",
-	`PURPOSE: Creates or updates a Prismic slice in your project with a given valid model.
+	`PURPOSE: Creates or updates a Prismic slice in your project with a given valid model, performing local changes to the slice library.
 
 USAGE: Use immediately after generating or editing a slice model to ensure it's valid and create/update the slice.
 
