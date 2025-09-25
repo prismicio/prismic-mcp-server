@@ -143,7 +143,6 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 ${resolvedLibraryAbsolutePaths.map((p) => `  - ${p}`).join("\n")}
 - Slice directory (choose one):
 ${sliceDirectoryOptions.map((p) => `  - ${p}`).join("\n")}
-- Model file (under chosen directory): model.json
 
 ## Basic Structure
 
