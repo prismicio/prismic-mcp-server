@@ -105,7 +105,7 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 			const sliceId = toSnakeCase(sliceName)
 
 			const instructions = `
-# How to Create a Prismic Slice
+# How to Model a Prismic Slice
 
 ## Request Analysis
 - **Slice Name**: ${sliceName}
