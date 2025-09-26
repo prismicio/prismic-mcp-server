@@ -1,5 +1,5 @@
 import { existsSync } from "fs"
-import { basename } from "path"
+import { basename, join as joinPath } from "path"
 import { z } from "zod"
 
 import { formatDecodeError, formatErrorForMcpTool } from "../lib/error"
@@ -31,12 +31,12 @@ RETURNS: Success confirmation or detailed validation errors if the model is inva
 			.describe(
 				"Whether this is a new slice creation (true) or updating existing slice (false)",
 			),
-		modelAbsolutePath: z
+		sliceAbsolutePath: z
 			.string()
 			.describe(
-				`Absolute path to the model file of the slice to be created/updated, it must follow the format: /path/to/slice/model.json`,
+				`Absolute path to the directory of the slice to be created/updated`,
 			),
-		model: z
+		sliceModel: z
 			.record(z.string(), z.unknown())
 			.describe("The JSON model structure of the slice to be created/updated"),
 	}).shape,
@@ -44,19 +44,30 @@ RETURNS: Success confirmation or detailed validation errors if the model is inva
 		try {
 			const {
 				sliceMachineConfigAbsolutePath,
-				modelAbsolutePath,
-				model: modelRaw,
-				isNewSlice: isNewSliceArg,
+				sliceAbsolutePath,
+				isNewSlice,
+				sliceModel: modelRaw,
 			} = args
 
-			const sliceName = basename(modelAbsolutePath)
-			const isNewSlice = isNewSliceArg && !existsSync(modelAbsolutePath)
+			const modelExists = existsSync(joinPath(sliceAbsolutePath, "model.json"))
+			if (isNewSlice && modelExists) {
+				throw new Error(
+					`Trying to create a new slice that already exists at ${sliceAbsolutePath}.`,
+				)
+			}
+			if (!isNewSlice && !modelExists) {
+				throw new Error(
+					`Trying to update a slice model that does not exist at ${sliceAbsolutePath}.`,
+				)
+			}
+
+			const sliceName = basename(sliceAbsolutePath)
 
 			try {
 				telemetryClient.track({
 					event: "MCP Tool - Save slice model",
 					sliceMachineConfigAbsolutePath,
-					properties: { sliceName, isNewSlice, modelAbsolutePath },
+					properties: { sliceName, isNewSlice, sliceAbsolutePath },
 				})
 			} catch (error) {
 				// noop, we don't wanna block the tool call if the tracking fails
@@ -68,21 +79,15 @@ RETURNS: Success confirmation or detailed validation errors if the model is inva
 				}
 			}
 
-			if (!modelAbsolutePath.endsWith("model.json")) {
-				throw new Error(
-					`The model file at ${modelAbsolutePath} does not end with "model.json".`,
-				)
-			}
-
 			const libraryID = resolveLibraryIdByPath({
 				sliceMachineConfigAbsolutePath,
-				sliceAbsolutePath: modelAbsolutePath,
+				sliceAbsolutePath,
 			})
 
 			const sentryExtra = {
 				sliceName,
 				isNewSlice,
-				modelAbsolutePath,
+				sliceAbsolutePath,
 				modelRaw: modelRaw,
 			}
 
