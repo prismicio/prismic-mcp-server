@@ -17,6 +17,11 @@ RETURNS: Prismic Framework-specific field documentation and code examples.`,
 		projectFramework: z
 			.enum(["next", "nuxt", "sveltekit"])
 			.describe("Project framework (Next.js, Nuxt, or SvelteKit)"),
+		stylingSystem: z
+			.string()
+			.describe(
+				"Detected styling system in the project (e.g., 'vanilla-css', 'tailwind', 'css-modules', 'styled-components', 'emotion', 'sass'...)",
+			),
 		modelAbsolutePath: z
 			.string()
 			.describe("Absolute path to the slice's 'model.json' file"),
@@ -65,6 +70,7 @@ RETURNS: Prismic Framework-specific field documentation and code examples.`,
 					sliceMachineConfigAbsolutePath: args.sliceMachineConfigAbsolutePath,
 					properties: {
 						framework: args.projectFramework,
+						stylingSystem: args.stylingSystem,
 						fieldsUsed: args.fieldsUsed,
 					},
 				})
@@ -100,8 +106,8 @@ RETURNS: Prismic Framework-specific field documentation and code examples.`,
 
 2. **Follow project patterns**
    - Framework: ${args.projectFramework}
-   - Styling: Match existing slices if available, otherwise use project's styling system
-   - Code: Analyze codebase for consistent patterns and conventions.
+   - Styling System: ${args.stylingSystem}
+   - Code: Analyze codebase for consistent patterns and conventions
 
 3. **Implement fields dynamically**
    - All content must come from Prismic fields

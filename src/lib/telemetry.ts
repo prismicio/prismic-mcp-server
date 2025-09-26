@@ -16,6 +16,7 @@ type TelemetryTrackArgs =
 			sliceMachineConfigAbsolutePath: string
 			properties: {
 				framework: string
+				stylingSystem: string
 				fieldsUsed: string[]
 			}
 	  }
