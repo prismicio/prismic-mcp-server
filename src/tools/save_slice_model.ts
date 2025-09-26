@@ -1,5 +1,10 @@
 import { existsSync } from "fs"
-import { basename, join as joinPath } from "path"
+import {
+	basename,
+	dirname,
+	join as joinPath,
+	resolve as resolvePath,
+} from "path"
 import { z } from "zod"
 
 import { formatDecodeError, formatErrorForMcpTool } from "../lib/error"
@@ -7,7 +12,7 @@ import { tool } from "../lib/mcp"
 import { trackSentryError } from "../lib/sentry"
 import {
 	initializeSliceMachineManager,
-	resolveLibraryIdByPath,
+	parseSliceMachineConfig,
 } from "../lib/sliceMachine"
 import { SharedSlice } from "@prismicio/types-internal/lib/customtypes"
 
@@ -79,10 +84,49 @@ RETURNS: Success confirmation or detailed validation errors if the model is inva
 				}
 			}
 
-			const libraryID = resolveLibraryIdByPath({
-				sliceMachineConfigAbsolutePath,
-				sliceAbsolutePath,
-			})
+			let libraryID: string | undefined
+
+			try {
+				const projectRoot = dirname(sliceMachineConfigAbsolutePath)
+				const inputSliceLibraryPath = dirname(sliceAbsolutePath)
+				const smConfig = parseSliceMachineConfig(sliceMachineConfigAbsolutePath)
+
+				const resolvedAbsoluteLibraryPaths: string[] = []
+
+				for (const libraryPath of smConfig.libraries) {
+					const absPath = resolvePath(projectRoot, libraryPath)
+
+					resolvedAbsoluteLibraryPaths.push(absPath)
+
+					if (absPath === inputSliceLibraryPath) {
+						libraryID = libraryPath
+					}
+				}
+
+				if (!libraryID) {
+					return {
+						content: [
+							{
+								type: "text",
+								text: `The slice directory "${sliceAbsolutePath}" is not inside any configured Slice Library from slicemachine.config.json.
+								
+	Configured libraries (resolved):\n${resolvedAbsoluteLibraryPaths.join("\n")}
+	
+	SUGGESTION: Move or create the slice under one of the configured libraries (e.g., "src/slices/MySlice").`,
+							},
+						],
+					}
+				}
+			} catch {
+				return {
+					content: [
+						{
+							type: "text",
+							text: `Could not read or parse slicemachine.config.json at "${sliceMachineConfigAbsolutePath}". Ensure it exists and includes a non-empty "libraries" array.`,
+						},
+					],
+				}
+			}
 
 			const sentryExtra = {
 				sliceName,
