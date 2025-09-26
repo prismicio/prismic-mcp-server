@@ -13,6 +13,9 @@ export default defineConfig({
 		},
 	},
 	plugins: [sdk()],
+	test: {
+		passWithNoTests: true,
+	},
 	define: {
 		__PACKAGE_VERSION__: JSON.stringify(pkg.version),
 	},
