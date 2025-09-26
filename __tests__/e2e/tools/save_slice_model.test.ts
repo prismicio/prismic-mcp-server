@@ -34,7 +34,7 @@ test.describe("save_slice_model tool - Calling Tool", () => {
 		})
 
 		expect(
-			createResult.replace(sliceDirectoryAbsolutePath, "{base_path}"),
+			createResult.replace(sliceAbsolutePath, "{base_path}"),
 		).toMatchSnapshot("valid-model-create.txt")
 
 		const updateResult = await callTool("save_slice_model", {
@@ -43,7 +43,7 @@ test.describe("save_slice_model tool - Calling Tool", () => {
 		})
 
 		expect(
-			updateResult.replace(sliceDirectoryAbsolutePath, "{base_path}"),
+			updateResult.replace(sliceAbsolutePath, "{base_path}"),
 		).toMatchSnapshot("valid-model-update.txt")
 	})
 
@@ -70,8 +70,8 @@ test.describe("save_slice_model tool - Calling Tool", () => {
 			sliceModel: model,
 		})
 
-		expect(
-			result.replace(sliceDirectoryAbsolutePath, "{base_path}"),
-		).toMatchSnapshot("invalid-model.txt")
+		expect(result.replace(sliceAbsolutePath, "{base_path}")).toMatchSnapshot(
+			"invalid-model.txt",
+		)
 	})
 })
