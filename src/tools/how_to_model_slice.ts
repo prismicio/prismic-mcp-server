@@ -1,4 +1,5 @@
-import { join as joinPath } from "path"
+import { join as joinPath } from "node:path"
+
 import { z } from "zod"
 
 import { formatErrorForMcpTool } from "../lib/error"
@@ -9,9 +10,9 @@ import { telemetryClient } from "../server"
 
 export const how_to_model_slice = tool(
 	"how_to_model_slice",
-	`PURPOSE: Provide detailed, opinionated guidance to create or update Prismic slice model.json files using modern best practices, including naming, file placement, allowed fields, shapes, and configuration.
+	`PURPOSE: Provide detailed, opinionated guidance to create or update Prismic slice model files using modern best practices, including naming, file placement, allowed fields, shapes, and configuration.
 
-USAGE: Use FIRST for any Prismic slice modeling request. Do not use for component or mock implementation.
+USAGE: Use FIRST for any Prismic slice creation or modeling request. Do not use for component or mock implementation.
 Input Type Selection Rules:
 - If the user attaches an image, include "image".
 - If the user attaches code, include "code".
@@ -142,7 +143,6 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 ${resolvedLibraryAbsolutePaths.map((p) => `  - ${p}`).join("\n")}
 - Slice directory (choose one):
 ${sliceDirectoryOptions.map((p) => `  - ${p}`).join("\n")}
-- Model file (under chosen directory): model.json
 
 ## Basic Structure
 
@@ -399,8 +399,11 @@ Notes:
 
 ## Implementation Steps
 
-1) Create the slice directory (if it doesn't exist)
-2) Create or update the model.json with the structure above inside the slice directory
+${
+	isNewSlice
+		? "Structure a slice JSON model with the instructions you received."
+		: "Analyze the existing model.json and update it according to the instructions you received."
+}
 
 ## Content Analysis Guidelines
 
@@ -434,15 +437,17 @@ ${
 
 ## Final Instructions
 
-- Focus only on model.json
-- After implementation, you MUST call the verify_slice_model tool to ensure correctness
-- After having a valid model.json, you MUST also call all the necessary tools to ensure everything related to the slice is updated to reflect the changes. Here is the recommended order of tools to call, please AVOID calling the tools in any other order than this one:
-  1. generate_types
-  2. how_to_code_slice
-  3. how_to_mock_slice
-  4. verify_slice_mock
+IMPORTANT: You should NEVER attempt to create a model.json file by yourself.
 
-  If you understood this, please state which tool you are calling next.`
+1) After structuring the model, you MUST call the save_slice_model tool, in order to create the slice. It expects a \`sliceModel\` parameter, which is the JSON model you structured.
+2) After calling save_slice_model, your slice model and scaffolding should be created, so now you MUST also call all the other tools to complete the personalized slice creation process. Here is the recommended order of tools and actions to follow, following a different order will produce errors:
+  - Tool 1: how_to_code_slice - Learn how to code a slice component.
+	  - Action: Code the slice with the instructions you received from how_to_code_slice.
+  - Tool 2: how_to_mock_slice - Learn how to create a slice mock.
+	  - Action: Create a slice mock.json with the instructions you received from how_to_mock_slice.
+  - Tool 3: verify_slice_mock - Verify that the slice mock you created is valid.
+
+  If you understood this, please SAY what tools you are calling next and the order in which you are calling them.`
 
 			return {
 				content: [

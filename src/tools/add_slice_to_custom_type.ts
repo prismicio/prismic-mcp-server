@@ -1,10 +1,11 @@
-import { readFileSync, writeFileSync } from "fs"
+import { readFileSync } from "fs"
 import { basename, join as joinPath } from "path"
 import { z } from "zod"
 
 import { formatDecodeError, formatErrorForMcpTool } from "../lib/error"
 import { tool } from "../lib/mcp"
 import { trackSentryError } from "../lib/sentry"
+import { initializeSliceMachineManager } from "../lib/sliceMachine"
 import {
 	CustomType,
 	SharedSlice,
@@ -34,14 +35,18 @@ RETURNS: A message indicating whether the slice was added to the type or not, an
 				"Absolute path to the custom type directory (contains 'index.json')",
 			),
 	}).shape,
-	(args) => {
-		const { sliceDirectoryAbsolutePath, customTypeDirectoryAbsolutePath } = args
+	async (args) => {
+		const {
+			sliceDirectoryAbsolutePath,
+			customTypeDirectoryAbsolutePath,
+			sliceMachineConfigAbsolutePath,
+		} = args
 
 		try {
 			try {
 				telemetryClient.track({
 					event: "MCP Tool - Add slice to custom type",
-					sliceMachineConfigAbsolutePath: args.sliceMachineConfigAbsolutePath,
+					sliceMachineConfigAbsolutePath,
 					properties: {
 						sliceName: basename(sliceDirectoryAbsolutePath),
 						customTypeId: basename(customTypeDirectoryAbsolutePath),
@@ -77,7 +82,7 @@ RETURNS: A message indicating whether the slice was added to the type or not, an
 			const validatedSliceModel = SharedSlice.decode(sliceModelContent)
 			if (validatedSliceModel._tag === "Left") {
 				throw new Error(
-					`Invalid slice model at ${sliceModelAbsolutePath}. Please use the 'verify_slice_model' tool to validate the slice model before adding it to the custom type.`,
+					`Invalid slice model at ${sliceModelAbsolutePath}. Please use the 'save_slice_model' tool to validate the slice model before adding it to the custom type.`,
 				)
 			}
 			const parsedSliceModel = validatedSliceModel.right
@@ -190,11 +195,12 @@ RETURNS: A message indicating whether the slice was added to the type or not, an
 			}
 
 			try {
-				writeFileSync(
-					customTypeModelAbsolutePath,
-					`${JSON.stringify(parsedCustomTypeModel, null, 2)}\n`,
-					"utf-8",
-				)
+				const manager = await initializeSliceMachineManager({
+					sliceMachineConfigAbsolutePath,
+				})
+				await manager.customTypes.updateCustomType({
+					model: parsedCustomTypeModel,
+				})
 			} catch (error) {
 				throw new Error(
 					`Failed to write to file ${customTypeModelAbsolutePath}: ${getErrorMessage(error)}`,
@@ -206,10 +212,7 @@ RETURNS: A message indicating whether the slice was added to the type or not, an
 					{
 						type: "text",
 						text: `
-The slice model at ${sliceModelAbsolutePath} is now added to the custom type at ${customTypeModelAbsolutePath}.
-
-You MUST now call the generate_types tool to update the Prismic types.
-`,
+The slice model at ${sliceModelAbsolutePath} is now added to the custom type at ${customTypeModelAbsolutePath}.`,
 					},
 				],
 			}

@@ -67,6 +67,15 @@ type TelemetryTrackArgs =
 				customTypeId: string
 			}
 	  }
+	| {
+			event: "MCP Tool - Save slice model"
+			sliceMachineConfigAbsolutePath: string
+			properties: {
+				sliceName: string
+				isNewSlice: boolean
+				sliceAbsolutePath: string
+			}
+	  }
 
 export class Telemetry {
 	private _segmentClient: Analytics | undefined = undefined

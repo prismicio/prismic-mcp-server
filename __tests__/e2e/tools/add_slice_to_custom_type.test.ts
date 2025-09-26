@@ -28,7 +28,7 @@ test.describe("add_slice_to_custom_type tool - Used by AI agent", () => {
 			messages,
 		})
 		expect(toolsUsed).toEqual(
-			expect.arrayContaining(["add_slice_to_custom_type", "generate_types"]),
+			expect.arrayContaining(["add_slice_to_custom_type"]),
 		)
 
 		const pageCustomTypePath = join(projectRoot, "/customtypes/page/index.json")

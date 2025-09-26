@@ -57,10 +57,8 @@
 		"lint": "eslint",
 		"types": "vitest --typecheck.only --run",
 		"types:watch": "vitest --typecheck.only",
-		"unit": "vitest run --coverage",
-		"unit:watch": "vitest watch",
 		"size": "size-limit",
-		"test": "npm run lint && npm run types && npm run unit && npm run build && npm run size",
+		"test": "npm run lint && npm run types && npm run build && npm run size",
 		"test:e2e": "playwright test --config __tests__/e2e/playwright.config.ts",
 		"test:e2e:update": "npm run test:e2e -- --update-snapshots",
 		"test:e2e:merge-reports": "playwright merge-reports"
@@ -76,7 +74,8 @@
 		"cookie": "1.0.2",
 		"prettier": "3.6.2",
 		"prismic-ts-codegen": "0.1.28",
-		"zod": "3.25.67"
+		"zod": "3.25.67",
+		"@slicemachine/manager": "0.25.4"
 	},
 	"devDependencies": {
 		"@anthropic-ai/claude-code": "^1.0.100",

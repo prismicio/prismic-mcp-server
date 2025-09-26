@@ -24,11 +24,7 @@ It should have:
 			messages,
 		})
 		expect(toolsUsed).toEqual(
-			expect.arrayContaining([
-				"how_to_model_slice",
-				"verify_slice_model",
-				"generate_types",
-			]),
+			expect.arrayContaining(["how_to_model_slice", "save_slice_model"]),
 		)
 
 		const sliceFile = join(projectRoot, "/src/slices/Hero/model.json")

@@ -1,5 +1,9 @@
+import {
+	type SliceMachineManager,
+	createSliceMachineManager,
+} from "@slicemachine/manager"
 import { readFileSync } from "fs"
-import { dirname, resolve as resolvePath } from "path"
+import { dirname, relative, resolve as resolvePath } from "path"
 import { z } from "zod"
 
 const SliceMachineConfigSchema = z.object({
@@ -35,10 +39,47 @@ export function getResolvedLibraries(
 	return config.libraries.map((lib) => resolvePath(projectRoot, lib))
 }
 
+export function resolveAbsoluteLibraryID(args: {
+	sliceMachineConfigAbsolutePath: string
+	libraryAbsolutePath: string
+}): { libraryID: string; resolvedLibraries: string[] } {
+	const { sliceMachineConfigAbsolutePath, libraryAbsolutePath } = args
+
+	const projectRoot = dirname(sliceMachineConfigAbsolutePath)
+	const resolvedLibraries = getResolvedLibraries(sliceMachineConfigAbsolutePath)
+
+	const matchingLibraryPath = resolvedLibraries.find(
+		(path) => path === libraryAbsolutePath,
+	)
+
+	if (!matchingLibraryPath) {
+		throw new Error(
+			`Could not find a matching library in slicemachine.config.json for the provided library absolute path: ${libraryAbsolutePath}.`,
+		)
+	}
+
+	return {
+		resolvedLibraries,
+		libraryID: relative(projectRoot, matchingLibraryPath),
+	}
+}
+
 export function getRepositoryName(
 	sliceMachineConfigAbsolutePath: string,
 ): string {
 	const config = parseSliceMachineConfig(sliceMachineConfigAbsolutePath)
 
 	return config.repositoryName
+}
+
+export async function initializeSliceMachineManager(args: {
+	sliceMachineConfigAbsolutePath: string
+}): Promise<SliceMachineManager> {
+	const { sliceMachineConfigAbsolutePath } = args
+
+	const projectRoot = dirname(sliceMachineConfigAbsolutePath)
+	const manager = createSliceMachineManager({ cwd: projectRoot })
+	await manager.plugins.initPlugins()
+
+	return manager
 }
