@@ -83,7 +83,7 @@ test.describe("how_to_code_slice tool - Calling Tool", () => {
 	test("should handle image field", async () => {
 		const result = await callTool("how_to_code_slice", {
 			projectFramework: "next",
-			stylingSystemToUse: "tailwind",
+			stylingSystem: "tailwind",
 			modelAbsolutePath: "/src/slices/Hero/model.json",
 			sliceMachineConfigAbsolutePath: "/slicemachine.config.json",
 			fieldsUsed: ["prismic.ImageField"],
