@@ -439,7 +439,7 @@ ${
 
 IMPORTANT: You should NEVER attempt to create a model.json file by yourself.
 
-1) After structuring the model, you MUST call the save_slice_model tool, in order to create the slice. It expects a \`model\` parameter, which is the JSON model you structured.
+1) After structuring the model, you MUST call the save_slice_model tool, in order to create the slice. It expects a \`sliceModel\` parameter, which is the JSON model you structured.
 2) After calling save_slice_model, your slice model and scaffolding should be created, so now you MUST also call all the other tools to complete the personalized slice creation process. Here is the recommended order of tools and actions to follow, following a different order will produce errors:
   - Tool 1: how_to_code_slice - Learn how to code a slice component.
 	  - Action: Code the slice with the instructions you received from how_to_code_slice.

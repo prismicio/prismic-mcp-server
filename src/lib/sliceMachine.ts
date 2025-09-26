@@ -3,7 +3,7 @@ import {
 	createSliceMachineManager,
 } from "@slicemachine/manager"
 import { readFileSync } from "fs"
-import { dirname, resolve as resolvePath } from "path"
+import { dirname, relative, resolve as resolvePath } from "path"
 import { z } from "zod"
 
 const SliceMachineConfigSchema = z.object({
@@ -37,6 +37,31 @@ export function getResolvedLibraries(
 	const projectRoot = dirname(sliceMachineConfigAbsolutePath)
 
 	return config.libraries.map((lib) => resolvePath(projectRoot, lib))
+}
+
+export function resolveAbsoluteLibraryID(args: {
+	sliceMachineConfigAbsolutePath: string
+	libraryAbsolutePath: string
+}): { libraryID: string; resolvedLibraries: string[] } {
+	const { sliceMachineConfigAbsolutePath, libraryAbsolutePath } = args
+
+	const projectRoot = dirname(sliceMachineConfigAbsolutePath)
+	const resolvedLibraries = getResolvedLibraries(sliceMachineConfigAbsolutePath)
+
+	const matchingLibraryPath = resolvedLibraries.find(
+		(path) => path === libraryAbsolutePath,
+	)
+
+	if (!matchingLibraryPath) {
+		throw new Error(
+			`Could not find a matching library in slicemachine.config.json for the provided library absolute path: ${libraryAbsolutePath}.`,
+		)
+	}
+
+	return {
+		resolvedLibraries,
+		libraryID: relative(projectRoot, matchingLibraryPath),
+	}
 }
 
 export function getRepositoryName(

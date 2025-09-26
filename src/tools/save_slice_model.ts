@@ -1,10 +1,5 @@
 import { existsSync } from "fs"
-import {
-	basename,
-	dirname,
-	join as joinPath,
-	resolve as resolvePath,
-} from "path"
+import { basename, dirname, join as joinPath } from "path"
 import { z } from "zod"
 
 import { formatDecodeError, formatErrorForMcpTool } from "../lib/error"
@@ -12,7 +7,7 @@ import { tool } from "../lib/mcp"
 import { trackSentryError } from "../lib/sentry"
 import {
 	initializeSliceMachineManager,
-	parseSliceMachineConfig,
+	resolveAbsoluteLibraryID,
 } from "../lib/sliceMachine"
 import { SharedSlice } from "@prismicio/types-internal/lib/customtypes"
 
@@ -87,36 +82,28 @@ RETURNS: Success confirmation or detailed validation errors if the model is inva
 			let libraryID: string | undefined
 
 			try {
-				const projectRoot = dirname(sliceMachineConfigAbsolutePath)
-				const inputSliceLibraryPath = dirname(sliceAbsolutePath)
-				const smConfig = parseSliceMachineConfig(sliceMachineConfigAbsolutePath)
+				const resolutionResult = resolveAbsoluteLibraryID({
+					sliceMachineConfigAbsolutePath,
+					libraryAbsolutePath: dirname(sliceAbsolutePath),
+				})
 
-				const resolvedAbsoluteLibraryPaths: string[] = []
-
-				for (const libraryPath of smConfig.libraries) {
-					const absPath = resolvePath(projectRoot, libraryPath)
-
-					resolvedAbsoluteLibraryPaths.push(absPath)
-
-					if (absPath === inputSliceLibraryPath) {
-						libraryID = libraryPath
-					}
-				}
-
-				if (!libraryID) {
+				if (!resolutionResult.libraryID) {
 					return {
 						content: [
 							{
 								type: "text",
 								text: `The slice directory "${sliceAbsolutePath}" is not inside any configured Slice Library from slicemachine.config.json.
 								
-	Configured libraries (resolved):\n${resolvedAbsoluteLibraryPaths.join("\n")}
+	Configured libraries (resolved):
+	${resolutionResult.resolvedLibraries.map((lib) => `  - ${lib}`).join("\n")}
 	
 	SUGGESTION: Move or create the slice under one of the configured libraries (e.g., "src/slices/MySlice").`,
 							},
 						],
 					}
 				}
+
+				libraryID = resolutionResult.libraryID
 			} catch {
 				return {
 					content: [
