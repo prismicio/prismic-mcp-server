@@ -16,17 +16,16 @@ test.describe("save_slice_model tool - Calling Tool", () => {
 			),
 		)
 
-		const sliceDirectoryAbsolutePath = join(projectRoot, "src/slices/Hero")
+		const libraryAbsolutePath = join(projectRoot, "src/slices")
+		const sliceAbsolutePath = join(libraryAbsolutePath, "Hero")
 
 		const toolProps = {
 			sliceMachineConfigAbsolutePath: join(
 				projectRoot,
 				"slicemachine.config.json",
 			),
-			sliceDirectoryAbsolutePath,
-			sliceName: "Hero",
-			libraryID: "./src/slices",
-			model,
+			sliceAbsolutePath,
+			sliceModel: model,
 		}
 
 		const createResult = await callTool("save_slice_model", {
@@ -59,17 +58,16 @@ test.describe("save_slice_model tool - Calling Tool", () => {
 			),
 		)
 
-		const sliceDirectoryAbsolutePath = join(projectRoot, "src/slices/Hero")
+		const libraryAbsolutePath = join(projectRoot, "src/slices")
+		const sliceAbsolutePath = join(libraryAbsolutePath, "Hero")
 		const result = await callTool("save_slice_model", {
 			sliceMachineConfigAbsolutePath: join(
 				projectRoot,
 				"slicemachine.config.json",
 			),
-			sliceDirectoryAbsolutePath,
-			sliceName: "Hero",
+			sliceAbsolutePath,
 			isNewSlice: true,
-			libraryID: "./src/slices",
-			model,
+			sliceModel: model,
 		})
 
 		expect(
