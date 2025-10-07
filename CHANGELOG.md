@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.20-alpha.0 (2025-10-07)
+
+
+### Features
+
+* add save_slice_model tool to generate types and lib index file ([#76](https://github.com/prismicio/prismic-mcp-server/issues/76)) ([a830bfa](https://github.com/prismicio/prismic-mcp-server/commit/a830bfa4dea0c250d7b91419395c336bf4612091))
+
 ### 0.0.19 (2025-09-19)
 
 ### 0.0.19-alpha.0 (2025-09-05)
