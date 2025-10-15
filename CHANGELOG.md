@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.20-alpha.1 (2025-10-15)
+
+
+### Features
+
+* create slice tool ([e8b1d9e](https://github.com/prismicio/prismic-mcp-server/commit/e8b1d9eaa0d3e5458c53b650f77171bc05ac4ecd))
+
 ### 0.0.20-alpha.0 (2025-10-07)
 
 
