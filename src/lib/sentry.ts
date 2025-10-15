@@ -28,6 +28,7 @@ type trackSentryErrorArgs = {
 		| "save_slice_model"
 		| "how_to_mock_slice"
 		| "verify_slice_mock"
+		| "create_slice"
 	extra?: Record<string, unknown>
 }
 

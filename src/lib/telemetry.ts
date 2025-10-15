@@ -76,6 +76,18 @@ type TelemetryTrackArgs =
 				sliceAbsolutePath: string
 			}
 	  }
+	| {
+			event: "MCP Tool - Create slice"
+			sliceMachineConfigAbsolutePath: string
+			properties: {
+				sliceName: string
+				contentRequirements: string
+				projectFramework: string
+				stylingSystem: string
+				inputTypes: string[]
+				hasCustomType: boolean
+			}
+	  }
 
 export class Telemetry {
 	private _segmentClient: Analytics | undefined = undefined

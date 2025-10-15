@@ -6,6 +6,7 @@ import { Telemetry } from "./lib/telemetry"
 import { name, version } from "../package.json"
 
 import { add_slice_to_custom_type } from "./tools/add_slice_to_custom_type"
+import { create_slice } from "./tools/create_slice"
 import { how_to_code_slice } from "./tools/how_to_code_slice"
 import { how_to_mock_slice } from "./tools/how_to_mock_slice"
 import { how_to_model_slice } from "./tools/how_to_model_slice"
@@ -18,6 +19,7 @@ telemetryClient.initTelemetry()
 initSentry()
 
 export const server = new McpServer({ name, version })
+server.tool(...create_slice)
 server.tool(...how_to_code_slice)
 server.tool(...how_to_model_slice)
 server.tool(...save_slice_model)
