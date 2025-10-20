@@ -23,9 +23,7 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 	z.object({
 		sliceMachineConfigAbsolutePath: z
 			.string()
-			.describe(
-				"Absolute path to the slice library directory where slices live (from slicemachine.config.json)",
-			),
+			.describe("Absolute path to 'slicemachine.config.json' file"),
 		sliceName: z
 			.string()
 			.regex(
@@ -35,11 +33,9 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 			.describe(
 				"The name of the slice, it MUST be PascalCase, e.g., 'SliceName', cannot start with a number, and with no special characters allowed",
 			),
-		isNewSlice: z
-			.boolean()
-			.describe(
-				"Whether this is a new slice creation (true) or updating existing slice (false)",
-			),
+		operation: z
+			.enum(["create", "update"])
+			.describe("Whether to create a new model or update an existing one"),
 		contentRequirements: z
 			.string()
 			.describe(
@@ -55,10 +51,12 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 			const {
 				sliceMachineConfigAbsolutePath,
 				sliceName,
-				isNewSlice,
+				operation,
 				contentRequirements,
 				inputTypes,
 			} = args
+
+			const isNewSlice = operation === "create"
 
 			try {
 				telemetryClient.track({
@@ -66,7 +64,7 @@ RETURNS: Step-by-step modeling instructions, naming conventions, final Prismic m
 					sliceMachineConfigAbsolutePath,
 					properties: {
 						sliceName,
-						isNewSlice,
+						operation,
 						contentRequirements,
 						inputTypes,
 					},
@@ -400,7 +398,7 @@ Notes:
 ## Implementation Steps
 
 ${
-	isNewSlice
+	operation === "create"
 		? "Structure a slice JSON model with the instructions you received."
 		: "Analyze the existing model.json and update it according to the instructions you received."
 }

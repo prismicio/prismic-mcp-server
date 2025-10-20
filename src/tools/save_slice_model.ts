@@ -23,14 +23,10 @@ RETURNS: Success confirmation or detailed validation errors if the model is inva
 	z.object({
 		sliceMachineConfigAbsolutePath: z
 			.string()
-			.describe(
-				"Absolute path to the slice library directory where slices live (from slicemachine.config.json)",
-			),
-		isNewSlice: z
-			.boolean()
-			.describe(
-				"Whether this is a new slice creation (true) or updating existing slice (false)",
-			),
+			.describe("Absolute path to 'slicemachine.config.json' file"),
+		operation: z
+			.enum(["create", "update"])
+			.describe("Whether to create a new model or update an existing one"),
 		sliceAbsolutePath: z
 			.string()
 			.describe(
@@ -45,9 +41,11 @@ RETURNS: Success confirmation or detailed validation errors if the model is inva
 			const {
 				sliceMachineConfigAbsolutePath,
 				sliceAbsolutePath,
-				isNewSlice,
+				operation,
 				sliceModel: modelRaw,
 			} = args
+
+			const isNewSlice = operation === "create"
 
 			const modelExists = existsSync(joinPath(sliceAbsolutePath, "model.json"))
 			if (isNewSlice && modelExists) {
@@ -67,7 +65,7 @@ RETURNS: Success confirmation or detailed validation errors if the model is inva
 				telemetryClient.track({
 					event: "MCP Tool - Save slice model",
 					sliceMachineConfigAbsolutePath,
-					properties: { sliceName, isNewSlice, sliceAbsolutePath },
+					properties: { sliceName, operation, sliceAbsolutePath },
 				})
 			} catch (error) {
 				// noop, we don't wanna block the tool call if the tracking fails

@@ -14,6 +14,9 @@ USAGE: Use FIRST when working with any Prismic slice component or field implemen
 
 RETURNS: Prismic Framework-specific field documentation and code examples.`,
 	z.object({
+		sliceMachineConfigAbsolutePath: z
+			.string()
+			.describe("Absolute path to 'slicemachine.config.json' file"),
 		projectFramework: z
 			.enum(["next", "nuxt", "sveltekit"])
 			.describe("Project framework (Next.js, Nuxt, or SvelteKit)"),
@@ -25,9 +28,6 @@ RETURNS: Prismic Framework-specific field documentation and code examples.`,
 		modelAbsolutePath: z
 			.string()
 			.describe("Absolute path to the slice's 'model.json' file"),
-		sliceMachineConfigAbsolutePath: z
-			.string()
-			.describe("Absolute path to 'slicemachine.config.json' file"),
 		fieldsUsed: z
 			.array(
 				z.enum([

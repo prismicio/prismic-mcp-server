@@ -25,7 +25,7 @@ type TelemetryTrackArgs =
 			sliceMachineConfigAbsolutePath: string
 			properties: {
 				sliceName: string
-				isNewSlice: boolean
+				operation: "create" | "update"
 				contentRequirements: string
 				inputTypes: string[]
 			}
@@ -35,7 +35,7 @@ type TelemetryTrackArgs =
 			sliceMachineConfigAbsolutePath: string
 			properties: {
 				sliceName: string
-				isNewSlice: boolean
+				operation: "create" | "update"
 			}
 	  }
 	| {
@@ -72,7 +72,7 @@ type TelemetryTrackArgs =
 			sliceMachineConfigAbsolutePath: string
 			properties: {
 				sliceName: string
-				isNewSlice: boolean
+				operation: "create" | "update"
 				sliceAbsolutePath: string
 			}
 	  }
