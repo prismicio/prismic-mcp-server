@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: Set up Node
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: 22
 
@@ -45,7 +45,7 @@ jobs:
 
     steps:
       - name: Set up Node
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: 22
 
@@ -76,7 +76,7 @@ jobs:
 
     steps:
       - name: Set up Node
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: 22
 
@@ -105,7 +105,7 @@ jobs:
 
     steps:
       - name: Set up Node
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: 22
 
@@ -133,7 +133,7 @@ jobs:
         shardTotal: [10]
     steps:
       - name: Set up Node
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: 22
 
@@ -178,7 +178,7 @@ jobs:
     if: ${{ !cancelled() }}
     steps:
       - name: Set up Node
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: 22
 
