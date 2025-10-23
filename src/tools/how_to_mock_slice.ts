@@ -89,7 +89,9 @@ RETURNS: A JSON mock covering all variations, plus guidance for text-only refine
 						"- Update mode: the provided mock is the reference for structure only. Apply text changes carefully: if a field and its type did not change and the user intent does not request changes to it, prefer retaining the previous text for that field.",
 				}[args.operation],
 				"- Repeatables (Groups, repeatable Links, legacy items if present): this mock includes a single element as reference. Choose a small, natural final count (typically 2–3) when appropriate and as implied by user intent.",
-				"- Next step (required): call the `verify_slice_mock` tool to validate mocks.json.",
+				"- When using UUIDs in the mock, you MUST ALWAYS check if it's a valid UUID v4",
+				"What NOT to do:",
+				"- Never try to write the mocks.json by yourself, always use Prismic to save data.",
 				`User intent: ${args.userIntent}`,
 			].join("\n")
 

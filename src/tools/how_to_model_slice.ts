@@ -432,20 +432,9 @@ ${
 			- If text clarifies or contradicts image/code, TEXT TAKES PRECEDENCE as the user's explicit intent (e.g., image shows two buttons but text specifies only one → model a single button)`
 		: ""
 }
-
-## Final Instructions
-
-IMPORTANT: You should NEVER attempt to create a model.json file by yourself.
-
-1) After structuring the model, you MUST call the save_slice_model tool, in order to create the slice. It expects a \`sliceModel\` parameter, which is the JSON model you structured.
-2) After calling save_slice_model, your slice model and scaffolding should be created, so now you MUST also call all the other tools to complete the personalized slice creation process. Here is the recommended order of tools and actions to follow, following a different order will produce errors:
-  - Tool 1: how_to_code_slice - Learn how to code a slice component.
-	  - Action: Code the slice with the instructions you received from how_to_code_slice.
-  - Tool 2: how_to_mock_slice - Learn how to create a slice mock.
-	  - Action: Create a slice mock.json with the instructions you received from how_to_mock_slice.
-  - Tool 3: verify_slice_mock - Verify that the slice mock you created is valid.
-
-  If you understood this, please SAY what tools you are calling next and the order in which you are calling them.`
+		
+# IMPORTANT NOTES
+- YOU SHOULD NEVER write the model.json by yourself, always use Prismic to save data.`
 
 			return {
 				content: [

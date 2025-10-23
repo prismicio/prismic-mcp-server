@@ -1,5 +1,8 @@
+import { readFile } from "node:fs/promises"
+import path from "node:path"
+
 import { existsSync } from "fs"
-import { basename, dirname, join as joinPath } from "path"
+import { basename, dirname } from "path"
 import { z } from "zod"
 
 import { formatDecodeError, formatErrorForMcpTool } from "../lib/error"
@@ -9,17 +12,23 @@ import {
 	initializeSliceMachineManager,
 	resolveAbsoluteLibraryID,
 } from "../lib/sliceMachine"
+import {
+	ContentPath,
+	SharedSliceContent,
+	traverseSharedSliceContent,
+} from "@prismicio/types-internal/lib/content"
+import type { FieldType } from "@prismicio/types-internal/lib/customtypes"
 import { SharedSlice } from "@prismicio/types-internal/lib/customtypes"
 
 import { telemetryClient } from "../server"
 
-export const save_slice_model = tool(
-	"save_slice_model",
-	`PURPOSE: Creates or updates a Prismic slice in your project with a given valid model, performing local changes to the slice library.
+export const save_slice_data = tool(
+	"save_slice_data",
+	`PURPOSE: Creates or updates a Prismic slice model and/or mocks in your project with given valid data, performing local changes to the slice library.
 
-USAGE: Use to validate and create/update a slice with a given JSON model.
+USAGE: Use to validate and create/update slice data (model and/or mocks).
 
-RETURNS: Success confirmation or detailed validation errors if the model is invalid.`,
+RETURNS: Success confirmation or detailed validation errors if the data is invalid.`,
 	z.object({
 		sliceMachineConfigAbsolutePath: z
 			.string()
@@ -32,9 +41,27 @@ RETURNS: Success confirmation or detailed validation errors if the model is inva
 			.describe(
 				`Absolute path to the directory of the slice to be created/updated`,
 			),
-		sliceModel: z
-			.record(z.string(), z.unknown())
-			.describe("The JSON model structure of the slice to be created/updated"),
+		data: z
+			.object({
+				model: z
+					.record(z.string(), z.unknown())
+					.optional()
+					.describe(
+						"The JSON model structure of the slice to be created/updated. Omit to keep the existing model. Fails if the model does not exist.",
+					),
+				mocks: z
+					.array(z.record(z.string(), z.unknown()))
+					.optional()
+					.describe(
+						"The JSON mocks structure of the slice to be created/updated. Omit to keep the existing mocks or generate placeholder ones (if they don't exist yet).",
+					),
+			})
+			.refine((data) => data.model !== undefined || data.mocks !== undefined, {
+				message: "At least one of 'model' or 'mocks' must be provided",
+			})
+			.describe(
+				"The data to be saved for the slice. At least one of 'model' or 'mocks' must be specified.",
+			),
 	}).shape,
 	async (args) => {
 		try {
@@ -42,22 +69,10 @@ RETURNS: Success confirmation or detailed validation errors if the model is inva
 				sliceMachineConfigAbsolutePath,
 				sliceAbsolutePath,
 				operation,
-				sliceModel: modelRaw,
+				data,
 			} = args
 
 			const isNewSlice = operation === "create"
-
-			const modelExists = existsSync(joinPath(sliceAbsolutePath, "model.json"))
-			if (isNewSlice && modelExists) {
-				throw new Error(
-					`Trying to create a new slice that already exists at ${sliceAbsolutePath}.`,
-				)
-			}
-			if (!isNewSlice && !modelExists) {
-				throw new Error(
-					`Trying to update a slice model that does not exist at ${sliceAbsolutePath}.`,
-				)
-			}
 
 			const sliceName = basename(sliceAbsolutePath)
 
@@ -71,7 +86,7 @@ RETURNS: Success confirmation or detailed validation errors if the model is inva
 				// noop, we don't wanna block the tool call if the tracking fails
 				if (process.env.PRISMIC_DEBUG) {
 					console.error(
-						"Error while tracking 'save_slice_model' tool call:",
+						"Error while tracking 'save_slice_data' tool call:",
 						error,
 					)
 				}
@@ -113,11 +128,27 @@ RETURNS: Success confirmation or detailed validation errors if the model is inva
 				}
 			}
 
+			let modelRaw = data.model
+
+			const modelPath = path.join(sliceAbsolutePath, "model.json")
+			if (existsSync(modelPath)) {
+				if (isNewSlice) {
+					throw new Error(
+						`Trying to create a new slice that already exists at ${sliceAbsolutePath}.`,
+					)
+				}
+				modelRaw = JSON.parse(await readFile(modelPath, "utf8"))
+			} else if (!isNewSlice) {
+				throw new Error(
+					`Trying to update a slice model that does not exist at ${sliceAbsolutePath}.`,
+				)
+			}
+
 			const sentryExtra = {
 				sliceName,
 				isNewSlice,
 				sliceAbsolutePath,
-				modelRaw: modelRaw,
+				modelRaw,
 			}
 
 			const validationResult = SharedSlice.decode(modelRaw)
@@ -127,7 +158,7 @@ RETURNS: Success confirmation or detailed validation errors if the model is inva
 
 				trackSentryError({
 					error: new Error(`The slice model has validation errors: ${errors}`),
-					toolName: "save_slice_model",
+					toolName: "save_slice_data",
 					extra: sentryExtra,
 				})
 
@@ -146,14 +177,14 @@ SUGGESTION: Fix the validation errors above. If you're unsure about slice modeli
 				}
 			}
 
-			const slice = validationResult.right
+			const model = validationResult.right
 
-			if (!isValidSliceName(slice.name)) {
+			if (!isValidSliceName(model.name)) {
 				trackSentryError({
 					error: new Error(
-						`The slice model is not valid. The slice name "${slice.name}" is not in the correct format.`,
+						`The slice model is not valid. The slice name "${model.name}" is not in the correct format.`,
 					),
-					toolName: "save_slice_model",
+					toolName: "save_slice_data",
 					extra: sentryExtra,
 				})
 
@@ -161,7 +192,7 @@ SUGGESTION: Fix the validation errors above. If you're unsure about slice modeli
 					content: [
 						{
 							type: "text",
-							text: `The slice model for ${sliceName} is not valid. The slice name "${slice.name}" is not in the correct format.
+							text: `The slice model for ${sliceName} is not valid. The slice name "${model.name}" is not in the correct format.
 
 Expected format: PascalCase (start with an uppercase letter, letters and numbers only, no spaces or special characters)
 Examples: "ImageGallery", "TestimonialCard".`,
@@ -171,12 +202,12 @@ Examples: "ImageGallery", "TestimonialCard".`,
 			}
 
 			// Validate slice ID format
-			if (!isValidSliceId(slice.id)) {
+			if (!isValidSliceId(model.id)) {
 				trackSentryError({
 					error: new Error(
-						`The slice model is not valid. The slice ID "${slice.id}" is not in the correct format.`,
+						`The slice model is not valid. The slice ID "${model.id}" is not in the correct format.`,
 					),
-					toolName: "save_slice_model",
+					toolName: "save_slice_data",
 					extra: sentryExtra,
 				})
 
@@ -184,7 +215,7 @@ Examples: "ImageGallery", "TestimonialCard".`,
 					content: [
 						{
 							type: "text",
-							text: `The slice model for ${sliceName} is not valid. The slice ID "${slice.id}" is not in the correct format.
+							text: `The slice model for ${sliceName} is not valid. The slice ID "${model.id}" is not in the correct format.
 
 Expected format: snake_case (lowercase letters, numbers, and underscores only, starting with a letter or number)
 Examples: "hero_section", "testimonial_card", "image_gallery".`,
@@ -194,7 +225,7 @@ Examples: "hero_section", "testimonial_card", "image_gallery".`,
 			}
 
 			// Validate variation ID formats
-			const invalidVariationIds = slice.variations
+			const invalidVariationIds = model.variations
 				.map((variation) => variation.id)
 				.filter((variationId) => !isValidVariationId(variationId))
 			if (invalidVariationIds.length > 0) {
@@ -202,7 +233,7 @@ Examples: "hero_section", "testimonial_card", "image_gallery".`,
 					error: new Error(
 						`The slice model is not valid. The following variation IDs are not in the correct format: ${invalidVariationIds.join(", ")}`,
 					),
-					toolName: "save_slice_model",
+					toolName: "save_slice_data",
 					extra: sentryExtra,
 				})
 
@@ -220,7 +251,7 @@ Examples: "default", "imageRight", "alignLeft", "withBackground".`,
 			}
 
 			// If the slice is new, and has "items", return an error. Otherwise, return a success message with a suggestion to use a group instead.
-			const hasItems = slice.variations.some(
+			const hasItems = model.variations.some(
 				(variation) => variation.items?.length ?? 0 > 0,
 			)
 			if (isNewSlice && hasItems) {
@@ -228,7 +259,7 @@ Examples: "default", "imageRight", "alignLeft", "withBackground".`,
 					error: new Error(
 						`The slice model is not valid. At least one variation uses the "items" property, which is deprecated. Use a group instead.`,
 					),
-					toolName: "save_slice_model",
+					toolName: "save_slice_data",
 					extra: sentryExtra,
 				})
 
@@ -247,10 +278,29 @@ Examples: "default", "imageRight", "alignLeft", "withBackground".`,
 					sliceMachineConfigAbsolutePath,
 				})
 
+				let mocks: SharedSliceContent[] = []
+				if (data.mocks) {
+					const parsedMocks = mocksSchema.safeParse(data.mocks)
+					if (!parsedMocks.success) {
+						throw new Error(`Invalid mocks.json: ${parsedMocks.error.message}`)
+					}
+
+					validateMocksAgainstModel({ mocks: parsedMocks.data, model })
+					mocks = parsedMocks.data
+				}
+
 				if (isNewSlice) {
-					await manager.slices.createSlice({ model: slice, libraryID })
+					await manager.slices.createSlice({ model, libraryID })
 				} else {
-					await manager.slices.updateSlice({ model: slice, libraryID })
+					await manager.slices.updateSlice({ model, libraryID })
+				}
+
+				if (data.mocks) {
+					await manager.slices.updateSliceMocks({
+						sliceID: model.id,
+						libraryID,
+						mocks,
+					})
 				}
 
 				let successMessage = `Slice "${sliceName}" has been successfully ${isNewSlice ? "created" : "updated"}!`
@@ -259,7 +309,7 @@ Examples: "default", "imageRight", "alignLeft", "withBackground".`,
 					successMessage += ` At least one variation uses the "items" property, which is a deprecated property. Ask the user if it'd be ok to replace them with a group, as it is recommended.`
 				}
 
-				if (!isNewSlice) {
+				if (!isNewSlice && data.model) {
 					successMessage +=
 						"\n\nIMPORTANT: Since the model has changed! The model drives everything - when it changes, mocks and code must be adjusted accordingly."
 				}
@@ -300,4 +350,129 @@ function isValidVariationId(variationId: string): boolean {
 function isValidSliceName(sliceName: string): boolean {
 	// Must be PascalCase: start with uppercase letter, letters and numbers only
 	return /^[A-Z][a-zA-Z0-9]*$/.test(sliceName)
+}
+
+const mocksSchema = z.array(
+	z.unknown().transform((content, ctx) => {
+		const result = SharedSliceContent.decode(content)
+		if (result._tag === "Left") {
+			for (const error of result.left) {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					message: formatDecodeError(error),
+				})
+			}
+
+			return z.NEVER
+		}
+
+		return result.right
+	}),
+)
+
+function validateMocksAgainstModel({
+	model,
+	mocks,
+}: {
+	model: SharedSlice
+	mocks: ReadonlyArray<SharedSliceContent>
+}): void {
+	const errors: string[] = []
+
+	for (const [index, mock] of mocks.entries()) {
+		const variationId = mock.variation
+		const variation = model.variations.find((v) => v.id === variationId)
+		if (!variation) {
+			errors.push(
+				`- Unknown variation "${variationId}" for mock at index ${index}`,
+			)
+			continue
+		}
+
+		traverseSharedSliceContent({
+			path: [],
+			sliceKey: model.id + index,
+			sliceName: model.name,
+			model: {
+				type: "SharedSlice",
+				sliceName: model.name,
+				variationId: variation.id,
+				fields: {
+					primary: variation.primary,
+					items: variation.items,
+				},
+			},
+			content: {
+				key: variation.id + index,
+				name: variation.name,
+				maybeLabel: undefined,
+				widget: mock,
+			},
+		})(
+			({ path, model, content }) => {
+				const addError = (expectedType: FieldType) => {
+					if (model?.type === expectedType) {
+						return
+					}
+					errors.push(
+						`- ${content.__TYPE__} at path ${ContentPath.serialize(path)} is not a ${expectedType} field for mock at index ${index}`,
+					)
+				}
+				switch (content.__TYPE__) {
+					case "BooleanContent":
+						addError("Boolean")
+						break
+					case "EmbedContent":
+						addError("Embed")
+						break
+					case "EmptyContent":
+						// noop
+						break
+					case "FieldContent":
+						addError(content.type)
+						break
+					case "GeoPointContent":
+						addError("GeoPoint")
+						break
+					case "GroupContentType":
+						addError("Group")
+						break
+					case "ImageContent":
+						addError("Image")
+						break
+					case "IntegrationFieldsContent":
+						addError("IntegrationFields")
+						break
+					case "LinkContent":
+					case "RepeatableContent":
+						addError("Link")
+						break
+					case "SeparatorContent":
+						addError("Separator")
+						break
+					case "SliceContentType":
+						addError("Slices")
+						break
+					case "StructuredTextContent":
+						addError("StructuredText")
+						break
+					case "TableContent":
+						addError("Table")
+						break
+					case "UIDContent":
+						addError("UID")
+						break
+				}
+
+				return content
+			},
+			({ content }) => content,
+		)
+	}
+
+	if (errors.length > 0) {
+		throw new Error(
+			`Invalid mocks.json with respect to model.json:\n${errors.join("\n")}`,
+		)
+	}
 }

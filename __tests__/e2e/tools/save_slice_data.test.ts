@@ -4,7 +4,7 @@ import { join } from "path"
 import { expect, test } from "../fixtures/test"
 import { callTool } from "../helpers/mcp-client"
 
-test.describe("save_slice_model tool - Calling Tool", () => {
+test.describe("save_slice_data tool - Calling Tool", () => {
 	test("should check a valid model input", async ({ projectRoot }) => {
 		const model = JSON.parse(
 			readFileSync(
@@ -25,10 +25,10 @@ test.describe("save_slice_model tool - Calling Tool", () => {
 				"slicemachine.config.json",
 			),
 			sliceAbsolutePath,
-			sliceModel: model,
+			data: { model },
 		}
 
-		const createResult = await callTool("save_slice_model", {
+		const createResult = await callTool("save_slice_data", {
 			...toolProps,
 			isNewSlice: true,
 		})
@@ -37,7 +37,7 @@ test.describe("save_slice_model tool - Calling Tool", () => {
 			createResult.replace(sliceAbsolutePath, "{base_path}"),
 		).toMatchSnapshot("valid-model-create.txt")
 
-		const updateResult = await callTool("save_slice_model", {
+		const updateResult = await callTool("save_slice_data", {
 			...toolProps,
 			isNewSlice: false,
 		})
@@ -60,14 +60,14 @@ test.describe("save_slice_model tool - Calling Tool", () => {
 
 		const libraryAbsolutePath = join(projectRoot, "src/slices")
 		const sliceAbsolutePath = join(libraryAbsolutePath, "Hero")
-		const result = await callTool("save_slice_model", {
+		const result = await callTool("save_slice_data", {
 			sliceMachineConfigAbsolutePath: join(
 				projectRoot,
 				"slicemachine.config.json",
 			),
 			sliceAbsolutePath,
 			isNewSlice: true,
-			sliceModel: model,
+			data: { model },
 		})
 
 		expect(result.replace(sliceAbsolutePath, "{base_path}")).toMatchSnapshot(

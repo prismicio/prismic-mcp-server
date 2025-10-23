@@ -28,7 +28,7 @@ test.describe("how_to_mock_slice tool - Used by AI agent", () => {
 			messages,
 		})
 		expect(toolsUsed).toEqual(
-			expect.arrayContaining(["how_to_mock_slice", "verify_slice_mock"]),
+			expect.arrayContaining(["how_to_mock_slice", "save_slice_data"]),
 		)
 
 		const sliceFile = join(projectRoot, "/src/slices/Hero/mocks.json")

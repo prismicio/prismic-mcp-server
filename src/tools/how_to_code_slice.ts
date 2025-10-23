@@ -117,6 +117,10 @@ RETURNS: Prismic Framework-specific field documentation and code examples.`,
 ## Field Documentation
 ${fieldDocs}
 
+## Extra Information
+- DO NOT define an alt property for PrismicNextImage (Next.js) or PrismicImage (Nuxt & SvelteKit) components.
+- ALWAYS ENSURE that any import that contains the word "Next", "Vue" or "Svelte", which are framework-specific, are not imported from a common package (e.g., "@prismicio/react"), but rather from the framework-specific package (e.g., Incorrect: \`import { PrismicNextImage } from "@prismicio/react"\`, Correct: \`import { PrismicNextImage } from "@prismicio/next"\`)
+
 ## Next Steps
 Implement the desired code changes following the documentation above and project patterns.`
 

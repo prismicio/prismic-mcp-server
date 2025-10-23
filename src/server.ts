@@ -9,8 +9,7 @@ import { add_slice_to_custom_type } from "./tools/add_slice_to_custom_type"
 import { how_to_code_slice } from "./tools/how_to_code_slice"
 import { how_to_mock_slice } from "./tools/how_to_mock_slice"
 import { how_to_model_slice } from "./tools/how_to_model_slice"
-import { save_slice_model } from "./tools/save_slice_model"
-import { verify_slice_mock } from "./tools/verify_slice_mock"
+import { save_slice_data } from "./tools/save_slice_data"
 
 export const telemetryClient = new Telemetry()
 telemetryClient.initTelemetry()
@@ -18,9 +17,11 @@ telemetryClient.initTelemetry()
 initSentry()
 
 export const server = new McpServer({ name, version })
-server.tool(...how_to_code_slice)
-server.tool(...how_to_model_slice)
-server.tool(...save_slice_model)
-server.tool(...how_to_mock_slice)
-server.tool(...verify_slice_mock)
-server.tool(...add_slice_to_custom_type)
+
+export const how_to_model_slice_tool = server.tool(...how_to_model_slice)
+export const how_to_mock_slice_tool = server.tool(...how_to_mock_slice)
+export const how_to_code_slice_tool = server.tool(...how_to_code_slice)
+export const save_slice_data_tool = server.tool(...save_slice_data)
+export const add_slice_to_custom_type_tool = server.tool(
+	...add_slice_to_custom_type,
+)
