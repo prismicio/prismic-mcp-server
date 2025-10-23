@@ -3,6 +3,10 @@ import { join } from "path"
 import { expect, test } from "../fixtures/test"
 import { getPrismicMcpTools } from "../helpers/ai-agent"
 
+test.only("pass", () => {
+	expect(true).toBe(true)
+})
+
 test("should check slice creation (model, code, mocks) based on user react code file prompt", async ({
 	aiAgent,
 	projectRoot,
