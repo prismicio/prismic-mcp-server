@@ -62,6 +62,7 @@ Focus on:
   -- don't grade at all the code structure
   -- ONLY grade the usage of Prismic components that should be the same
 `,
+			testName: "how_to_code_slice_slice-code-generation-text-prompt",
 		})
 
 		console.info("Grade:", grade)

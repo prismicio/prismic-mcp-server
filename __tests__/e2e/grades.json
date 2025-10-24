@@ -1,0 +1,28 @@
+{
+  "2025-10-24T12:36:00+01:00_2614a15": {
+    "create-slice-code-prompt_slice-creation-react-code-file-prompt": {
+      "score": 5,
+      "summary": "Model lacks critical formatting options (strong, hyperlink support) and configuration properties. Code is functionally incomplete—missing custom component renderers, visual features (UnderlineDoodle), and proper button variant styling that reference provides."
+    },
+    "create-slice-image-prompt_slice-creation-image-prompt": {
+      "score": 7,
+      "summary": "Core model structure and field types match well. Code rendering differs significantly in styling complexity and approach, but both achieve similar UI outcomes. Mocks follow proper structure with slightly different content."
+    },
+    "create-slice-text-prompt_slice-creation-text-prompt": {
+      "score": 5,
+      "summary": "Core structure is correct with matching fields and types, but model configuration, mock link structures, and code implementation diverge significantly from reference standards."
+    },
+    "how_to_code_slice_slice-code-generation-text-prompt": {
+      "score": 8,
+      "summary": "Generated code correctly uses all key Prismic components (PrismicRichText, PrismicNextLink, isFilled checks) with proper field mapping and variant handling. Missing isFilled checks for description and buttons fields reduces score slightly compared to reference implementation."
+    },
+    "how_to_mock_slice_slice-mock-generation-text-prompt": {
+      "score": 8,
+      "summary": "Structure matches well with proper nesting and type annotations. Link values differ (ExternalLink with URLs vs AnyLink), but both are valid implementations."
+    },
+    "how_to_model_slice_slice-model-generation-text-prompt": {
+      "score": 8,
+      "summary": "Both models contain the same 3 fields (title, description, CTA buttons) with matching types and semantic purposes. Minor differences in config details like placeholder text and additional allowTargetBlank properties in the reference do not affect core functionality."
+    }
+  }
+}

@@ -59,6 +59,7 @@ Focus on:
   -- structure is roughly the same
   -- text should be the same
 `,
+		testName: "create-slice-code-prompt_slice-creation-react-code-file-prompt",
 	})
 
 	console.info("Grade:", grade)

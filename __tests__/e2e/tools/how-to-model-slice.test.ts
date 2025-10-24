@@ -47,6 +47,7 @@ Focus on:
   -- Field configurations should be functionally similar
   -- Order of fields is not important
 `,
+			testName: "how_to_model_slice_slice-model-generation-text-prompt",
 		})
 
 		console.info("Grade:", grade)

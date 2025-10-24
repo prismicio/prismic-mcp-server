@@ -48,6 +48,7 @@ Focus on:
   -- structure is roughly the same
   -- it's ok is any mock value is totally different
 `,
+			testName: "how_to_mock_slice_slice-mock-generation-text-prompt",
 		})
 
 		console.info("Grade:", grade)

@@ -57,6 +57,7 @@ Focus on:
   -- structure is roughly the same
   -- text should be the same
 `,
+		testName: "create-slice-text-prompt_slice-creation-text-prompt",
 	})
 
 	console.info("Grade:", grade)
