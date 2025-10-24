@@ -33,9 +33,6 @@ RETURNS: Success confirmation or detailed validation errors if the data is inval
 		sliceMachineConfigAbsolutePath: z
 			.string()
 			.describe("Absolute path to 'slicemachine.config.json' file"),
-		operation: z
-			.enum(["create", "update"])
-			.describe("Whether to create a new model or update an existing one"),
 		sliceAbsolutePath: z
 			.string()
 			.describe(
@@ -65,22 +62,16 @@ RETURNS: Success confirmation or detailed validation errors if the data is inval
 	}).shape,
 	async (args) => {
 		try {
-			const {
-				sliceMachineConfigAbsolutePath,
-				sliceAbsolutePath,
-				operation,
-				data,
-			} = args
-
-			const isNewSlice = operation === "create"
+			const { sliceMachineConfigAbsolutePath, sliceAbsolutePath, data } = args
 
 			const sliceName = basename(sliceAbsolutePath)
+			const isNewSlice = !existsSync(path.join(sliceAbsolutePath, "model.json"))
 
 			try {
 				telemetryClient.track({
 					event: "MCP Tool - Save slice model",
 					sliceMachineConfigAbsolutePath,
-					properties: { sliceName, operation, sliceAbsolutePath },
+					properties: { sliceName, isNewSlice, sliceAbsolutePath },
 				})
 			} catch (error) {
 				// noop, we don't wanna block the tool call if the tracking fails

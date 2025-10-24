@@ -25,7 +25,7 @@ type TelemetryTrackArgs =
 			sliceMachineConfigAbsolutePath: string
 			properties: {
 				sliceName: string
-				operation: "create" | "update"
+				isNewSlice: boolean
 				contentRequirements: string
 				inputTypes: string[]
 			}
@@ -35,14 +35,14 @@ type TelemetryTrackArgs =
 			sliceMachineConfigAbsolutePath: string
 			properties: {
 				sliceName: string
-				operation: "create" | "update"
+				isNewSlice: boolean
 			}
 	  }
 	| {
 			event: "MCP Tool - How to mock a slice"
 			sliceMachineConfigAbsolutePath: string
 			properties: {
-				operation: "create" | "update"
+				isNewSlice: boolean
 				sliceName: string
 				userIntent: string
 			}
@@ -72,7 +72,7 @@ type TelemetryTrackArgs =
 			sliceMachineConfigAbsolutePath: string
 			properties: {
 				sliceName: string
-				operation: "create" | "update"
+				isNewSlice: boolean
 				sliceAbsolutePath: string
 			}
 	  }
