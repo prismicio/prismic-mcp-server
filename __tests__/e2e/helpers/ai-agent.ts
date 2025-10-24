@@ -168,6 +168,7 @@ Output STRICT JSON (no backticks, no prose) with this shape:
 			const commitTimestamp = execSync("git log -1 --format=%cI")
 				.toString()
 				.trim()
+				.replace(/([+-]\d{2}:\d{2}|Z)$/, "Z")
 
 			// Create the key in format: {commit_timestamp}_{last7CharsOfCommitHash}
 			const key = `${commitTimestamp}_${commitHash}`
