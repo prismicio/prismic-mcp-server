@@ -2,8 +2,15 @@ import {
 	type SDKMessage,
 	query as claudeQuery,
 } from "@anthropic-ai/claude-code"
+import { execSync } from "child_process"
+import { promises as fs } from "fs"
 import path from "path"
+import { fileURLToPath } from "url"
 
+type Grade = {
+	score: number
+	summary: string
+}
 export class AIAgent {
 	private projectRoot: string
 
@@ -41,7 +48,7 @@ export class AIAgent {
 						"mcp__prismic__add_slice_to_custom_type",
 					],
 					permissionMode: "bypassPermissions",
-					model: "sonnet",
+					model: "global.anthropic.claude-haiku-4-5-20251001-v1:0",
 					mcpServers: {
 						prismic: {
 							command: "node",
@@ -71,10 +78,12 @@ export class AIAgent {
 		generatedPath,
 		referencePath,
 		instructions,
+		testName,
 	}: {
 		generatedPath: string
 		referencePath: string
 		instructions?: string
+		testName: string
 	}): Promise<Grade> {
 		const prompt = `
 You are an expert reviewer assigned to a task.
@@ -119,7 +128,7 @@ Output STRICT JSON (no backticks, no prose) with this shape:
 					],
 					additionalDirectories: [referencePath],
 					permissionMode: "bypassPermissions",
-					model: "sonnet",
+					model: "global.anthropic.claude-haiku-4-5-20251001-v1:0",
 				},
 			})
 
@@ -136,20 +145,68 @@ Output STRICT JSON (no backticks, no prose) with this shape:
 						message.type === "result" && message.subtype === "success",
 				)?.result || ""
 
-			const match = resultText.match(/\{[\s\S]*\}$/)
-			const json = match ? match[0] : resultText
+			const match = resultText.match(/```json([\s\S]*?)```/)
+			const json = match ? match[1] : resultText
 
-			return JSON.parse(json)
+			const grade = JSON.parse(json)
+
+			await this.trackGrade(grade, testName)
+
+			return grade
 		} catch (error) {
 			console.error("Error during Claude Code query:", error)
 			throw error
 		}
 	}
-}
 
-type Grade = {
-	score: number
-	summary: string
+	private async trackGrade(grade: Grade, testName: string): Promise<void> {
+		try {
+			const commitHash = execSync("git rev-parse HEAD")
+				.toString()
+				.trim()
+				.slice(0, 7)
+
+			const commitTimestamp = execSync("git log -1 --format=%cI")
+				.toString()
+				.trim()
+
+			// Create the key in format: {commit_timestamp}_{last7CharsOfCommitHash}
+			const key = `${commitTimestamp}_${commitHash}`
+
+			const __filename = fileURLToPath(import.meta.url)
+			const __dirname = path.dirname(__filename)
+			const outputDir = path.join(__dirname, "..")
+			const gradesFilePath = path.join(outputDir, "grades.json")
+
+			// Read existing grades or initialize empty object
+			let gradesData: Record<string, Record<string, Grade>> = {}
+			try {
+				const fileContent = await fs.readFile(gradesFilePath, "utf-8")
+				gradesData = JSON.parse(fileContent)
+			} catch {
+				// File doesn't exist yet, start with empty object
+				gradesData = {}
+			}
+
+			// Initialize the timestamp_hash entry if it doesn't exist
+			if (!gradesData[key]) {
+				gradesData[key] = {}
+			}
+
+			// Add the new grade under the test name
+			gradesData[key][testName] = grade
+
+			// Write updated grades back to file
+			await fs.writeFile(gradesFilePath, JSON.stringify(gradesData, null, 2))
+
+			console.info(
+				`Grade tracked for "${testName}" with score ${grade.score}/10 at ${key}`,
+			)
+		} catch (error) {
+			console.error("Error tracking grade:", error)
+			throw error
+		}
+	}
 }
 
 export function getPrismicMcpTools({
