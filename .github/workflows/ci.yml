@@ -165,7 +165,7 @@ jobs:
           TELEMETRY_DISABLED: true
 
       - name: Upload blob report to GitHub Actions Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: ${{ !cancelled() }}
         with:
           name: e2e-blob-report-${{ matrix.shardIndex }}
@@ -202,7 +202,7 @@ jobs:
         run: npm run test:e2e:merge-reports -- --reporter html ./e2e-all-blob-reports
 
       - name: Upload HTML report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: html-report--attempt-${{ github.run_attempt }}
           path: playwright-report
