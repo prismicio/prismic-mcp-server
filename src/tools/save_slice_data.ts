@@ -369,7 +369,6 @@ function validateMocksAgainstModel({
 	mocks: ReadonlyArray<SharedSliceContent>
 }): void {
 	const errors: string[] = []
-	const invalidUuidErrors: string[] = []
 
 	for (const [index, mock] of mocks.entries()) {
 		const variationId = mock.variation
@@ -430,8 +429,8 @@ function validateMocksAgainstModel({
 						content.value.forEach((value, itemIndex) => {
 							if (!validateUuid(value.key)) {
 								const newUuid = getUuidV4()
-								invalidUuidErrors.push(
-									`Found an invalid UUIDv4 value for "key" (${value.key}) in GroupContentType at index ${itemIndex} of the mock at index ${index}, please replace with this valid one and try again: ${newUuid}`,
+								errors.push(
+									`- Invalid UUIDv4 value for "key" (${value.key}) in GroupContentType at index ${itemIndex} of the mock at index ${index}, please replace with this valid one and try again: ${newUuid}`,
 								)
 								value.key = newUuid
 							}
@@ -447,8 +446,8 @@ function validateMocksAgainstModel({
 					case "LinkContent":
 						if (!validateUuid(content.key)) {
 							const newUuid = getUuidV4()
-							invalidUuidErrors.push(
-								`Found an invalid UUIDv4 value for "key" (${content.key}) in LinkContent at index ${index} of the mock at index ${index}, please replace with this valid one and try again: ${newUuid}`,
+							errors.push(
+								`- Invalid UUIDv4 value for "key" (${content.key}) in LinkContent at index ${index} of the mock at index ${index}, please replace with this valid one and try again: ${newUuid}`,
 							)
 							content.key = newUuid
 						}
@@ -458,8 +457,8 @@ function validateMocksAgainstModel({
 						content.value.forEach((value, itemIndex) => {
 							if (!validateUuid(value.key)) {
 								const newUuid = getUuidV4()
-								invalidUuidErrors.push(
-									`Found an invalid UUIDv4 value for "key" (${value.key}) in RepeatableContent at index ${itemIndex} of the mock at index ${index}, please replace with this valid one and try again: ${newUuid}`,
+								errors.push(
+									`- Invalid UUIDv4 value for "key" (${value.key}) in RepeatableContent at index ${itemIndex} of the mock at index ${index}, please replace with this valid one and try again: ${newUuid}`,
 								)
 								value.key = newUuid
 							}
@@ -489,15 +488,9 @@ function validateMocksAgainstModel({
 		)
 	}
 
-	if (invalidUuidErrors.length > 0) {
-		throw new Error(
-			`Invalid UUIDv4 keys found in mocks.json with respect to model.json:\n${invalidUuidErrors.map((error) => `- ${error}`).join("\n")}`,
-		)
-	}
-
 	if (errors.length > 0) {
 		throw new Error(
-			`Invalid mocks.json with respect to model.json:\n${errors.join("\n")}`,
+			`Invalid mock data with respect to model.json:\n${errors.join("\n")}`,
 		)
 	}
 }
