@@ -3,6 +3,7 @@ import path from "node:path"
 
 import { existsSync } from "fs"
 import { basename, dirname } from "path"
+import { v4 as getUuidV4, validate as validateUuid } from "uuid"
 import { z } from "zod"
 
 import { formatDecodeError, formatErrorForMcpTool } from "../lib/error"
@@ -325,7 +326,6 @@ SUGGESTION: Check that the slicemachine.config.json path is correct and that the
 		}
 	},
 )
-
 function isValidSliceId(sliceId: string): boolean {
 	// Must be snake_case: lowercase letters, numbers, and underscores only
 	// Must start with a letter or number, not underscore
@@ -369,6 +369,7 @@ function validateMocksAgainstModel({
 	mocks: ReadonlyArray<SharedSliceContent>
 }): void {
 	const errors: string[] = []
+	const invalidUuidErrors: string[] = []
 
 	for (const [index, mock] of mocks.entries()) {
 		const variationId = mock.variation
@@ -426,6 +427,15 @@ function validateMocksAgainstModel({
 						addError("GeoPoint")
 						break
 					case "GroupContentType":
+						content.value.forEach((value, itemIndex) => {
+							if (!validateUuid(value.key)) {
+								const newUuid = getUuidV4()
+								invalidUuidErrors.push(
+									`Found an invalid UUIDv4 value for "key" (${value.key}) in GroupContentType at index ${itemIndex} of the mock at index ${index}, please replace with this valid one and try again: ${newUuid}`,
+								)
+								value.key = newUuid
+							}
+						})
 						addError("Group")
 						break
 					case "ImageContent":
@@ -435,7 +445,25 @@ function validateMocksAgainstModel({
 						addError("IntegrationFields")
 						break
 					case "LinkContent":
+						if (!validateUuid(content.key)) {
+							const newUuid = getUuidV4()
+							invalidUuidErrors.push(
+								`Found an invalid UUIDv4 value for "key" (${content.key}) in LinkContent at index ${index} of the mock at index ${index}, please replace with this valid one and try again: ${newUuid}`,
+							)
+							content.key = newUuid
+						}
+						addError("Link")
+						break
 					case "RepeatableContent":
+						content.value.forEach((value, itemIndex) => {
+							if (!validateUuid(value.key)) {
+								const newUuid = getUuidV4()
+								invalidUuidErrors.push(
+									`Found an invalid UUIDv4 value for "key" (${value.key}) in RepeatableContent at index ${itemIndex} of the mock at index ${index}, please replace with this valid one and try again: ${newUuid}`,
+								)
+								value.key = newUuid
+							}
+						})
 						addError("Link")
 						break
 					case "SeparatorContent":
@@ -458,6 +486,12 @@ function validateMocksAgainstModel({
 				return content
 			},
 			({ content }) => content,
+		)
+	}
+
+	if (invalidUuidErrors.length > 0) {
+		throw new Error(
+			`Invalid UUIDv4 keys found in mocks.json with respect to model.json:\n${invalidUuidErrors.map((error) => `- ${error}`).join("\n")}`,
 		)
 	}
 

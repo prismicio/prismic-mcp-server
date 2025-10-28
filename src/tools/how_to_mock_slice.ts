@@ -88,11 +88,13 @@ RETURNS: A JSON mock covering all variations, plus guidance for text-only refine
 					? "- Create mode: provide natural, relevant text values aligned with the slice and project context."
 					: "- Update mode: the provided mock is the reference for structure only. Apply text changes carefully: if a field and its type did not change and the user intent does not request changes to it, prefer retaining the previous text for that field.",
 				"- Repeatables (Groups, repeatable Links, legacy items if present): this mock includes a single element as reference. Choose a small, natural final count (typically 2–3) when appropriate and as implied by user intent.",
-				"- When using UUIDs in the mock, you MUST ALWAYS check if it's a valid UUID v4",
 				"What NOT to do:",
 				"- Never try to write the mocks.json by yourself, always use Prismic to save data.",
+				'- IMPORTANT: IF YOU USE ANY UUID FOR THE MOCK DATA (OFTEN USED FOR THE "key" PROPERTIES), ALWAYS MAKE SURE IT IS A VALID UUID v4 STRING.',
 				`User intent: ${args.userIntent}`,
-			].join("\n")
+			]
+				.filter(Boolean)
+				.join("\n")
 
 			return {
 				content: [
