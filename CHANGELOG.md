@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.20-alpha.5 (2025-10-28)
+
+
+### Refactor
+
+* reuse errors ([b3aa4bc](https://github.com/prismicio/prismic-mcp-server/commit/b3aa4bc8219b28622d697860c2be8ddafe6f4037))
+
 ### 0.0.20-alpha.4 (2025-10-28)
 
 ### 0.0.20-alpha.3 (2025-10-28)
