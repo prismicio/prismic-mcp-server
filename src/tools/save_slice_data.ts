@@ -13,6 +13,10 @@ import {
 	initializeSliceMachineManager,
 	resolveAbsoluteLibraryID,
 } from "../lib/sliceMachine"
+import type {
+	GroupItemContent,
+	LinkContent,
+} from "@prismicio/types-internal/lib/content"
 import {
 	ContentPath,
 	SharedSliceContent,
@@ -272,6 +276,16 @@ Examples: "default", "imageRight", "alignLeft", "withBackground".`,
 
 				let mocks: SharedSliceContent[] = []
 				if (data.mocks) {
+					// LLMs often provide invalid UUIDs, so we prematurely find these and present a clear error message.
+					// This would also be caught by parsing the mock below, as the UUID is validated there, but the error messages 
+					// extremely verbose, and the LLM just doesn't understand it and will struggle to fix it.
+					const invalidUuidV4Errors = findInvalidUuidV4Errors(data.mocks)
+					if (invalidUuidV4Errors.length > 0) {
+						throw new Error(
+							`Invalid mocks.json:\n${invalidUuidV4Errors.map((error) => `- ${error}`).join("\n")}`,
+						)
+					}
+
 					const parsedMocks = mocksSchema.safeParse(data.mocks)
 					if (!parsedMocks.success) {
 						throw new Error(`Invalid mocks.json: ${parsedMocks.error.message}`)
@@ -326,6 +340,53 @@ SUGGESTION: Check that the slicemachine.config.json path is correct and that the
 		}
 	},
 )
+
+function findInvalidUuidV4Errors(
+	mocks: ReadonlyArray<Record<string, unknown>>,
+): string[] {
+	const errors: string[] = []
+
+	function traverseObject(obj: unknown, path: string[] = []): void {
+		if (typeof obj === "object" && obj !== null && !Array.isArray(obj)) {
+			const content = obj as Record<string, unknown>
+
+			if (
+				typeof content.__TYPE__ === "string" &&
+				typeof content.key === "string"
+			) {
+				// assume the type just to have some type safety in the next line
+				const { __TYPE__, key } = content as LinkContent | GroupItemContent
+				if (
+					(__TYPE__ === "GroupItemContent" || __TYPE__ === "LinkContent") &&
+					!validateUuid(key)
+				) {
+					errors.push(
+						`Invalid UUIDv4 value for "key" (${key}) in ${__TYPE__} at path ${path.join("")}, please replace with this valid one and try again: ${getUuidV4()}`,
+					)
+				}
+			}
+
+			// Continue traversing nested objects
+			Object.entries(content).forEach(([key, value]) => {
+				if (key !== "__TYPE__") {
+					// Skip __TYPE__ values as we've already processed them
+					traverseObject(value, [...path, `.${key}`])
+				}
+			})
+		} else if (Array.isArray(obj)) {
+			obj.forEach((item, index) => {
+				traverseObject(item, [...path, `[${index}]`])
+			})
+		}
+	}
+
+	mocks.forEach((mock, mockIndex) => {
+		traverseObject(mock, [`mock[${mockIndex}]`])
+	})
+
+	return errors
+}
+
 function isValidSliceId(sliceId: string): boolean {
 	// Must be snake_case: lowercase letters, numbers, and underscores only
 	// Must start with a letter or number, not underscore
@@ -426,15 +487,6 @@ function validateMocksAgainstModel({
 						addError("GeoPoint")
 						break
 					case "GroupContentType":
-						content.value.forEach((value, itemIndex) => {
-							if (!validateUuid(value.key)) {
-								const newUuid = getUuidV4()
-								errors.push(
-									`- Invalid UUIDv4 value for "key" (${value.key}) in GroupContentType at index ${itemIndex} of the mock at index ${index}, please replace with this valid one and try again: ${newUuid}`,
-								)
-								value.key = newUuid
-							}
-						})
 						addError("Group")
 						break
 					case "ImageContent":
@@ -444,25 +496,7 @@ function validateMocksAgainstModel({
 						addError("IntegrationFields")
 						break
 					case "LinkContent":
-						if (!validateUuid(content.key)) {
-							const newUuid = getUuidV4()
-							errors.push(
-								`- Invalid UUIDv4 value for "key" (${content.key}) in LinkContent at index ${index} of the mock at index ${index}, please replace with this valid one and try again: ${newUuid}`,
-							)
-							content.key = newUuid
-						}
-						addError("Link")
-						break
 					case "RepeatableContent":
-						content.value.forEach((value, itemIndex) => {
-							if (!validateUuid(value.key)) {
-								const newUuid = getUuidV4()
-								errors.push(
-									`- Invalid UUIDv4 value for "key" (${value.key}) in RepeatableContent at index ${itemIndex} of the mock at index ${index}, please replace with this valid one and try again: ${newUuid}`,
-								)
-								value.key = newUuid
-							}
-						})
 						addError("Link")
 						break
 					case "SeparatorContent":
