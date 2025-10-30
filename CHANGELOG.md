@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.20-alpha.6 (2025-10-30)
+
+
+### Chore
+
+* lint ([96f705a](https://github.com/prismicio/prismic-mcp-server/commit/96f705af4b27bae99b45aa6f7d5e58a67285d772))
+
 ### 0.0.20-alpha.5 (2025-10-28)
 
 
