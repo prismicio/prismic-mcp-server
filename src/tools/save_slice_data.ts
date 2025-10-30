@@ -277,7 +277,7 @@ Examples: "default", "imageRight", "alignLeft", "withBackground".`,
 				let mocks: SharedSliceContent[] = []
 				if (data.mocks) {
 					// LLMs often provide invalid UUIDs, so we prematurely find these and present a clear error message.
-					// This would also be caught by parsing the mock below, as the UUID is validated there, but the error messages 
+					// This would also be caught by parsing the mock below, as the UUID is validated there, but the error messages
 					// extremely verbose, and the LLM just doesn't understand it and will struggle to fix it.
 					const invalidUuidV4Errors = findInvalidUuidV4Errors(data.mocks)
 					if (invalidUuidV4Errors.length > 0) {
