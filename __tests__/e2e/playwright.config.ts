@@ -8,7 +8,7 @@ export default defineConfig({
 	workers: 1,
 
 	// Fail the build on CI if you accidentally left test.only in the source code.
-	forbidOnly: false,
+	forbidOnly: CI,
 
 	// Retry on CI only
 	retries: CI ? 2 : 0,
