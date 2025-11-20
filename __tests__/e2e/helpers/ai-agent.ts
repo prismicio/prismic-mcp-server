@@ -127,7 +127,7 @@ Output STRICT JSON (no backticks, no prose) with this shape:
 					],
 					additionalDirectories: [referencePath],
 					permissionMode: "bypassPermissions",
-					model: "global.anthropic.claude-haiku-4-5-20251001-v1:0",
+					model: "sonnet",
 				},
 			})
 
@@ -160,43 +160,35 @@ Output STRICT JSON (no backticks, no prose) with this shape:
 
 	private async trackGrade(grade: Grade, testName: string): Promise<void> {
 		try {
-			const commitHash = execSync("git rev-parse HEAD")
-				.toString()
-				.trim()
-				.slice(0, 7)
-
 			const commitTimestamp = execSync("git log -1 --format=%cI")
 				.toString()
 				.trim()
 				.replace(/([+-]\d{2}:\d{2}|Z)$/, "Z")
+			const last7CharsOfCommitHash = execSync("git rev-parse HEAD")
+				.toString()
+				.trim()
+				.slice(0, 7)
 
-			// Create the key in format: {commit_timestamp}_{last7CharsOfCommitHash}
-			const key = `${commitTimestamp}_${commitHash}`
+			const key = `${commitTimestamp}_${last7CharsOfCommitHash}`
 
 			const __filename = fileURLToPath(import.meta.url)
 			const __dirname = path.dirname(__filename)
 			const outputDir = path.join(__dirname, "..")
 			const gradesFilePath = path.join(outputDir, "grades.json")
 
-			// Read existing grades or initialize empty object
 			let gradesData: Record<string, Record<string, Grade>> = {}
 			try {
 				const fileContent = await fs.readFile(gradesFilePath, "utf-8")
 				gradesData = JSON.parse(fileContent)
 			} catch {
-				// File doesn't exist yet, start with empty object
 				gradesData = {}
 			}
 
-			// Initialize the timestamp_hash entry if it doesn't exist
 			if (!gradesData[key]) {
 				gradesData[key] = {}
 			}
 
-			// Add the new grade under the test name
 			gradesData[key][testName] = grade
-
-			// Write updated grades back to file
 			await fs.writeFile(gradesFilePath, JSON.stringify(gradesData, null, 2))
 
 			console.info(

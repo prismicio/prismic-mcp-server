@@ -434,7 +434,9 @@ ${
 }
 		
 # IMPORTANT NOTES
-- YOU SHOULD NEVER write the model.json by yourself, always use Prismic to save data.`
+
+- YOU SHOULD NEVER write the model.json by yourself, always use Prismic to save data.
+- If you a vague instruction like "Create a <name> slice", it's strongly recommended that, besides generating the slice model, you also code its component and generate its mock data, so that the slice is fully functional. If you have more detailed instructions on how to operate, you can ignore this recommendation.`
 
 			return {
 				content: [

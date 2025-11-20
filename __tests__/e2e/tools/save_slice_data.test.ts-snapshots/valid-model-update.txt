@@ -1,0 +1,8 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Slice \"Hero\" has been successfully updated!\n\nIMPORTANT: Since the model has changed! The model drives everything - when it changes, mocks and code must be adjusted accordingly."
+    }
+  ]
+}
