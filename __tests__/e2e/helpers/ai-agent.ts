@@ -160,16 +160,7 @@ Output STRICT JSON (no backticks, no prose) with this shape:
 
 	private async trackGrade(grade: Grade, testName: string): Promise<void> {
 		try {
-			const commitTimestamp = execSync("git log -1 --format=%cI")
-				.toString()
-				.trim()
-				.replace(/([+-]\d{2}:\d{2}|Z)$/, "Z")
-			const last7CharsOfCommitHash = execSync("git rev-parse HEAD")
-				.toString()
-				.trim()
-				.slice(0, 7)
-
-			const key = `${commitTimestamp}_${last7CharsOfCommitHash}`
+			const key = execSync("git rev-parse HEAD").toString().trim()
 
 			const __filename = fileURLToPath(import.meta.url)
 			const __dirname = path.dirname(__filename)
