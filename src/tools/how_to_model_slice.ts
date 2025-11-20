@@ -398,7 +398,7 @@ Notes:
 ## Implementation Steps
 
 ${
-	args.isNewSlice
+	isNewSlice
 		? "Structure a slice JSON model with the instructions you received."
 		: "Analyze the existing model.json and update it according to the instructions you received."
 }
