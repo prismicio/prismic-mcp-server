@@ -47,7 +47,7 @@ export class AIAgent {
 						"mcp__prismic__add_slice_to_custom_type",
 					],
 					permissionMode: "bypassPermissions",
-					model: "global.anthropic.claude-haiku-4-5-20251001-v1:0",
+					model: "sonnet",
 					mcpServers: {
 						prismic: {
 							command: "node",
@@ -144,8 +144,8 @@ Output STRICT JSON (no backticks, no prose) with this shape:
 						message.type === "result" && message.subtype === "success",
 				)?.result || ""
 
-			const match = resultText.match(/```json([\s\S]*?)```/)
-			const json = match ? match[1] : resultText
+			const match = resultText.match(/\{[\s\S]*\}$/)
+			const json = match ? match[0] : resultText
 
 			const grade = JSON.parse(json)
 
