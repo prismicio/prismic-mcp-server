@@ -2,8 +2,15 @@ import {
 	type SDKMessage,
 	query as claudeQuery,
 } from "@anthropic-ai/claude-code"
+import { execSync } from "child_process"
+import { promises as fs } from "fs"
 import path from "path"
+import { fileURLToPath } from "url"
 
+type Grade = {
+	score: number
+	summary: string
+}
 export class AIAgent {
 	private projectRoot: string
 
@@ -35,9 +42,8 @@ export class AIAgent {
 						"MultiEdit",
 						"mcp__prismic__how_to_code_slice",
 						"mcp__prismic__how_to_model_slice",
-						"mcp__prismic__save_slice_model",
+						"mcp__prismic__save_slice_data",
 						"mcp__prismic__how_to_mock_slice",
-						"mcp__prismic__verify_slice_mock",
 						"mcp__prismic__add_slice_to_custom_type",
 					],
 					permissionMode: "bypassPermissions",
@@ -71,10 +77,12 @@ export class AIAgent {
 		generatedPath,
 		referencePath,
 		instructions,
+		testName,
 	}: {
 		generatedPath: string
 		referencePath: string
 		instructions?: string
+		testName: string
 	}): Promise<Grade> {
 		const prompt = `
 You are an expert reviewer assigned to a task.
@@ -139,17 +147,49 @@ Output STRICT JSON (no backticks, no prose) with this shape:
 			const match = resultText.match(/\{[\s\S]*\}$/)
 			const json = match ? match[0] : resultText
 
-			return JSON.parse(json)
+			const grade = JSON.parse(json)
+
+			await this.trackGrade(grade, testName)
+
+			return grade
 		} catch (error) {
 			console.error("Error during Claude Code query:", error)
 			throw error
 		}
 	}
-}
 
-type Grade = {
-	score: number
-	summary: string
+	private async trackGrade(grade: Grade, testName: string): Promise<void> {
+		try {
+			const key = execSync("git rev-parse HEAD").toString().trim()
+
+			const __filename = fileURLToPath(import.meta.url)
+			const __dirname = path.dirname(__filename)
+			const outputDir = path.join(__dirname, "..")
+			const gradesFilePath = path.join(outputDir, "grades.json")
+
+			let gradesData: Record<string, Record<string, Grade>> = {}
+			try {
+				const fileContent = await fs.readFile(gradesFilePath, "utf-8")
+				gradesData = JSON.parse(fileContent)
+			} catch {
+				gradesData = {}
+			}
+
+			if (!gradesData[key]) {
+				gradesData[key] = {}
+			}
+
+			gradesData[key][testName] = grade
+			await fs.writeFile(gradesFilePath, JSON.stringify(gradesData, null, 2))
+
+			console.info(
+				`Grade tracked for "${testName}" with score ${grade.score}/10 at ${key}`,
+			)
+		} catch (error) {
+			console.error("Error tracking grade:", error)
+			throw error
+		}
+	}
 }
 
 export function getPrismicMcpTools({

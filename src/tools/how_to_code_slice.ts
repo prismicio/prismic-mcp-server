@@ -14,6 +14,9 @@ USAGE: Use FIRST when working with any Prismic slice component or field implemen
 
 RETURNS: Prismic Framework-specific field documentation and code examples.`,
 	z.object({
+		sliceMachineConfigAbsolutePath: z
+			.string()
+			.describe("Absolute path to 'slicemachine.config.json' file"),
 		projectFramework: z
 			.enum(["next", "nuxt", "sveltekit"])
 			.describe("Project framework (Next.js, Nuxt, or SvelteKit)"),
@@ -25,9 +28,6 @@ RETURNS: Prismic Framework-specific field documentation and code examples.`,
 		modelAbsolutePath: z
 			.string()
 			.describe("Absolute path to the slice's 'model.json' file"),
-		sliceMachineConfigAbsolutePath: z
-			.string()
-			.describe("Absolute path to 'slicemachine.config.json' file"),
 		fieldsUsed: z
 			.array(
 				z.enum([
@@ -116,6 +116,10 @@ RETURNS: Prismic Framework-specific field documentation and code examples.`,
 
 ## Field Documentation
 ${fieldDocs}
+
+## Extra Information
+- DO NOT define an alt property for PrismicNextImage (Next.js) or PrismicImage (Nuxt & SvelteKit) components.
+- ALWAYS ENSURE that any import that contains the word "Next", "Vue" or "Svelte", which are framework-specific, are not imported from a common package (e.g., "@prismicio/react"), but rather from the framework-specific package (e.g., Incorrect: \`import { PrismicNextImage } from "@prismicio/react"\`, Correct: \`import { PrismicNextImage } from "@prismicio/next"\`)
 
 ## Next Steps
 Implement the desired code changes following the documentation above and project patterns.`

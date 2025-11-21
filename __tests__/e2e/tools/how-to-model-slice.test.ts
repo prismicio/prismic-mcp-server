@@ -24,7 +24,7 @@ It should have:
 			messages,
 		})
 		expect(toolsUsed).toEqual(
-			expect.arrayContaining(["how_to_model_slice", "save_slice_model"]),
+			expect.arrayContaining(["how_to_model_slice", "save_slice_data"]),
 		)
 
 		const sliceFile = join(projectRoot, "/src/slices/Hero/model.json")
@@ -47,6 +47,7 @@ Focus on:
   -- Field configurations should be functionally similar
   -- Order of fields is not important
 `,
+			testName: "how_to_model_slice_slice-model-generation-text-prompt",
 		})
 
 		console.info("Grade:", grade)

@@ -42,7 +42,7 @@ type TelemetryTrackArgs =
 			event: "MCP Tool - How to mock a slice"
 			sliceMachineConfigAbsolutePath: string
 			properties: {
-				operation: "create" | "update"
+				isNewSlice: boolean
 				sliceName: string
 				userIntent: string
 			}

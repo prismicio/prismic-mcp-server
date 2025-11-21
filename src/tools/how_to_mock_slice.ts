@@ -1,5 +1,6 @@
 import * as fs from "node:fs/promises"
 import * as path from "node:path"
+import { existsSync } from "node:fs"
 
 import { SharedSliceMock } from "@prismicio/mocks"
 import { z } from "zod"
@@ -24,9 +25,6 @@ RETURNS: A JSON mock covering all variations, plus guidance for text-only refine
 		sliceDirectoryAbsolutePath: z
 			.string()
 			.describe("Absolute path to the slice directory (contains model.json)"),
-		operation: z
-			.enum(["create", "update"])
-			.describe("Whether to create a new mocks.json or update an existing one"),
 		userIntent: z
 			.string()
 			.describe(
@@ -36,12 +34,16 @@ RETURNS: A JSON mock covering all variations, plus guidance for text-only refine
 	async (args) => {
 		try {
 			const sliceName = path.basename(args.sliceDirectoryAbsolutePath)
+			const isNewSlice = !existsSync(
+				path.join(args.sliceDirectoryAbsolutePath, "mocks.json"),
+			)
+
 			try {
 				telemetryClient.track({
 					event: "MCP Tool - How to mock a slice",
 					sliceMachineConfigAbsolutePath: args.sliceMachineConfigAbsolutePath,
 					properties: {
-						operation: args.operation,
+						isNewSlice,
 						sliceName,
 						userIntent: args.userIntent,
 					},
@@ -82,16 +84,17 @@ RETURNS: A JSON mock covering all variations, plus guidance for text-only refine
 				"- Structure: keep the exact structure and field keys from the provided mock; do not add/remove fields or change types.",
 				"- Text fields: update only textual values (Text, StructuredText/RichText, link display text if allowed) so content feels appropriate to the slice and project, guided by the user intent.",
 				"- Model-driven choices: do NOT change enumerated/config-driven values (e.g., Select options, link variants).",
-				{
-					create:
-						"- Create mode: provide natural, relevant text values aligned with the slice and project context.",
-					update:
-						"- Update mode: the provided mock is the reference for structure only. Apply text changes carefully: if a field and its type did not change and the user intent does not request changes to it, prefer retaining the previous text for that field.",
-				}[args.operation],
+				isNewSlice
+					? "- Create mode: provide natural, relevant text values aligned with the slice and project context."
+					: "- Update mode: the provided mock is the reference for structure only. Apply text changes carefully: if a field and its type did not change and the user intent does not request changes to it, prefer retaining the previous text for that field.",
 				"- Repeatables (Groups, repeatable Links, legacy items if present): this mock includes a single element as reference. Choose a small, natural final count (typically 2–3) when appropriate and as implied by user intent.",
-				"- Next step (required): call the `verify_slice_mock` tool to validate mocks.json.",
+				"What NOT to do:",
+				"- Never try to write the mocks.json by yourself, always use Prismic to save data.",
+				'- IMPORTANT: IF YOU USE ANY UUID FOR THE MOCK DATA (OFTEN USED FOR THE "key" PROPERTIES), ALWAYS MAKE SURE IT IS A VALID UUID v4 STRING.',
 				`User intent: ${args.userIntent}`,
-			].join("\n")
+			]
+				.filter(Boolean)
+				.join("\n")
 
 			return {
 				content: [

@@ -6,9 +6,8 @@ export async function callTool(
 		| "add_slice_to_custom_type"
 		| "how_to_code_slice"
 		| "how_to_model_slice"
-		| "save_slice_model"
-		| "how_to_mock_slice"
-		| "verify_slice_mock",
+		| "save_slice_data"
+		| "how_to_mock_slice",
 	args: Record<string, unknown>,
 ): Promise<string> {
 	const transport = new StdioClientTransport({

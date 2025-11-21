@@ -13,7 +13,7 @@ test("should check slice creation (model, code, mocks) based on user react code 
 	)
 
 	const messages = await aiAgent.simulateUserQuery({
-		prompt: `Create a "Hero" slice based on my code file [!code_file]: ${referenceCodeFile}`,
+		prompt: `Create and code a "Hero" slice based on my code file [!code_file]: ${referenceCodeFile}`,
 	})
 	expect(messages.length).toBeGreaterThan(0)
 
@@ -23,10 +23,9 @@ test("should check slice creation (model, code, mocks) based on user react code 
 	expect(toolsUsed).toEqual(
 		expect.arrayContaining([
 			"how_to_model_slice",
-			"save_slice_model",
+			"save_slice_data",
 			"how_to_code_slice",
 			"how_to_mock_slice",
-			"verify_slice_mock",
 		]),
 	)
 
@@ -56,6 +55,7 @@ Focus on:
   -- structure is roughly the same
   -- text should be the same
 `,
+		testName: "create-slice-code-prompt_slice-creation-react-code-file-prompt",
 	})
 
 	console.info("Grade:", grade)

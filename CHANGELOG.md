@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.20-alpha.6 (2025-10-30)
+
+
+### Chore
+
+* lint ([96f705a](https://github.com/prismicio/prismic-mcp-server/commit/96f705af4b27bae99b45aa6f7d5e58a67285d772))
+
+### 0.0.20-alpha.5 (2025-10-28)
+
+
+### Refactor
+
+* reuse errors ([b3aa4bc](https://github.com/prismicio/prismic-mcp-server/commit/b3aa4bc8219b28622d697860c2be8ddafe6f4037))
+
+### 0.0.20-alpha.4 (2025-10-28)
+
+### 0.0.20-alpha.3 (2025-10-28)
+
+
+### Features
+
+* create_slice_prompt ([38b35c4](https://github.com/prismicio/prismic-mcp-server/commit/38b35c493052755fc3ed8fe8829d28d8afecd082))
+
+### 0.0.20-alpha.2 (2025-10-23)
+
+### 0.0.20-alpha.1 (2025-10-15)
+
+
+### Features
+
+* create slice tool ([e8b1d9e](https://github.com/prismicio/prismic-mcp-server/commit/e8b1d9eaa0d3e5458c53b650f77171bc05ac4ecd))
+
 ### 0.0.20-alpha.0 (2025-10-07)
 
 

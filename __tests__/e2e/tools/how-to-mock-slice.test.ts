@@ -28,7 +28,7 @@ test.describe("how_to_mock_slice tool - Used by AI agent", () => {
 			messages,
 		})
 		expect(toolsUsed).toEqual(
-			expect.arrayContaining(["how_to_mock_slice", "verify_slice_mock"]),
+			expect.arrayContaining(["how_to_mock_slice", "save_slice_data"]),
 		)
 
 		const sliceFile = join(projectRoot, "/src/slices/Hero/mocks.json")
@@ -48,6 +48,7 @@ Focus on:
   -- structure is roughly the same
   -- it's ok is any mock value is totally different
 `,
+			testName: "how_to_mock_slice_slice-mock-generation-text-prompt",
 		})
 
 		console.info("Grade:", grade)
