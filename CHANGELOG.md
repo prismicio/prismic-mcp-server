@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.20 (2025-11-21)
+
+
+### Features
+
+* better instruction ([#100](https://github.com/prismicio/prismic-mcp-server/issues/100)) ([bd622b9](https://github.com/prismicio/prismic-mcp-server/commit/bd622b92ad72edcf000eac3116e95437fe36bd3f))
+
 ### 0.0.20-alpha.6 (2025-10-30)
 
 
