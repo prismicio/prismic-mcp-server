@@ -1,0 +1,28 @@
+{
+  "ff540a8effbad7dd8ede8bdc8dedc081647ed89f": {
+    "create-slice-code-prompt_slice-creation-react-code-file-prompt": {
+      "score": 7,
+      "summary": "Generated slice matches reference well in structure and functionality. Missing decorative icon field and has minor styling differences in code implementation."
+    },
+    "create-slice-image-prompt_slice-creation-image-prompt": {
+      "score": 7,
+      "summary": "Generated slice has same field structure and types but differs in styling approach and button rendering logic. Mock content is nearly identical with minor text variations."
+    },
+    "create-slice-text-prompt_slice-creation-text-prompt": {
+      "score": 8,
+      "summary": "Generated Hero slice closely matches reference with correct field structure and functionality. Minor differences in field names (cta_buttons vs buttons) and configurations don't affect core requirements."
+    },
+    "how_to_code_slice_slice-code-generation-text-prompt": {
+      "score": 7,
+      "summary": "Generated code correctly uses PrismicRichText and PrismicNextLink components but has issues with field access patterns and missing proper conditional checks that the reference demonstrates."
+    },
+    "how_to_mock_slice_slice-mock-generation-text-prompt": {
+      "score": 9,
+      "summary": "Structure matches perfectly with same field organization and types. Minor differences in text content and link properties are acceptable variations."
+    },
+    "how_to_model_slice_slice-model-generation-text-prompt": {
+      "score": 9,
+      "summary": "Generated model matches reference with same field types and structure. Minor differences in field configs and naming (cta_buttons vs buttons) don't affect functionality."
+    }
+  }
+}
