@@ -75,7 +75,7 @@
 		"prettier": "3.6.2",
 		"prismic-ts-codegen": "0.1.28",
 		"zod": "3.25.67",
-		"@slicemachine/manager": "0.25.4",
+		"@slicemachine/manager": "0.26.0",
 		"uuid": "13.0.0"
 	},
 	"devDependencies": {
