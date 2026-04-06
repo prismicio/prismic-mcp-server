@@ -144,7 +144,9 @@ Output STRICT JSON (no backticks, no prose) with this shape:
 						message.type === "result" && message.subtype === "success",
 				)?.result || ""
 
-			const stripped = resultText.replace(/^```(?:json)?\s*/, "").replace(/\s*```\s*$/, "")
+			const stripped = resultText
+				.replace(/^```(?:json)?\s*/, "")
+				.replace(/\s*```\s*$/, "")
 			const match = stripped.match(/\{[\s\S]*\}$/)
 			const json = match ? match[0] : stripped
 
