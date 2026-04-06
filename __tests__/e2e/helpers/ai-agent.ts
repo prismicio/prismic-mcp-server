@@ -1,7 +1,7 @@
 import {
 	type SDKMessage,
 	query as claudeQuery,
-} from "@anthropic-ai/claude-code"
+} from "@anthropic-ai/claude-agent-sdk"
 import { execSync } from "child_process"
 import { promises as fs } from "fs"
 import path from "path"

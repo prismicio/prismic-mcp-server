@@ -59,7 +59,9 @@ async function globalSetup(): Promise<void> {
 		})
 		console.info("Local MCP server built successfully")
 	} catch (error) {
-		throw new Error(`Local MCP server built failed: ${error}`)
+		throw new Error(`Local MCP server built failed: ${error}`, {
+			cause: error,
+		})
 	}
 }
 

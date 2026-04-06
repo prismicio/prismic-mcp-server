@@ -76,6 +76,7 @@ RETURNS: A message indicating whether the slice was added to the type or not, an
 			} catch (error) {
 				throw new Error(
 					`Invalid JSON format for slice model at ${sliceModelAbsolutePath}: ${getErrorMessage(error)}`,
+					{ cause: error },
 				)
 			}
 
@@ -101,6 +102,7 @@ RETURNS: A message indicating whether the slice was added to the type or not, an
 			} catch (error) {
 				throw new Error(
 					`Invalid JSON format for custom type model at ${customTypeModelAbsolutePath}: ${getErrorMessage(error)}`,
+					{ cause: error },
 				)
 			}
 
@@ -204,6 +206,7 @@ RETURNS: A message indicating whether the slice was added to the type or not, an
 			} catch (error) {
 				throw new Error(
 					`Failed to write to file ${customTypeModelAbsolutePath}: ${getErrorMessage(error)}`,
+					{ cause: error },
 				)
 			}
 
