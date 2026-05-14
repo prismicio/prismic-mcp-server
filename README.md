@@ -1,3 +1,8 @@
+> [!IMPORTANT]
+> This package is no longer recommended for building Prismic websites with AI. Follow the new Prismic CLI-based approach instead: [Build with AI in Prismic](https://prismic.io/docs/ai).
+>
+> For Prismic content management through MCP, use Prismic’s server-side MCP server: [Prismic MCP documentation](https://prismic.io/docs/mcp).
+
 # @prismicio/mcp-server
 
 [![npm version][npm-version-src]][npm-version-href]
