@@ -46,13 +46,13 @@ jobs:
           fi
 
       - name: Set up Node
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node }}
           registry-url: "https://registry.npmjs.org"
 
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Set up Git
         run: |
@@ -60,7 +60,7 @@ jobs:
           git config user.name "${GITHUB_ACTOR}"
 
       - name: Retrieve node_modules
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: node_modules
           key: ${{ matrix.os }}-node-v${{ matrix.node }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/package-lock.json')) }}
